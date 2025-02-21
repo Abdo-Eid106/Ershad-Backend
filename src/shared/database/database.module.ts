@@ -1,0 +1,84 @@
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import {
+  Regulation,
+  RegistrationRules,
+  DismissalRules,
+  RetakeRules,
+  AcademicRequirements,
+  UniversityRequirements,
+  BasicScienceRequirements,
+  FacultyRequirements,
+  SpecializationRequirements,
+  Level,
+  CourseGpaRange,
+  CumGpaRange,
+  GradProjectRequirements,
+  TrainingRequirements,
+} from 'src/modules/regulation/entities';
+import { Course } from 'src/modules/course/entites/course.entity';
+import { Program } from 'src/modules/program/entities/program.entitiy';
+import { Plan } from 'src/modules/plan/entities/plan.entity';
+import { PlanCourse } from 'src/modules/plan/entities/plan-course.entity';
+import { RequirementCourse } from 'src/modules/requirement/entities/requirement-course.entity';
+import { User } from 'src/modules/user/entities/user.entity';
+import { Student } from 'src/modules/student/entities/student.entity';
+import { PersonalInfo } from 'src/modules/personal-info/entities/personal-info.entity';
+import { AcademicInfo } from 'src/modules/academic-info/entities/academic-info.entity';
+import { Semester } from 'src/modules/semester/entities/semester.entity';
+import { SemesterCourse } from 'src/modules/semester/entities/semester-course.entity';
+import { Officer } from 'src/modules/officer/entities/officer.entity';
+import { Admin } from 'src/modules/admin/entities/admin.entity';
+import { Role } from 'src/modules/auth/entities/role.entity';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('DB_HOST', 'localhost'),
+        port: configService.get<number>('DB_PORT', 3306),
+        username: configService.get<string>('DB_USER', 'root'),
+        password: configService.get<string>('DB_PASSWORD', '12345'),
+        database: configService.get<string>('DB_NAME', 'test'),
+        entities: [
+          Regulation,
+          RegistrationRules,
+          DismissalRules,
+          RetakeRules,
+          AcademicRequirements,
+          UniversityRequirements,
+          BasicScienceRequirements,
+          FacultyRequirements,
+          SpecializationRequirements,
+          CourseGpaRange,
+          CumGpaRange,
+          GradProjectRequirements,
+          TrainingRequirements,
+          Level,
+          Course,
+          Program,
+          Plan,
+          PlanCourse,
+          RequirementCourse,
+          User,
+          Student,
+          PersonalInfo,
+          AcademicInfo,
+          Semester,
+          SemesterCourse,
+          Officer,
+          Admin,
+          Role,
+        ],
+        synchronize: true,
+      }),
+    }),
+  ],
+  exports: [TypeOrmModule],
+})
+export class DatabaseModule {}

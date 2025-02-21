@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "*.embeddedhtml": "html",
+    "*.ejs": "html",
+    ".fantomasignore": "ignore",
+    "xstring": "cpp"
+  }
+}

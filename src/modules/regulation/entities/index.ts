@@ -1,0 +1,14 @@
+export { Regulation } from './regulation.entity';
+export { RegistrationRules } from './registration-rules.entity';
+export { DismissalRules } from './dissmisal-rules.entity';
+export { RetakeRules } from './retake-rules.entity';
+export { AcademicRequirements } from './academic-requirements.entity';
+export { UniversityRequirements } from './university-requirements';
+export { BasicScienceRequirements } from './basic-science-requirements.entitiy';
+export { FacultyRequirements } from './faculty-requirements.entity';
+export { SpecializationRequirements } from './specialization-requirements';
+export { Level } from './level-requirements.entity';
+export { CourseGpaRange } from './course-gpa-range.entity';
+export { CumGpaRange } from './cum-gpa-range.entity';
+export { GradProjectRequirements } from './graduation-project-requirements.entity';
+export { TrainingRequirements } from './training-requirements.entity';
