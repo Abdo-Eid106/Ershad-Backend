@@ -24,7 +24,7 @@ import { RoleEnum } from '../role/enums/role.enum';
 import { Roles } from '../role/decorators/roles.decorator';
 
 @Controller('courses')
-// @UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtGuard, RolesGuard)
 @Serialize(CourseDto)
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}

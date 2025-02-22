@@ -96,30 +96,18 @@ export class CourseService {
     const courseIds =
       await this.academicInfoService.getTakenCourseIds(studentId);
 
-    if (courseIds.length == 0) return [];
-
     return this.courseRepo
       .createQueryBuilder('course')
-      .leftJoin('course.prerequisite', 'prerequisite')
+      .leftJoinAndSelect('course.prerequisite', 'prerequisite')
       .innerJoin('course.requirementCourses', 'requirementCourse')
       .innerJoin('requirementCourse.regulation', 'regulation')
       .innerJoin('regulation.academicInfos', 'academicInfo')
       .innerJoin('academicInfo.student', 'student')
       .where('student.userId = :studentId', { studentId })
       .andWhere(
-        'prerequisite.id is NULL OR prerequisite.id IN (:...courseIds)',
-        { courseIds },
+        'prerequisite.id IS NULL OR prerequisite.id IN (:...courseIds)',
+        { courseIds: courseIds.length ? courseIds : [null] },
       )
-      .select([
-        'course.id AS id',
-        'course.name AS name',
-        'course.code AS code',
-        'course.lectureHours AS lectureHours',
-        'course.practicalHours AS practicalHours',
-        'course.creditHours AS creditHours',
-        'course.level AS level',
-        'course.prerequisite AS prerequisite',
-      ])
-      .getRawMany();
+      .getMany();
   }
 }
