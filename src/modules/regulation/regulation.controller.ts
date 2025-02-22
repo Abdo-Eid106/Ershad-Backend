@@ -17,9 +17,12 @@ import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
 import { Roles } from '../role/decorators/roles.decorator';
 import { RoleEnum } from '../role/enums/role.enum';
+import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
+import { RegulationDto } from './dto/regulation.dto';
 
 @Controller('regulations')
 // @UseGuards(JwtGuard, RolesGuard)
+@Serialize(RegulationDto)
 export class RegulationController {
   constructor(private readonly regulationService: RegulationService) {}
 

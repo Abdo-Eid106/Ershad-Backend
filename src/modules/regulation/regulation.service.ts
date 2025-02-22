@@ -189,23 +189,7 @@ export class RegulationService {
   }
 
   async findAll() {
-    return this.regulationRepo.find({
-      relations: [
-        'levels',
-        'cumGpaRanges',
-        'courseGpaRanges',
-        'registrationRules',
-        'academicRequirements',
-        'universityRequirements',
-        'specializationRequirements',
-        'specializationRequirements.trainingRequirements',
-        'specializationRequirements.gradProjectRequirements',
-        'facultyRequirements',
-        'basicScienceRequirements',
-        'retakeRules',
-        'dismissalRules',
-      ],
-    });
+    return this.regulationRepo.find();
   }
 
   async findOne(id: UUID) {
