@@ -23,41 +23,79 @@ import { RolesGuard } from '../role/guards/roles.guard';
 import { Roles } from '../role/decorators/roles.decorator';
 import { RoleEnum } from '../role/enums/role.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { currentUser } from 'src/shared/decorators/current-user.decorator';
+import { IPayloud } from 'src/shared/interfaces/payloud.interface';
 
-@Controller('/students/:id/personal-info')
-// @UseGuards(JwtGuard, RolesGuard)
-@Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
+@Controller()
+@UseGuards(JwtGuard, RolesGuard)
 @Serialize(PersonalInfoDto)
 export class PersonalInfoController {
   constructor(private readonly personalInfoService: PersonalInfoService) {}
 
-  @Get()
-  findOne(@Param('id', ParseUUIDPipe) id: UUID) {
+  @Get('/students/:id/personal-info')
+  @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
+  findById(@Param('id', ParseUUIDPipe) id: UUID) {
     return this.personalInfoService.findOne(id);
   }
 
-  @Put()
-  update(
+  @Get('/me/personal-info')
+  @Roles(RoleEnum.STUDENT)
+  findMe(@currentUser() user: IPayloud) {
+    return this.personalInfoService.findOne(user.id);
+  }
+
+  @Put('/students/:id/personal-info')
+  @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
+  updateById(
     @Param('id', ParseUUIDPipe) id: UUID,
     @Body() updatePersonalInfoDto: UpdatePersonalInfoDto,
   ) {
     return this.personalInfoService.update(id, updatePersonalInfoDto);
   }
 
-  @Patch('avatar')
+  @Put('/me/personal-info')
+  @Roles(RoleEnum.STUDENT)
+  updateMe(
+    @currentUser() user: IPayloud,
+    @Body() updatePersonalInfoDto: UpdatePersonalInfoDto,
+  ) {
+    return this.personalInfoService.update(user.id, updatePersonalInfoDto);
+  }
+
+  @Patch('/students/:id/avatar')
+  @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
   @UseInterceptors(FileInterceptor('avatar'))
-  async updateAvatar(
+  async updateAvatarById(
     @Param('id', ParseUUIDPipe) id: UUID,
     @UploadedFile(
       new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 2 * 1024 * 1024 }),
-          new FileTypeValidator({ fileType: /(jpeg|png|webp)$/ }),
-        ],
+        validators: PersonalInfoController.fileValidators(),
       }),
     )
     file: Express.Multer.File,
   ) {
     return this.personalInfoService.updateAvatar(id, file);
+  }
+
+  @Patch('/me/avatar')
+  @Roles(RoleEnum.STUDENT)
+  @UseInterceptors(FileInterceptor('avatar'))
+  async updateMyAvatar(
+    @currentUser() user: IPayloud,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: PersonalInfoController.fileValidators(),
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return this.personalInfoService.updateAvatar(user.id, file);
+  }
+
+  private static fileValidators() {
+    return [
+      new MaxFileSizeValidator({ maxSize: 2 * 1024 * 1024 }),
+      new FileTypeValidator({ fileType: /(jpeg|png|webp)$/ }),
+    ];
   }
 }
