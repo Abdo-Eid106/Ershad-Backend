@@ -60,6 +60,11 @@ export class CourseController {
     return this.courseService.findOne(id);
   }
 
+  @Get(':id/details')
+  findCourseDetails(@Param('id', ParseUUIDPipe) id: UUID) {
+    return this.courseService.findCourseDetails(id);
+  }
+
   @Delete(':id')
   @HttpCode(204)
   @Roles(RoleEnum.ADMIN)

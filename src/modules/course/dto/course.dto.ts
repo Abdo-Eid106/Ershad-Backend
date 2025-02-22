@@ -25,4 +25,8 @@ export class CourseDto {
   @Expose()
   @Type(() => CourseDto)
   prerequisite?: CourseDto;
+
+  @Expose()
+  @Type(() => CourseDto)
+  dependentCourses?: CourseDto[];
 }

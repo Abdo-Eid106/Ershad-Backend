@@ -110,4 +110,18 @@ export class CourseService {
       )
       .getMany();
   }
+
+  async findCourseDetails(courseId: UUID) {
+    const course = await this.courseRepo
+      .createQueryBuilder('course')
+      .leftJoinAndSelect('course.prerequisite', 'prerequisite')
+      .getOne();
+    if (!course) throw new NotFoundException('course not found');
+
+    const dependentCourses = await this.courseRepo.find({
+      where: { prerequisite: { id: courseId } },
+    });
+
+    return { ...course, dependentCourses };
+  }
 }
