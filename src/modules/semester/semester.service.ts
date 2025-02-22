@@ -59,7 +59,7 @@ export class SemesterService {
       }),
     );
 
-    await this.semesterCourseRepo.save(
+    return this.semesterCourseRepo.save(
       semesterCourses.map((semesterCourse) =>
         this.semesterCourseRepo.create({
           semester: { id: semesterRecord.id },
@@ -68,15 +68,13 @@ export class SemesterService {
         }),
       ),
     );
-
-    return 'This action adds a new semester';
   }
 
   async findStudentSemesters(studentId: UUID) {
     if (!(await this.studentRepo.existsBy({ userId: studentId })))
       throw new NotFoundException('student not found');
 
-    const semesters = await this.studentRepo
+    return this.studentRepo
       .createQueryBuilder('student')
       .innerJoin('student.academicInfo', 'ac')
       .innerJoin('ac.regulation', 'regulation')
@@ -99,21 +97,6 @@ export class SemesterService {
           WHEN SUM(course.creditHours) > 0 THEN ROUND(SUM(range.gpa * course.creditHours) / SUM(course.creditHours), 2)
           ELSE 0 
         END AS gpa`,
-        `CASE 
-          WHEN SUM(SUM(CASE WHEN range.gpa > 0 THEN course.creditHours ELSE 0 END)) OVER (
-            ORDER BY semester.startYear ASC, semester.semester ASC
-          ) > 0 
-          THEN ROUND(
-            SUM(SUM(range.gpa * course.creditHours)) OVER (
-              ORDER BY semester.startYear ASC, semester.semester ASC
-            ) / 
-            SUM(SUM(CASE WHEN range.gpa > 0 THEN course.creditHours ELSE 0 END)) OVER (
-              ORDER BY semester.startYear ASC, semester.semester ASC
-            ),
-            2
-          )
-          ELSE 0 
-        END AS cumulativeGpa`,
         `JSON_ARRAYAGG(
           JSON_OBJECT(
             "courseId", course.id,
@@ -133,63 +116,6 @@ export class SemesterService {
       .orderBy('semester.startYear', 'DESC')
       .addOrderBy('semester.semester', 'DESC')
       .getRawMany();
-
-    console.log('semesters = ', semesters[0]);
-
-    return semesters;
-  }
-
-  async test(studentId: UUID) {
-    if (!(await this.studentRepo.existsBy({ userId: studentId })))
-      throw new NotFoundException('student not found');
-
-    const semesters = await this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'ac')
-      .innerJoin('ac.regulation', 'regulation')
-      .innerJoin('ac.semesters', 'semester')
-      .innerJoin('semester.semesterCourses', 'semesterCourse')
-      .innerJoin('semesterCourse.course', 'course')
-      .innerJoin(
-        'regulation.courseGpaRanges',
-        'range',
-        'semesterCourse.degree BETWEEN range.from AND range.to',
-      )
-      .select([
-        'semester.id AS id',
-        'semester.startYear AS startYear',
-        'semester.endYear AS endYear',
-        'semester.semester AS semester',
-        'SUM(CASE WHEN range.gpa > 0 THEN course.creditHours ELSE 0 END) as gainedHours',
-        'SUM(course.creditHours) as totalHours',
-        `CASE 
-          WHEN SUM(course.creditHours) > 0 THEN ROUND(SUM(range.gpa * course.creditHours) / SUM(course.creditHours), 2)
-          ELSE 0 
-        END AS gpa`,
-        ``,
-        `JSON_ARRAYAGG(
-          JSON_OBJECT(
-            "courseId", course.id,
-            "code", course.code,
-            "name", course.name,
-            "creditHours", course.creditHours,
-            "degree", semesterCourse.degree,
-            "grade", range.name,
-            "gpa", range.gpa
-          )
-        ) AS courses`,
-      ])
-      .where('student.userId = :studentId', { studentId })
-      .groupBy(
-        'semester.startYear, semester.endYear, semester.semester, semester.id',
-      )
-      .orderBy('semester.startYear', 'DESC')
-      .addOrderBy('semester.semester', 'DESC')
-      .getRawMany();
-
-    console.log('semesters = ', semesters[0]);
-
-    return semesters;
   }
 
   async findOne(id: UUID) {

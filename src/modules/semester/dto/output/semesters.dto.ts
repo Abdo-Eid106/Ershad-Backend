@@ -28,6 +28,9 @@ class CourseDto {
 
   @Expose()
   grade: number;
+
+  @Expose()
+  gpa: number;
 }
 
 export class SemestersDto {
