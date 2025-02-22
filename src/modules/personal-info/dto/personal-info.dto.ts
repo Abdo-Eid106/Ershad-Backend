@@ -32,4 +32,7 @@ export class PersonalInfoDto {
 
   @Expose()
   phone: string;
+
+  @Expose()
+  avatar: string;
 }

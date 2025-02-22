@@ -9,6 +9,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UUID } from 'crypto';
 import { UpdatePersonalInfoDto } from './dto/update-personal-info.dto';
 import { User } from '../user/entities/user.entity';
+import { CloudinaryService } from 'src/shared/upload/cloudinary.service';
+import { Student } from '../student/entities/student.entity';
 
 @Injectable()
 export class PersonalInfoService {
@@ -17,6 +19,7 @@ export class PersonalInfoService {
     private readonly personalInfoRepo: Repository<PersonalInfo>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async findOne(id: UUID) {
@@ -31,6 +34,7 @@ export class PersonalInfoService {
         'PI.universityId AS universityId',
         'PI.gender AS gender',
         'PI.phone AS phone',
+        'PI.avatar AS avatar',
         'user.email AS email',
       ])
       .where('user.id = :id', { id })
@@ -84,5 +88,18 @@ export class PersonalInfoService {
     });
 
     return this.findOne(id);
+  }
+
+  async updateAvatar(studentId: UUID, avatar: Express.Multer.File) {
+    const personalInfo = await this.personalInfoRepo.findOne({
+      where: { studentId },
+    });
+    if (!personalInfo) throw new NotFoundException('student not found');
+
+    const { secure_url } = await this.cloudinaryService.uploadMedia(
+      avatar,
+      'image',
+    );
+    return this.personalInfoRepo.save({ ...personalInfo, avatar: secure_url });
   }
 }
