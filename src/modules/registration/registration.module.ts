@@ -5,13 +5,11 @@ import { AcademicInfoModule } from '../academic-info/academic-info.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Student } from '../student/entities/student.entity';
 import { Course } from '../course/entites/course.entity';
+import { Registration } from './entities/registration.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      Student,
-      Course,
-    ]),
+    TypeOrmModule.forFeature([Student, Course, Registration]),
     AcademicInfoModule,
   ],
   controllers: [RegistrationController],

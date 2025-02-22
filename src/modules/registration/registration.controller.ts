@@ -7,6 +7,8 @@ import { IPayloud } from 'src/shared/interfaces/payloud.interface';
 import { Roles } from '../role/decorators/roles.decorator';
 import { RoleEnum } from '../role/enums/role.enum';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
+import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
+import { CourseDto } from '../course/dto/course.dto';
 
 @Controller('/registrations')
 @UseGuards(JwtGuard, RolesGuard)
@@ -26,5 +28,11 @@ export class RegistrationController {
   ) {
     await this.registrationService.create(user.id, createRegistrationDto);
     return { message: 'Registration completed successfully.' };
+  }
+
+  @Get('/me')
+  @Serialize(CourseDto)
+  async getMyRegistration(@currentUser() user: IPayloud) {
+    return this.registrationService.getStudentRegisteredCourses(user.id);
   }
 }

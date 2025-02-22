@@ -22,6 +22,9 @@ export class RegistrationService {
     @InjectRepository(Course)
     private readonly courseRepo: Repository<Course>,
 
+    @InjectRepository(Registration)
+    private readonly registrationRepo: Repository<Registration>,
+
     private readonly academicInfoService: AcademicInfoService,
     private readonly dataSource: DataSource,
   ) {}
@@ -186,5 +189,31 @@ export class RegistrationService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async getStudentRegisteredCourses(studentId: UUID) {
+    if (!(await this.studentRepo.existsBy({ userId: studentId })))
+      throw new NotFoundException('Student not found');
+
+    const registeredCourses = await this.registrationRepo
+      .createQueryBuilder('registration')
+      .innerJoin('registration.registrationCourses', 'registrationCourse')
+      .innerJoin('registrationCourse.course', 'course')
+      .where('registration.academicInfoId = :studentId', { studentId })
+      .select([
+        'course.id AS id',
+        'course.name AS name',
+        'course.code AS code',
+        'course.lectureHours AS lectureHours',
+        'course.practicalHours AS practicalHours',
+        'course.creditHours AS creditHours',
+        'course.prerequisite AS prerequisite',
+      ])
+      .getRawMany();
+
+    if (registeredCourses.length === 0)
+      throw new NotFoundException(`Student hasn't registered yet`);
+
+    return registeredCourses;
   }
 }
