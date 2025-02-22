@@ -20,7 +20,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { OfficerModule } from './modules/officer/officer.module';
 import { RoleModule } from './modules/role/role.module';
 import { AdminModule } from './modules/admin/admin.module';
-import { RegisterationModule } from './modules/registeration/registeration.module';
+import { RegistrationModule } from './modules/registration/registration.module';
 
 @Module({
   imports: [
@@ -40,7 +40,7 @@ import { RegisterationModule } from './modules/registeration/registeration.modul
     OfficerModule,
     RoleModule,
     AdminModule,
-    RegisterationModule,
+    RegistrationModule,
   ],
   controllers: [AppController],
   providers: [

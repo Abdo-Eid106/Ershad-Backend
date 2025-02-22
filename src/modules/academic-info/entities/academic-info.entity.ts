@@ -9,6 +9,7 @@ import {
 import { Student } from '../../student/entities/student.entity';
 import { Semester } from 'src/modules/semester/entities/semester.entity';
 import { Regulation } from 'src/modules/regulation/entities';
+import { Registration } from 'src/modules/registration/entities/registration.entity';
 
 @Entity()
 export class AcademicInfo {
@@ -28,4 +29,7 @@ export class AcademicInfo {
 
   @OneToMany(() => Semester, (semester) => semester.academicInfo)
   semesters: Semester[];
+
+  @OneToOne(() => Registration, (registration) => registration.academicInfo)
+  registration: Registration;
 }

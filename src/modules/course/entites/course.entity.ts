@@ -1,4 +1,5 @@
 import { PlanCourse } from 'src/modules/plan/entities/plan-course.entity';
+import { RegistrationCourse } from 'src/modules/registration/entities/registration-course.entity';
 import { RequirementCourse } from 'src/modules/requirement/entities/requirement-course.entity';
 import { SemesterCourse } from 'src/modules/semester/entities/semester-course.entity';
 import { BaseEntity } from 'src/shared/entities/Base.entity';
@@ -45,4 +46,10 @@ export class Course extends BaseEntity {
 
   @OneToMany(() => SemesterCourse, (semesterCourse) => semesterCourse.course)
   semesterCourses: SemesterCourse[];
+
+  @OneToMany(
+    () => RegistrationCourse,
+    (regsitrationCourse) => regsitrationCourse.course,
+  )
+  registrationCourses: RegistrationCourse[];
 }

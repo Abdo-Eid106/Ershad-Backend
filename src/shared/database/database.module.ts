@@ -22,6 +22,8 @@ import { Program } from 'src/modules/program/entities/program.entitiy';
 import { Plan } from 'src/modules/plan/entities/plan.entity';
 import { PlanCourse } from 'src/modules/plan/entities/plan-course.entity';
 import { RequirementCourse } from 'src/modules/requirement/entities/requirement-course.entity';
+import { Registration } from 'src/modules/registration/entities/registration.entity';
+import { RegistrationCourse } from 'src/modules/registration/entities/registration-course.entity';
 import { User } from 'src/modules/user/entities/user.entity';
 import { Student } from 'src/modules/student/entities/student.entity';
 import { PersonalInfo } from 'src/modules/personal-info/entities/personal-info.entity';
@@ -74,6 +76,8 @@ import { Role } from 'src/modules/auth/entities/role.entity';
           Officer,
           Admin,
           Role,
+          Registration,
+          RegistrationCourse,
         ],
         synchronize: true,
       }),

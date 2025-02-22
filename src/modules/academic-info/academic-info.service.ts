@@ -228,7 +228,7 @@ export class AcademicInfoService {
     return semesters >= semestersWithoutGpaRules;
   }
 
-  async getRegisterationHoursRange(
+  async getRegistrationHoursRange(
     studentId: UUID,
   ): Promise<{ min: number; max: number }> {
     const gpa = await this.getGpa(studentId);
@@ -253,5 +253,17 @@ export class AcademicInfoService {
       ])
       .setParameters({ gpa, isUnderGpaRules })
       .getRawOne();
+  }
+
+  async getMaxRetakeCourses(studentId: UUID) {
+    const result = await this.studentRepo
+      .createQueryBuilder('student')
+      .innerJoin('student.academicInfo', 'ac')
+      .innerJoin('ac.regulation', 'regulation')
+      .innerJoin('regulation.retakeRules', 'retakeRules')
+      .where('student.userId = :studentId', { studentId })
+      .select('retakeRules.maxRetakeCourses', 'maxRetakeCourses')
+      .getRawOne();
+    return result?.maxRetakeCourses ?? 0;
   }
 }
