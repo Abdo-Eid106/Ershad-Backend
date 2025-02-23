@@ -22,14 +22,16 @@ import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
 import { Roles } from '../role/decorators/roles.decorator';
 import { RoleEnum } from '../role/enums/role.enum';
+import { currentUser } from 'src/shared/decorators/current-user.decorator';
+import { IPayloud } from 'src/shared/interfaces/payloud.interface';
 
 @Controller()
-// @UseGuards(JwtGuard, RolesGuard)
-@Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
+@UseGuards(JwtGuard, RolesGuard)
 export class SemesterController {
   constructor(private readonly semesterService: SemesterService) {}
 
   @Post('/students/:id/semesters')
+  @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
   create(
     @Param('id', ParseUUIDPipe) id: UUID,
     @Body() createSemesterDto: CreateSemesterDto,
@@ -38,18 +40,28 @@ export class SemesterController {
   }
 
   @Get('/students/:id/semesters')
+  @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
   @Serialize(SemestersDto)
   findStudentSemesters(@Param('id', ParseUUIDPipe) id: UUID) {
     return this.semesterService.findStudentSemesters(id);
   }
 
+  @Get('/semesters/me')
+  @Serialize(SemestersDto)
+  @Roles(RoleEnum.STUDENT)
+  findMySemesters(@currentUser() user: IPayloud) {
+    return this.semesterService.findStudentSemesters(user.id);
+  }
+
   @Get('/semesters/:id')
   @Serialize(SemesterDto)
+  @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
   findOne(@Param('id', ParseUUIDPipe) id: UUID) {
     return this.semesterService.findOne(id);
   }
 
   @Put('/semesters/:id')
+  @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
   update(
     @Param('id', ParseUUIDPipe) id: UUID,
     @Body() updateSemesterDto: UpdateSemesterDto,
@@ -58,6 +70,7 @@ export class SemesterController {
   }
 
   @Delete('/semesters/:id')
+  @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
   remove(@Param('id') id: UUID) {
     return this.semesterService.remove(id);
   }

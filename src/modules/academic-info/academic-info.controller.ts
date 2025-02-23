@@ -16,20 +16,30 @@ import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
 import { Roles } from '../role/decorators/roles.decorator';
 import { RoleEnum } from '../role/enums/role.enum';
+import { currentUser } from 'src/shared/decorators/current-user.decorator';
+import { IPayloud } from 'src/shared/interfaces/payloud.interface';
 
-@Controller('students/:id/academic-info')
-// @UseGuards(JwtGuard, RolesGuard)
-@Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
+@Controller()
+@UseGuards(JwtGuard, RolesGuard)
 export class AcademicInfoController {
   constructor(private readonly academicInfoService: AcademicInfoService) {}
 
-  @Get()
+  @Get('students/:id/academic-info')
+  @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
   @Serialize(AcademicInfoDto)
   get(@Param('id', ParseUUIDPipe) id: UUID) {
     return this.academicInfoService.getAcademicInfo(id);
   }
 
-  @Put()
+  @Get('academic-info/me')
+  @Roles(RoleEnum.STUDENT)
+  @Serialize(AcademicInfoDto)
+  getMyAcademicInfo(@currentUser() user: IPayloud) {
+    return this.academicInfoService.getAcademicInfo(user.id);
+  }
+
+  @Put('students/:id/academic-info')
+  @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
   update(
     @Param('id', ParseUUIDPipe) id: UUID,
     @Body() updateAcademicInfoDto: UpdateAcademicInfoDto,
