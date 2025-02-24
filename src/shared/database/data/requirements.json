@@ -1,0 +1,86 @@
+[
+  {
+    "id": "d4e7f86g-1h23-4i56-j789-k0l1m2n3o4p5",
+    "createdAt": "2024-01-15T00:00:00.000Z",
+    "updatedAt": "2024-01-15T00:00:00.000Z",
+    "course": { "id": "550e8400-e29b-41d4-a716-446655440000" },
+    "category": "UNIVERSITY",
+    "optional": false,
+    "regulation": { "id": "3f5c1a72-9b48-4d21-bb44-8c6f6e2aaf32" }
+  },
+  {
+    "id": "q6r8s9t0-2u34-5v67-w890-x1y2z3a4b5c6",
+    "createdAt": "2024-01-15T00:00:00.000Z",
+    "updatedAt": "2024-01-15T00:00:00.000Z",
+    "course": { "id": "6a1f56b6-74ae-4a32-bcc6-7c4039d0d4f6" },
+    "category": "UNIVERSITY",
+    "optional": true,
+    "regulation": { "id": "3f5c1a72-9b48-4d21-bb44-8c6f6e2aaf32" }
+  },
+  {
+    "id": "d7e8f9g0-3h45-6i78-j901-k2l3m4n5o6p7",
+    "createdAt": "2024-01-15T00:00:00.000Z",
+    "updatedAt": "2024-01-15T00:00:00.000Z",
+    "course": { "id": "d497ce5e-bfa6-4cf6-a717-1bb95ff1b4f9" },
+    "category": "BASIC_SCIENCE",
+    "optional": false,
+    "regulation": { "id": "3f5c1a72-9b48-4d21-bb44-8c6f6e2aaf32" }
+  },
+  {
+    "id": "q8r9s0t1-4u56-7v89-w012-x3y4z5a6b7c8",
+    "createdAt": "2024-01-15T00:00:00.000Z",
+    "updatedAt": "2024-01-15T00:00:00.000Z",
+    "course": { "id": "e50f0129-29b4-4fd8-9c5f-68f7820f80c1" },
+    "category": "BASIC_SCIENCE",
+    "optional": false,
+    "regulation": { "id": "3f5c1a72-9b48-4d21-bb44-8c6f6e2aaf32" }
+  },
+  {
+    "id": "d9e0f1g2-5h67-8i90-j123-k4l5m6n7o8p9",
+    "createdAt": "2024-01-15T00:00:00.000Z",
+    "updatedAt": "2024-01-15T00:00:00.000Z",
+    "course": { "id": "8156ddcf-8e1c-47e3-a98c-b28c2dd3c583" },
+    "category": "FACULTY",
+    "optional": false,
+    "regulation": { "id": "3f5c1a72-9b48-4d21-bb44-8c6f6e2aaf32" }
+  },
+  {
+    "id": "q0r1s2t3-6u78-9v01-w234-x5y6z7a8b9c0",
+    "createdAt": "2024-01-15T00:00:00.000Z",
+    "updatedAt": "2024-01-15T00:00:00.000Z",
+    "course": { "id": "7e26c125-f807-4d8f-bb61-1bcf9d7a7b21" },
+    "category": "FACULTY",
+    "optional": true,
+    "regulation": { "id": "3f5c1a72-9b48-4d21-bb44-8c6f6e2aaf32" }
+  },
+  {
+    "id": "d1e2f3g4-7h89-0i12-j345-k6l7m8n9o0p1",
+    "createdAt": "2024-01-15T00:00:00.000Z",
+    "updatedAt": "2024-01-15T00:00:00.000Z",
+    "course": { "id": "b3834bde-4d95-4cfc-8d1f-72eb07ef4029" },
+    "category": "SPECIALIZATION",
+    "optional": false,
+    "regulation": { "id": "3f5c1a72-9b48-4d21-bb44-8c6f6e2aaf32" },
+    "program": { "id": "a1f4b73d-8e92-45c4-bc64-91f7ef1a8a32" }
+  },
+  {
+    "id": "q2r3s4t5-8u90-1v23-w456-x7y8z9a0b1c2",
+    "createdAt": "2024-01-15T00:00:00.000Z",
+    "updatedAt": "2024-01-15T00:00:00.000Z",
+    "course": { "id": "b5c19e8f-b748-4f1a-a3b4-16756f4e9f45" },
+    "category": "SPECIALIZATION",
+    "optional": false,
+    "regulation": { "id": "3f5c1a72-9b48-4d21-bb44-8c6f6e2aaf32" },
+    "program": { "id": "b2c5d84e-7f34-4a12-bd75-12f9ae2b4d43" }
+  },
+  {
+    "id": "d3e4f5g6-9h01-2i34-j567-k8l9m0n1o2p3",
+    "createdAt": "2024-01-15T00:00:00.000Z",
+    "updatedAt": "2024-01-15T00:00:00.000Z",
+    "course": { "id": "bf01a1d9-5913-4512-b25c-58c899c07c41" },
+    "category": "SPECIALIZATION",
+    "optional": false,
+    "regulation": { "id": "3f5c1a72-9b48-4d21-bb44-8c6f6e2aaf32" },
+    "program": { "id": "c3d6e95f-6g45-4b23-ce86-23g0bf3c5e54" }
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "c74b81b2-9f4b-4c6e-a88f-2f1b6dc84b69",
+    "name": "ADMIN"
+  },
+  {
+    "id": "a29f8e3d-1e7c-4db8-bf3e-58d2cf4f5b72",
+    "name": "OFFICER"
+  },
+  {
+    "id": "e6b3cbb8-39e9-4b9c-b5eb-b85a2c8ea74a",
+    "name": "STUDENT"
+  }
+]

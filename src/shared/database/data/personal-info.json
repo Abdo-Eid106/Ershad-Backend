@@ -1,0 +1,14 @@
+[
+  {
+    "studentId": "d9e8f2b3-41a7-4a52-9c3c-1a55b7e8e2f0",
+    "name": {
+      "en": "Ziad Mousa",
+      "ar": "زياد موسي "
+    },
+    "nationalId": "12345678901234",
+    "universityId": "U20240001",
+    "gender": "FEMALE",
+    "phone": "+201234567890",
+    "avatar": "https://example.com/avatar.jpg"
+  }
+]

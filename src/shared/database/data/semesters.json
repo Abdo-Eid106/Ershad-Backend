@@ -1,0 +1,16 @@
+[
+  {
+    "semester": 1,
+    "startYear": 2024,
+    "endYear": 2025,
+    "id": "3e7b0181-b43d-4d32-aaa2-370b93b5e9c0",
+    "academicInfo": { "studentId": "d9e8f2b3-41a7-4a52-9c3c-1a55b7e8e2f0" }
+  },
+  {
+    "semester": 2,
+    "startYear": 2024,
+    "endYear": 2025,
+    "id": "cc7da700-ef6d-446e-b265-4186a9914b8d",
+    "academicInfo": { "studentId": "d9e8f2b3-41a7-4a52-9c3c-1a55b7e8e2f0" }
+  }
+]

@@ -1,0 +1,81 @@
+[
+  {
+    "id": "3f5c1a72-9b48-4d21-bb44-8c6f6e2aaf32",
+    "name": {
+      "en": "name",
+      "ar": "name"
+    },
+    "academicRequirements": {
+      "regulationHours": 140,
+      "levelsCount": 4,
+      "semestersWithoutGpaRules": 2
+    },
+    "levels": [
+      { "value": 1, "reqHours": 0 },
+      { "value": 2, "reqHours": 30 },
+      { "value": 3, "reqHours": 66 },
+      { "value": 4, "reqHours": 102 }
+    ],
+    "registrationRules": {
+      "maxRegistrationHours": 21,
+      "normalRegistrationHours": 18,
+      "minRegistrationHours": 12,
+      "gpaForMaxHours": 3,
+      "summerTermHours": 9
+    },
+    "universityRequirements": { "mandatoryHours": 102 },
+    "basicScienceRequirements": {
+      "mandatoryHours": 0,
+      "optionalHours": 0
+    },
+    "facultyRequirements": {
+      "mandatoryHours": 0,
+      "optionalHours": 0
+    },
+    "specializationRequirements": {
+      "requiredHours": 60,
+      "mandatoryHours": 60,
+      "optionalHours": 0,
+      "gradProjectRequirements": {
+        "requiredHours": 120,
+        "creditHours": 4
+      },
+      "trainingRequirements": {
+        "requiredHours": 102,
+        "creditHours": 3
+      }
+    },
+    "retakeRules": {
+      "maxRetakeGrade": 83,
+      "maxRetakeCourses": 3
+    },
+    "dismissalRules": {
+      "maxConsecutiveWarnings": 4,
+      "maxYearsLevelOne": 1,
+      "minGpaForGraduation": 2
+    },
+    "courseGpaRanges": [
+      { "from": 0, "to": 49, "gpa": 0, "name": "F" },
+      { "from": 50, "to": 54, "gpa": 1, "name": "-D" },
+      { "from": 55, "to": 59, "gpa": 1.5, "name": "D" },
+      { "from": 60, "to": 63, "gpa": 2, "name": "D+" },
+      { "from": 64, "to": 67, "gpa": 2.2, "name": "C-" },
+      { "from": 68, "to": 71, "gpa": 2.4, "name": "C" },
+      { "from": 72, "to": 75, "gpa": 2.6, "name": "C+" },
+      { "from": 76, "to": 79, "gpa": 2.8, "name": "B-" },
+      { "from": 80, "to": 83, "gpa": 3, "name": "B" },
+      { "from": 84, "to": 87, "gpa": 3.3, "name": "B+" },
+      { "from": 88, "to": 91, "gpa": 3.4, "name": "A-" },
+      { "from": 92, "to": 95, "gpa": 3.7, "name": "A" },
+      { "from": 96, "to": 100, "gpa": 4, "name": "A+" }
+    ],
+    "cumGpaRanges": [
+      { "from": 0, "to": 0.99, "name": "ضعيف جدا" },
+      { "from": 1, "to": 1.99, "name": "ضعيف" },
+      { "from": 2, "to": 2.49, "name": "مقبول" },
+      { "from": 2.5, "to": 2.99, "name": "جيد" },
+      { "from": 3, "to": 3.49, "name": "جيد جدا" },
+      { "from": 3.5, "to": 4, "name": "ممتاز" }
+    ]
+  }
+]

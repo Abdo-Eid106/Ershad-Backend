@@ -1,0 +1,23 @@
+[
+  {
+    "id": "a1f4b73d-8e92-45c4-bc64-91f7ef1a8a32",
+    "name": { "en": "Computer Science", "ar": "علوم الحاسب" },
+    "code": "CS101",
+    "degree": "Bachelor of Science",
+    "regulation": { "id": "3f5c1a72-9b48-4d21-bb44-8c6f6e2aaf32" }
+  },
+  {
+    "id": "b2c5d84e-7f34-4a12-bd75-12f9ae2b4d43",
+    "name": { "en": "Information Technology", "ar": "تكنولوجيا المعلومات" },
+    "code": "IT102",
+    "degree": "Bachelor of Science",
+    "regulation": { "id": "3f5c1a72-9b48-4d21-bb44-8c6f6e2aaf32" }
+  },
+  {
+    "id": "c3d6e95f-6g45-4b23-ce86-23g0bf3c5e54",
+    "name": { "en": "Information System", "ar": "نظم المعلومات" },
+    "code": "IS103",
+    "degree": "Bachelor of Science",
+    "regulation": { "id": "3f5c1a72-9b48-4d21-bb44-8c6f6e2aaf32" }
+  }
+]

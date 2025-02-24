@@ -1,0 +1,20 @@
+[
+  {
+    "id": "f8a1d3e7-2c4b-4a4a-8e3e-64f3b3d1a7f5",
+    "email": "admin@example.com",
+    "password": "password123",
+    "role": "ADMIN"
+  },
+  {
+    "id": "b5c6f47d-8d5a-4a59-b62c-019e1c82a39a",
+    "email": "officer@example.com",
+    "password": "password123",
+    "role": "OFFICER"
+  },
+  {
+    "id": "d9e8f2b3-41a7-4a52-9c3c-1a55b7e8e2f0",
+    "email": "student@example.com",
+    "password": "password123",
+    "role": "STUDENT"
+  }
+]

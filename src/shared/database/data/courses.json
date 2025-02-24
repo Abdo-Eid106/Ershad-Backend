@@ -1,0 +1,112 @@
+[
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "name": { "en": "Introduction to Programming", "ar": "مقدمة في البرمجة" },
+    "code": "CS101",
+    "lectureHours": 3,
+    "practicalHours": 2,
+    "creditHours": 4,
+    "description": "This course covers the basics of programming using Python.",
+    "level": 1,
+    "prerequisiteId": null
+  },
+  {
+    "id": "6a1f56b6-74ae-4a32-bcc6-7c4039d0d4f6",
+    "name": { "en": "Data Structures", "ar": "هياكل البيانات" },
+    "code": "CS102",
+    "lectureHours": 3,
+    "practicalHours": 1,
+    "creditHours": 3,
+    "description": "An in-depth study of data structures such as arrays, linked lists, and trees.",
+    "level": 2,
+    "prerequisiteId": "550e8400-e29b-41d4-a716-446655440000"
+  },
+  {
+    "id": "d497ce5e-bfa6-4cf6-a717-1bb95ff1b4f9",
+    "name": { "en": "Algorithms", "ar": "الخوارزميات" },
+    "code": "CS201",
+    "lectureHours": 3,
+    "practicalHours": 1,
+    "creditHours": 3,
+    "description": "Introduction to algorithmic problem-solving techniques.",
+    "level": 2,
+    "prerequisiteId": "6a1f56b6-74ae-4a32-bcc6-7c4039d0d4f6"
+  },
+  {
+    "id": "e50f0129-29b4-4fd8-9c5f-68f7820f80c1",
+    "name": { "en": "Database Systems", "ar": "أنظمة قواعد البيانات" },
+    "code": "CS202",
+    "lectureHours": 3,
+    "practicalHours": 2,
+    "creditHours": 4,
+    "description": "Fundamentals of database design, SQL, and transactions.",
+    "level": 3,
+    "prerequisiteId": "550e8400-e29b-41d4-a716-446655440000"
+  },
+  {
+    "id": "8156ddcf-8e1c-47e3-a98c-b28c2dd3c583",
+    "name": { "en": "Operating Systems", "ar": "أنظمة التشغيل" },
+    "code": "CS301",
+    "lectureHours": 3,
+    "practicalHours": 1,
+    "creditHours": 3,
+    "description": "Study of modern operating system concepts including process management and memory management.",
+    "level": 3,
+    "prerequisiteId": "d497ce5e-bfa6-4cf6-a717-1bb95ff1b4f9"
+  },
+  {
+    "id": "7e26c125-f807-4d8f-bb61-1bcf9d7a7b21",
+    "name": { "en": "Computer Networks", "ar": "شبكات الحاسوب" },
+    "code": "CS302",
+    "lectureHours": 3,
+    "practicalHours": 2,
+    "creditHours": 4,
+    "description": "Covers networking principles, protocols, and security.",
+    "level": 3,
+    "prerequisiteId": "d497ce5e-bfa6-4cf6-a717-1bb95ff1b4f9"
+  },
+  {
+    "id": "b3834bde-4d95-4cfc-8d1f-72eb07ef4029",
+    "name": { "en": "Software Engineering", "ar": "هندسة البرمجيات" },
+    "code": "CS401",
+    "lectureHours": 3,
+    "practicalHours": 2,
+    "creditHours": 4,
+    "description": "Covers software development methodologies and best practices.",
+    "level": 4,
+    "prerequisiteId": "e50f0129-29b4-4fd8-9c5f-68f7820f80c1"
+  },
+  {
+    "id": "b5c19e8f-b748-4f1a-a3b4-16756f4e9f45",
+    "name": { "en": "Artificial Intelligence", "ar": "الذكاء الاصطناعي" },
+    "code": "CS402",
+    "lectureHours": 3,
+    "practicalHours": 1,
+    "creditHours": 3,
+    "description": "Introduction to AI concepts such as machine learning and natural language processing.",
+    "level": 4,
+    "prerequisiteId": "d497ce5e-bfa6-4cf6-a717-1bb95ff1b4f9"
+  },
+  {
+    "id": "bf01a1d9-5913-4512-b25c-58c899c07c41",
+    "name": { "en": "Cybersecurity", "ar": "الأمن السيبراني" },
+    "code": "CS403",
+    "lectureHours": 3,
+    "practicalHours": 2,
+    "creditHours": 4,
+    "description": "Covers cryptography, ethical hacking, and cybersecurity principles.",
+    "level": 4,
+    "prerequisiteId": "7e26c125-f807-4d8f-bb61-1bcf9d7a7b21"
+  },
+  {
+    "id": "d61e56e9-3d64-4e71-93ad-3a4fbc7aa1c5",
+    "name": { "en": "Cloud Computing", "ar": "الحوسبة السحابية" },
+    "code": "CS404",
+    "lectureHours": 3,
+    "practicalHours": 2,
+    "creditHours": 4,
+    "description": "Introduction to cloud platforms, virtualization, and distributed computing.",
+    "level": 4,
+    "prerequisiteId": "8156ddcf-8e1c-47e3-a98c-b28c2dd3c583"
+  }
+]

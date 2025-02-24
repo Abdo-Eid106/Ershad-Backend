@@ -1,0 +1,52 @@
+[
+  {
+    "semester": { "id": "3e7b0181-b43d-4d32-aaa2-370b93b5e9c0" },
+    "course": { "id": "550e8400-e29b-41d4-a716-446655440000" },
+    "degree": 85
+  },
+  {
+    "semester": { "id": "3e7b0181-b43d-4d32-aaa2-370b93b5e9c0" },
+    "course": { "id": "6a1f56b6-74ae-4a32-bcc6-7c4039d0d4f6" },
+    "degree": 90
+  },
+  {
+    "semester": { "id": "3e7b0181-b43d-4d32-aaa2-370b93b5e9c0" },
+    "course": { "id": "e50f0129-29b4-4fd8-9c5f-68f7820f80c1" },
+    "degree": 80
+  },
+  {
+    "semester": { "id": "3e7b0181-b43d-4d32-aaa2-370b93b5e9c0" },
+    "course": { "id": "7e26c125-f807-4d8f-bb61-1bcf9d7a7b21" },
+    "degree": 88
+  },
+  {
+    "semester": { "id": "3e7b0181-b43d-4d32-aaa2-370b93b5e9c0" },
+    "course": { "id": "d497ce5e-bfa6-4cf6-a717-1bb95ff1b4f9" },
+    "degree": 82
+  },
+  {
+    "semester": { "id": "cc7da700-ef6d-446e-b265-4186a9914b8d" },
+    "course": { "id": "e50f0129-29b4-4fd8-9c5f-68f7820f80c1" },
+    "degree": 85
+  },
+  {
+    "semester": { "id": "cc7da700-ef6d-446e-b265-4186a9914b8d" },
+    "course": { "id": "b3834bde-4d95-4cfc-8d1f-72eb07ef4029" },
+    "degree": 92
+  },
+  {
+    "semester": { "id": "cc7da700-ef6d-446e-b265-4186a9914b8d" },
+    "course": { "id": "bf01a1d9-5913-4512-b25c-58c899c07c41" },
+    "degree": 79
+  },
+  {
+    "semester": { "id": "cc7da700-ef6d-446e-b265-4186a9914b8d" },
+    "course": { "id": "d61e56e9-3d64-4e71-93ad-3a4fbc7aa1c5" },
+    "degree": 86
+  },
+  {
+    "semester": { "id": "cc7da700-ef6d-446e-b265-4186a9914b8d" },
+    "course": { "id": "b5c19e8f-b748-4f1a-a3b4-16756f4e9f45" },
+    "degree": 90
+  }
+]
