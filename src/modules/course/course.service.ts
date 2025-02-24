@@ -115,6 +115,7 @@ export class CourseService {
     const course = await this.courseRepo
       .createQueryBuilder('course')
       .leftJoinAndSelect('course.prerequisite', 'prerequisite')
+      .where('course.id = :courseId', { courseId })
       .getOne();
     if (!course) throw new NotFoundException('course not found');
 
