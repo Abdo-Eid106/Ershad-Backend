@@ -63,16 +63,16 @@ export class Regulation extends BaseEntity {
   specializationRequirements: SpecializationRequirements;
 
   @OneToMany(() => Level, (level) => level.regulation)
-  levels: Level;
+  levels: Level[];
 
   @OneToMany(
     () => CourseGpaRange,
     (courseGpaRange) => courseGpaRange.regulation,
   )
-  courseGpaRanges: CourseGpaRange;
+  courseGpaRanges: CourseGpaRange[];
 
   @OneToMany(() => CumGpaRange, (cumGpaRanges) => cumGpaRanges.regulation)
-  cumGpaRanges: CumGpaRange;
+  cumGpaRanges: CumGpaRange[];
 
   @OneToMany(() => Program, (program) => program.regulation)
   programs: Program[];
