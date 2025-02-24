@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { RequirementCategory } from '@prisma/client';
+import { RequirementCategory } from './enums/requirement-category.enum';
 import { CreateRequirementDto } from './dto/create-requirement.dto';
 import { Repository } from 'typeorm';
 import { Regulation } from '../regulation/entities';
@@ -83,6 +83,7 @@ export class RequirementService {
     const requirement = await this.requirementCourseRepo.findOne({
       where: { id },
     });
+    console.log('requirement = ', requirement);
 
     if (!requirement) throw new NotFoundException('requirement not found');
     return this.requirementCourseRepo.remove(requirement);
