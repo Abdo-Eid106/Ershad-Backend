@@ -7,7 +7,9 @@ import { Program } from 'src/modules/program/entities/program.entitiy';
 
 @Entity()
 export class RequirementCourse extends BaseEntity {
-  @ManyToOne(() => Course, (course) => course.requirementCourses)
+  @ManyToOne(() => Course, (course) => course.requirementCourses, {
+    onDelete: 'CASCADE',
+  })
   course: Course;
 
   @Column({ type: 'enum', enum: RequirementCategory })
