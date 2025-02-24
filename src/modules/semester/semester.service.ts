@@ -105,7 +105,7 @@ export class SemesterService {
             "creditHours", course.creditHours,
             "degree", semesterCourse.degree,
             "grade", range.name,
-            "gpa", range.gpa
+            "gpa", ROUND(range.gpa, 2)
           )
         ) AS courses`,
       ])
