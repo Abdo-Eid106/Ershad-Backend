@@ -1,4 +1,4 @@
-import { PlanCourse } from 'src/modules/plan/entities/plan-course.entity';
+import { SemesterPlanCourse } from 'src/modules/plan/entities/semester-plan-course.entity';
 import { RegistrationCourse } from 'src/modules/registration/entities/registration-course.entity';
 import { RequirementCourse } from 'src/modules/requirement/entities/requirement-course.entity';
 import { SemesterCourse } from 'src/modules/semester/entities/semester-course.entity';
@@ -35,9 +35,6 @@ export class Course extends BaseEntity {
   @JoinColumn({ name: 'prerequisiteId' })
   prerequisite?: Course;
 
-  @OneToMany(() => PlanCourse, (planCourse) => planCourse.course)
-  planCourses: PlanCourse[];
-
   @OneToMany(
     () => RequirementCourse,
     (requirementCourse) => requirementCourse.course,
@@ -52,4 +49,10 @@ export class Course extends BaseEntity {
     (regsitrationCourse) => regsitrationCourse.course,
   )
   registrationCourses: RegistrationCourse[];
+
+  @OneToMany(
+    () => SemesterPlanCourse,
+    (semesterPlanCourse) => semesterPlanCourse.course,
+  )
+  semesterPlanCourses: SemesterPlanCourse[];
 }

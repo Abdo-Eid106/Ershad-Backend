@@ -1,9 +1,7 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
-  HttpCode,
   Param,
   ParseUUIDPipe,
   Post,
@@ -12,45 +10,40 @@ import {
 } from '@nestjs/common';
 import { PlanService } from './plan.service';
 import { CreatePlanDto } from './dto/create-plan.dto';
-import { UpdatePlanDto } from './dto/update-plan.dto';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { UUID } from 'crypto';
-import { PlanDto } from './dto/plan.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
 import { Roles } from '../role/decorators/roles.decorator';
 import { RoleEnum } from '../role/enums/role.enum';
+import { SemesterPlanDto } from './dto/semester-plan.dto';
 
-@Controller('plans')
+@Controller()
 // @UseGuards(JwtGuard, RolesGuard)
-@Serialize(PlanDto)
 export class PlanController {
   constructor(private readonly planService: PlanService) {}
 
-  @Post()
+  @Post('programs/:programId/plans')
   @Roles(RoleEnum.ADMIN)
-  create(@Body() CreatePlanDto: CreatePlanDto) {
-    return this.planService.create(CreatePlanDto);
+  create(
+    @Param('programId', ParseUUIDPipe) programId: UUID,
+    @Body() CreatePlanDto: CreatePlanDto,
+  ) {
+    return this.planService.create(programId, CreatePlanDto);
   }
 
-  @Get(':id')
+  @Get('plans/:id')
+  @Serialize(SemesterPlanDto)
   findOne(@Param('id', ParseUUIDPipe) id: UUID) {
     return this.planService.findOne(id);
   }
 
-  @Put(':id')
+  @Put('plans/:id')
   @Roles(RoleEnum.ADMIN)
   update(
     @Param('id', ParseUUIDPipe) id: UUID,
-    @Body() updatePlanDto: UpdatePlanDto,
+    @Body() updatePlanDto: CreatePlanDto,
   ) {
     return this.planService.update(id, updatePlanDto);
-  }
-
-  @Delete(':id')
-  @HttpCode(204)
-  @Roles(RoleEnum.ADMIN)
-  remove(@Param('id', ParseUUIDPipe) id: UUID) {
-    return this.planService.remove(id);
   }
 }

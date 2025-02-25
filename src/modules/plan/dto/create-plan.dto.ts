@@ -9,10 +9,7 @@ import {
 } from 'class-validator';
 import { UUID } from 'crypto';
 
-export class CreatePlanCourse {
-  @IsUUID()
-  courseId: UUID;
-
+export class CreateSemesterPlan {
   @IsInt()
   @Min(1)
   level: number;
@@ -21,14 +18,15 @@ export class CreatePlanCourse {
   @Min(1)
   @Max(2)
   semester: number;
+
+  @IsArray()
+  @IsUUID('all', { each: true })
+  courseIds: UUID[];
 }
 
 export class CreatePlanDto {
-  @IsUUID()
-  programId: UUID;
-
   @IsArray()
   @ValidateNested()
-  @Type(() => CreatePlanCourse)
-  planCourses: CreatePlanCourse[];
+  @Type(() => CreateSemesterPlan)
+  semesters: CreateSemesterPlan[];
 }

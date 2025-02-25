@@ -49,9 +49,9 @@ export class ProgramService {
         'program.name AS name',
         'program.code AS code',
         'program.degree AS degree',
-        'plan.id AS planId',
+        'plan.programId AS planId',
         `CASE 
-          WHEN plan.id IS NOT NULL THEN TRUE 
+          WHEN plan.programId IS NOT NULL THEN TRUE 
           ELSE FALSE 
         END AS hasPlan`,
       ])
@@ -88,5 +88,15 @@ export class ProgramService {
   async remove(id: UUID) {
     const program = await this.findOne(id);
     return this.programRepo.remove(program);
+  }
+
+  async getProgramLevel(id: UUID) {
+    const { levelsCount } = await this.programRepo
+      .createQueryBuilder('program')
+      .innerJoin('program.regulation', 'regulation')
+      .innerJoin('regulation.academicRequirements', 'ac')
+      .select('ac.levelsCount', 'levelsCount')
+      .getRawOne();
+    return levelsCount;
   }
 }

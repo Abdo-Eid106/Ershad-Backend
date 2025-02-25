@@ -20,7 +20,8 @@ import {
 import { Course } from 'src/modules/course/entites/course.entity';
 import { Program } from 'src/modules/program/entities/program.entitiy';
 import { Plan } from 'src/modules/plan/entities/plan.entity';
-import { PlanCourse } from 'src/modules/plan/entities/plan-course.entity';
+import { SemesterPlan } from 'src/modules/plan/entities/semester-plan.entity';
+import { SemesterPlanCourse } from 'src/modules/plan/entities/semester-plan-course.entity';
 import { RequirementCourse } from 'src/modules/requirement/entities/requirement-course.entity';
 import { Registration } from 'src/modules/registration/entities/registration.entity';
 import { RegistrationCourse } from 'src/modules/registration/entities/registration-course.entity';
@@ -65,7 +66,8 @@ import { Role } from 'src/modules/auth/entities/role.entity';
           Course,
           Program,
           Plan,
-          PlanCourse,
+          SemesterPlan,
+          SemesterPlanCourse,
           RequirementCourse,
           User,
           Student,

@@ -1,14 +1,23 @@
-import { BaseEntity } from 'src/shared/entities/Base.entity';
-import { PlanCourse } from './plan-course.entity';
-import { Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import {
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+} from 'typeorm';
 import { Program } from 'src/modules/program/entities/program.entitiy';
+import { SemesterPlan } from './semester-plan.entity';
+import { UUID } from 'crypto';
 
 @Entity()
-export class Plan extends BaseEntity {
+export class Plan {
+  @PrimaryColumn('uuid')
+  programId: UUID;
+
   @OneToOne(() => Program, (program) => program.plan, { onDelete: 'CASCADE' })
-  @JoinColumn()
+  @JoinColumn({ name: 'programId' })
   program: Program;
 
-  @OneToMany(() => PlanCourse, (planCourse) => planCourse.plan)
-  planCourses: PlanCourse[];
+  @OneToMany(() => SemesterPlan, (semesterPlan) => semesterPlan.plan)
+  semesterPlans: SemesterPlan[];
 }
