@@ -19,7 +19,7 @@ import { Roles } from '../role/decorators/roles.decorator';
 import { RoleEnum } from '../role/enums/role.enum';
 
 @Controller('admins')
-// @UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtGuard, RolesGuard)
 @Roles(RoleEnum.ADMIN)
 @Serialize(AdminDto)
 export class AdminController {

@@ -19,7 +19,7 @@ import { RoleEnum } from '../role/enums/role.enum';
 import { SemesterPlanDto } from './dto/semester-plan.dto';
 
 @Controller('programs/:programId/plans')
-// @UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtGuard, RolesGuard)
 export class PlanController {
   constructor(private readonly planService: PlanService) {}
 

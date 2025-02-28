@@ -23,7 +23,7 @@ import { Roles } from '../role/decorators/roles.decorator';
 import { RoleEnum } from '../role/enums/role.enum';
 
 @Controller('students')
-// @UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtGuard, RolesGuard)
 @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}

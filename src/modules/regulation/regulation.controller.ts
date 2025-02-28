@@ -21,7 +21,7 @@ import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { RegulationDto } from './dto/regulation.dto';
 
 @Controller('regulations')
-// @UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtGuard, RolesGuard)
 @Serialize(RegulationDto)
 export class RegulationController {
   constructor(private readonly regulationService: RegulationService) {}

@@ -21,7 +21,7 @@ import { RoleEnum } from '../role/enums/role.enum';
 import { Roles } from '../role/decorators/roles.decorator';
 
 @Controller('requirements')
-// @UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtGuard, RolesGuard)
 @Serialize(RequirementDto)
 export class RequirementController {
   constructor(private readonly requirementService: RequirementService) {}

@@ -26,7 +26,7 @@ import { RolesGuard } from '../role/guards/roles.guard';
 import { RoleEnum } from '../role/enums/role.enum';
 
 @Controller('programs')
-// @UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtGuard, RolesGuard)
 @Serialize(ProgramDto)
 export class ProgramController {
   constructor(private readonly programService: ProgramService) {}
