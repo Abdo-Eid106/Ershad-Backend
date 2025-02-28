@@ -1,12 +1,10 @@
-import { BadRequestException, Injectable, UseGuards } from '@nestjs/common';
-import { JwtGuard } from '../auth/guards/jwt.guard';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdatePasswordDto } from './dto/update-password';
 import { compare, hash } from 'bcrypt';
 import { UUID } from 'crypto';
-import { RolesGuard } from '../role/guards/roles.guard';
 
 @Injectable()
 export class UserService {
@@ -20,7 +18,12 @@ export class UserService {
     if (!user || !(await compare(updatePasswordDto.oldPassword, user.password)))
       throw new BadRequestException('password is incorrect');
 
+    if (updatePasswordDto.oldPassword === updatePasswordDto.newPassword)
+      throw new BadRequestException(
+        'new password must be different from the old password',
+      );
+
     const newPassword = await hash(updatePasswordDto.newPassword, 12);
-    return this.userRepo.save({ ...user, passoword: newPassword });
+    return this.userRepo.save({ ...user, password: newPassword });
   }
 }
