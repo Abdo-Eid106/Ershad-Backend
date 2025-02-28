@@ -18,12 +18,12 @@ import { Roles } from '../role/decorators/roles.decorator';
 import { RoleEnum } from '../role/enums/role.enum';
 import { SemesterPlanDto } from './dto/semester-plan.dto';
 
-@Controller()
+@Controller('programs/:programId/plans')
 // @UseGuards(JwtGuard, RolesGuard)
 export class PlanController {
   constructor(private readonly planService: PlanService) {}
 
-  @Post('programs/:programId/plans')
+  @Post()
   @Roles(RoleEnum.ADMIN)
   create(
     @Param('programId', ParseUUIDPipe) programId: UUID,
@@ -32,18 +32,18 @@ export class PlanController {
     return this.planService.create(programId, CreatePlanDto);
   }
 
-  @Get('plans/:id')
+  @Get()
   @Serialize(SemesterPlanDto)
-  findOne(@Param('id', ParseUUIDPipe) id: UUID) {
-    return this.planService.findOne(id);
+  findOne(@Param('programId', ParseUUIDPipe) programId: UUID) {
+    return this.planService.findOne(programId);
   }
 
-  @Put('plans/:id')
+  @Put()
   @Roles(RoleEnum.ADMIN)
   update(
-    @Param('id', ParseUUIDPipe) id: UUID,
+    @Param('programId', ParseUUIDPipe) programId: UUID,
     @Body() updatePlanDto: CreatePlanDto,
   ) {
-    return this.planService.update(id, updatePlanDto);
+    return this.planService.update(programId, updatePlanDto);
   }
 }
