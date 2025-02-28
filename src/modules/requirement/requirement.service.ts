@@ -1,73 +1,43 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { RequirementCategory } from './enums/requirement-category.enum';
 import { CreateRequirementDto } from './dto/create-requirement.dto';
 import { Repository } from 'typeorm';
-import { Regulation } from '../regulation/entities';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Course } from '../course/entites/course.entity';
 import { RequirementCourse } from './entities/requirement-course.entity';
-import { Program } from '../program/entities/program.entitiy';
-import { UUID } from 'crypto';
+import { RequirementValidationService } from './requirements-validation.service';
 import { GetRequiremetsDto } from './dto/get-requirements.dto';
+import { UUID } from 'crypto';
 
 @Injectable()
 export class RequirementService {
   constructor(
-    @InjectRepository(Course)
-    private readonly courseRepo: Repository<Course>,
-    @InjectRepository(Regulation)
-    private readonly regulationRepo: Repository<Regulation>,
-    @InjectRepository(Program)
-    private readonly programRepo: Repository<Program>,
     @InjectRepository(RequirementCourse)
     private readonly requirementCourseRepo: Repository<RequirementCourse>,
+    private readonly requirementValidationService: RequirementValidationService,
   ) {}
 
   async create(createRequirementDto: CreateRequirementDto) {
-    const { courseId, regulationId, category, programId } =
+    await this.requirementValidationService.validate(createRequirementDto);
+    const { courseId, regulationId, programId, category } =
       createRequirementDto;
-
-    const course = await this.courseRepo.findOne({
-      where: { id: courseId },
-    });
-    if (!course) throw new NotFoundException('course not found');
-
-    const regulation = await this.regulationRepo.findOne({
-      where: { id: regulationId },
-    });
-    if (!regulation) throw new NotFoundException('regulation not found');
-
-    if (
-      category == RequirementCategory.SPECIALIZATION &&
-      (await this.programRepo.existsBy({ id: programId }))
-    )
-      throw new NotFoundException('program not found');
-
-    const exist = await this.requirementCourseRepo
-      .createQueryBuilder('requirementCourse')
-      .innerJoin('requirementCourse.regulation', 'regulation')
-      .where('regulation.id = :regulationId', { regulationId })
-      .andWhere('requirementCourse.courseId = :courseId', { courseId })
-      .getExists();
-    if (exist) throw new ConflictException('requirement already exist');
 
     return this.requirementCourseRepo.save(
       this.requirementCourseRepo.create({
         ...createRequirementDto,
-        course,
-        regulation,
+        course: { id: courseId },
+        regulation: { id: regulationId },
+        program:
+          category == RequirementCategory.SPECIALIZATION
+            ? { id: programId }
+            : null,
       }),
     );
   }
 
   async findMany(getRequiremetsDto: GetRequiremetsDto) {
-    const { optional, regulationId, category } = getRequiremetsDto;
+    const { optional, regulationId, category, programId } = getRequiremetsDto;
 
-    return this.requirementCourseRepo
+    const query = this.requirementCourseRepo
       .createQueryBuilder('requirement')
       .leftJoinAndSelect('requirement.course', 'course')
       .leftJoinAndSelect('course.prerequisite', 'prerequisite')
@@ -75,15 +45,19 @@ export class RequirementService {
       .andWhere('requirement.optional = :optional', {
         optional: optional.toLowerCase() == 'true',
       })
-      .andWhere('requirement.category = :category', { category })
-      .getMany();
+      .andWhere('requirement.category = :category', { category });
+
+    if (category == RequirementCategory.SPECIALIZATION) {
+      query.andWhere('requirement.programId = :programId', { programId });
+    }
+
+    return query.getMany();
   }
 
   async remove(id: UUID) {
     const requirement = await this.requirementCourseRepo.findOne({
       where: { id },
     });
-    console.log('requirement = ', requirement);
 
     if (!requirement) throw new NotFoundException('requirement not found');
     return this.requirementCourseRepo.remove(requirement);
