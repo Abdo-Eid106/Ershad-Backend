@@ -3,6 +3,7 @@ import { Regulation } from 'src/modules/regulation/entities';
 import { Plan } from 'src/modules/plan/entities/plan.entity';
 import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { RequirementCourse } from 'src/modules/requirement/entities/requirement-course.entity';
+import { AcademicInfo } from 'src/modules/academic-info/entities/academic-info.entity';
 
 @Entity()
 export class Program extends BaseEntity {
@@ -28,4 +29,7 @@ export class Program extends BaseEntity {
     (requirementCourse) => requirementCourse.program,
   )
   requirementCourses: RequirementCourse[];
+
+  @OneToMany(() => AcademicInfo, (academicInfo) => academicInfo.program)
+  academicInfos: AcademicInfo[];
 }

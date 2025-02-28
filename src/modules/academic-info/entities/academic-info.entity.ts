@@ -10,6 +10,7 @@ import { Student } from '../../student/entities/student.entity';
 import { Semester } from 'src/modules/semester/entities/semester.entity';
 import { Regulation } from 'src/modules/regulation/entities';
 import { Registration } from 'src/modules/registration/entities/registration.entity';
+import { Program } from 'src/modules/program/entities/program.entitiy';
 
 @Entity()
 export class AcademicInfo {
@@ -26,6 +27,11 @@ export class AcademicInfo {
     onDelete: 'SET NULL',
   })
   regulation?: Regulation;
+
+  @ManyToOne(() => Program, (program) => program.academicInfos, {
+    onDelete: 'SET NULL',
+  })
+  program?: Program;
 
   @OneToMany(() => Semester, (semester) => semester.academicInfo)
   semesters: Semester[];
