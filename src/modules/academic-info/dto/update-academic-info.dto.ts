@@ -1,7 +1,11 @@
 import { UUID } from 'crypto';
-import { IsUUID } from 'class-validator';
+import { IsOptional, IsUUID } from 'class-validator';
 
 export class UpdateAcademicInfoDto {
   @IsUUID()
   regulationId: UUID;
+
+  @IsUUID()
+  @IsOptional()
+  programId?: UUID;
 }

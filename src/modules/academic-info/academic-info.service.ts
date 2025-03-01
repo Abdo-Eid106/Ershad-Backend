@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UUID } from 'crypto';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Student } from '../student/entities/student.entity';
@@ -6,6 +11,8 @@ import { EntityManager, Repository } from 'typeorm';
 import { UpdateAcademicInfoDto } from './dto/update-academic-info.dto';
 import { Regulation } from '../regulation/entities';
 import { AcademicInfo } from './entities/academic-info.entity';
+import { Program } from '../program/entities/program.entitiy';
+import { AcademicInfoValidationService } from './academic-info-validation.service';
 
 @Injectable()
 export class AcademicInfoService {
@@ -14,8 +21,8 @@ export class AcademicInfoService {
     private readonly studentRepo: Repository<Student>,
     @InjectRepository(AcademicInfo)
     private readonly academicInfoRepo: Repository<AcademicInfo>,
-    @InjectRepository(Regulation)
-    private readonly regulationRepo: Repository<Regulation>,
+    @Inject(forwardRef(() => AcademicInfoValidationService))
+    private readonly academicInfoValidationService: AcademicInfoValidationService,
     @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
 
@@ -41,17 +48,16 @@ export class AcademicInfoService {
   }
 
   async update(studentId: UUID, updateAcademicInfoDto: UpdateAcademicInfoDto) {
-    const academicInfo = await this.academicInfoRepo.findOne({
-      where: { studentId },
-    });
-    if (!academicInfo) throw new NotFoundException('student not found');
+    await this.academicInfoValidationService.validate(
+      studentId,
+      updateAcademicInfoDto,
+    );
+    const { regulationId, programId } = updateAcademicInfoDto;
 
-    const regulation = await this.regulationRepo.findOne({
-      where: { id: updateAcademicInfoDto.regulationId },
-    });
-    if (!regulation) throw new NotFoundException('regulation not found');
-
-    return this.academicInfoRepo.save({ ...academicInfo, regulation });
+    return this.academicInfoRepo.update(
+      { studentId },
+      { regulation: { id: regulationId }, program: { id: programId } },
+    );
   }
 
   async getGpa(studentId: UUID) {
@@ -265,5 +271,16 @@ export class AcademicInfoService {
       .select('retakeRules.maxRetakeCourses', 'maxRetakeCourses')
       .getRawOne();
     return result?.maxRetakeCourses ?? 0;
+  }
+
+  async getRequiredHoursForSpecialization(studentId: UUID) {
+    const result = await this.academicInfoRepo
+      .createQueryBuilder('ac')
+      .innerJoin('ac.regulation', 'regulation')
+      .innerJoin('regulation.specializationRequirements', 'sp')
+      .select('sp.requiredHours', 'requiredHours')
+      .where('ac.studentId = :studentId', { studentId })
+      .getRawOne();
+    return result.requiredHours as number;
   }
 }
