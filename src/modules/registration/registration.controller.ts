@@ -16,11 +16,6 @@ import { CourseDto } from '../course/dto/course.dto';
 export class RegistrationController {
   constructor(private readonly registrationService: RegistrationService) {}
 
-  @Get('/prediction')
-  async getPredciton(@currentUser() user: IPayloud) {
-    return this.registrationService.getPrediction(user.id);
-  }
-
   @Post()
   async create(
     @currentUser() user: IPayloud,

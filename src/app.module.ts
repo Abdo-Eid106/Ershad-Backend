@@ -21,6 +21,8 @@ import { OfficerModule } from './modules/officer/officer.module';
 import { RoleModule } from './modules/role/role.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { RegistrationModule } from './modules/registration/registration.module';
+import { SummaryModule } from './modules/summary/summary.module';
+import { CourseRecommendationModule } from './modules/course-recommendation/course-recommendation.module';
 
 @Module({
   imports: [
@@ -41,6 +43,8 @@ import { RegistrationModule } from './modules/registration/registration.module';
     RoleModule,
     AdminModule,
     RegistrationModule,
+    SummaryModule,
+    CourseRecommendationModule,
   ],
   controllers: [AppController],
   providers: [

@@ -288,4 +288,15 @@ export class AcademicInfoService {
       .getRawOne();
     return result.requiredHours as number;
   }
+
+  async getCurrentSemester(studentId: UUID) {
+    return (
+      (await this.academicInfoRepo
+        .createQueryBuilder('ac')
+        .innerJoin('ac.semesters', 'semester')
+        .where('ac.studentId = :studentId', { studentId })
+        .select('semester.id')
+        .getCount()) + 1
+    );
+  }
 }

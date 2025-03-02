@@ -1,5 +1,6 @@
 import { Expose, Type } from 'class-transformer';
 import { UUID } from 'crypto';
+import { ProgramDto } from 'src/modules/program/dto';
 
 class NameDto {
   @Expose()
@@ -34,4 +35,8 @@ export class AcademicInfoDto {
   @Expose()
   @Type(() => RegulationDto)
   regulation: RegulationDto;
+
+  @Expose()
+  @Type(() => ProgramDto)
+  program: ProgramDto;
 }

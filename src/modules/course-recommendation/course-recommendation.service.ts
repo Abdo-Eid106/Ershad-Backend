@@ -1,0 +1,97 @@
+import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import { UUID } from 'crypto';
+import { EntityManager, Repository } from 'typeorm';
+import { AcademicInfo } from '../academic-info/entities/academic-info.entity';
+import { Plan } from '../plan/entities/plan.entity';
+import { AcademicInfoService } from '../academic-info/academic-info.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { COURSE_SELECT_FIELDS } from '../course/constants';
+
+@Injectable()
+export class CourseRecommendationService {
+  constructor(
+    @InjectRepository(AcademicInfo)
+    private readonly academicInfoRepo: Repository<AcademicInfo>,
+    @InjectRepository(Plan)
+    private readonly planRepo: Repository<Plan>,
+    private readonly academicInfoService: AcademicInfoService,
+    private readonly entityManager: EntityManager,
+  ) {}
+
+  async getRecommenedCourses(studentId: UUID) {
+    const plan =
+      (await this.getProgramPlan(studentId)) ||
+      (await this.getAlternativeProgramPlan(studentId));
+    if (!plan) {
+      throw new ServiceUnavailableException(
+        'recommendation service is currently unavailable',
+      );
+    }
+
+    const courseIds =
+      await this.academicInfoService.getTakenCourseIds(studentId);
+
+    const coursesSubQuery = this.planRepo
+      .createQueryBuilder('plan')
+      .leftJoin('plan.semesterPlans', 'semesterPlan')
+      .leftJoin('semesterPlan.semesterPlanCourses', 'semesterPlanCourse')
+      .innerJoin('semesterPlanCourse.course', 'course')
+      .leftJoin('course.prerequisite', 'prerequisite')
+      .andWhere(
+        'prerequisite.id IS NULL OR prerequisite.id IN (:...courseIds)',
+        { courseIds: courseIds.length ? courseIds : [null] },
+      )
+      .andWhere('course.id NOT IN (:...courseIds)', {
+        courseIds: courseIds.length ? courseIds : [null],
+      })
+      .select([
+        ...COURSE_SELECT_FIELDS,
+        'semesterPlan.level AS level',
+        'semesterPlan.semester AS semester',
+        `SUM(course.creditHours) OVER (
+          ORDER BY semesterPlan.level ASC,  semesterPlan.semester ASC
+        ) AS sum`,
+        '(semesterPlan.level - 1) * 2 + semesterPlan.semester AS semesterOrder',
+      ])
+      .orderBy('semesterOrder', 'ASC');
+
+    const { max: maxCredits } =
+      await this.academicInfoService.getRegistrationHoursRange(studentId);
+    const currentSemester =
+      await this.academicInfoService.getCurrentSemester(studentId);
+
+    return this.entityManager
+      .createQueryBuilder()
+      .select('*')
+      .from(`(${coursesSubQuery.getQuery()})`, 'sub')
+      .where('sub.sum <= :maxCredits', { maxCredits })
+      .andWhere('sub.semesterOrder <= :currentSemester', { currentSemester })
+      .setParameters(coursesSubQuery.getParameters())
+      .getRawMany();
+  }
+
+  async getProgramPlan(studentId: UUID) {
+    const plan = await this.academicInfoRepo
+      .createQueryBuilder('ac')
+      .innerJoin('ac.program', 'program')
+      .innerJoin('program.plan', 'plan')
+      .where('ac.studentId = :studentId', { studentId })
+      .select('plan.programId AS programId')
+      .getRawOne();
+    return plan as Plan;
+  }
+
+  async getAlternativeProgramPlan(studentId: UUID) {
+    const plan = await this.academicInfoRepo
+      .createQueryBuilder('ac')
+      .innerJoin('ac.regulation', 'regulation')
+      .innerJoin('regulation.programs', 'program')
+      .innerJoin('program.plan', 'plan')
+      .where('ac.studentId = :studentId', { studentId })
+      .andWhere('plan.programId IS NOT NULL')
+      .select('plan.programId AS programId')
+      .getRawOne();
+
+    return plan as Plan;
+  }
+}

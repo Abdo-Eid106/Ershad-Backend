@@ -19,51 +19,11 @@ export class RegistrationService {
   constructor(
     @InjectRepository(Student)
     private readonly studentRepo: Repository<Student>,
-
-    @InjectRepository(Course)
-    private readonly courseRepo: Repository<Course>,
-
     @InjectRepository(Registration)
     private readonly registrationRepo: Repository<Registration>,
-
-    private readonly academicInfoService: AcademicInfoService,
-    private readonly dataSource: DataSource,
     private readonly registrationValidationService: RegistrationValidationService,
+    private readonly dataSource: DataSource,
   ) {}
-
-  async getPrediction(studentId: UUID) {
-    //get taken courses
-    const courseIds =
-      await this.academicInfoService.getTakenCourseIds(studentId);
-    const { min, max } =
-      await this.academicInfoService.getRegistrationHoursRange(studentId);
-
-    return this.courseRepo
-      .createQueryBuilder('course')
-      .leftJoin('course.prerequisite', 'prerequisite')
-      .innerJoin('course.requirementCourses', 'requirementCourse')
-      .innerJoin('requirementCourse.regulation', 'regulation')
-      .innerJoin('regulation.academicInfos', 'academicInfo')
-      .innerJoin('academicInfo.student', 'student')
-      .where('student.userId = :studentId', { studentId })
-      .andWhere(
-        'prerequisite.id is NULL OR prerequisite.id IN (:...courseIds)',
-        { courseIds },
-      )
-      .select([
-        'course.id AS id',
-        'course.name AS name',
-        'course.code AS code',
-        'course.lectureHours AS lectureHours',
-        'course.practicalHours AS practicalHours',
-        'course.creditHours AS creditHours',
-        'course.level AS level',
-        'course.prerequisite AS prerequisite',
-        'requirementCourse.optional AS optional',
-      ])
-      .orderBy('requirementCourse.optional', 'DESC')
-      .getRawMany();
-  }
 
   async create(studentId: UUID, createRegistrationDto: CreateRegistrationDto) {
     await this.registrationValidationService.validate(
