@@ -29,7 +29,11 @@ export class AcademicInfoService {
   async getAcademicInfo(studentId: UUID) {
     const student = await this.studentRepo.findOne({
       where: { userId: studentId },
-      relations: ['academicInfo', 'academicInfo.regulation'],
+      relations: [
+        'academicInfo',
+        'academicInfo.regulation',
+        'academicInfo.program',
+      ],
     });
     if (!student) throw new NotFoundException('student not found');
 
@@ -44,6 +48,7 @@ export class AcademicInfoService {
       gpa,
       level,
       regulation: student.academicInfo.regulation,
+      program: student.academicInfo.program,
     };
   }
 

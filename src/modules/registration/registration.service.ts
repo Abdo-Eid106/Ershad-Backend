@@ -12,6 +12,7 @@ import { Student } from '../student/entities/student.entity';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { Registration } from './entities/registration.entity';
 import { RegistrationCourse } from './entities/registration-course.entity';
+import { RegistrationValidationService } from './registration-validation.service';
 
 @Injectable()
 export class RegistrationService {
@@ -27,6 +28,7 @@ export class RegistrationService {
 
     private readonly academicInfoService: AcademicInfoService,
     private readonly dataSource: DataSource,
+    private readonly registrationValidationService: RegistrationValidationService,
   ) {}
 
   async getPrediction(studentId: UUID) {
@@ -64,131 +66,38 @@ export class RegistrationService {
   }
 
   async create(studentId: UUID, createRegistrationDto: CreateRegistrationDto) {
+    await this.registrationValidationService.validate(
+      studentId,
+      createRegistrationDto,
+    );
+
     const { courseIds } = createRegistrationDto;
-    if (courseIds.length === 0)
-      throw new BadRequestException(`You haven't registered for any courses`);
 
-    // Check for duplicate courses
-    const uniqueCourseIds = [...new Set(courseIds)];
-    if (courseIds.length !== uniqueCourseIds.length)
-      throw new BadRequestException('Duplicate courses detected');
+    return await this.dataSource.transaction(
+      async (transactionalEntityManager) => {
+        // Check if a registration already exists and delete it
+        await transactionalEntityManager.delete(Registration, {
+          academicInfoId: studentId,
+        });
 
-    // Get the total count of valid courses and their total credit hours
-    const { courseCount, totalCreditHours } = await this.courseRepo
-      .createQueryBuilder('course')
-      .where('course.id IN (:...courseIds)', { courseIds })
-      .select([
-        'COUNT(*) AS courseCount',
-        'SUM(course.creditHours) as totalCreditHours',
-      ])
-      .getRawOne();
+        // Create a new Registration entry
+        const registration = transactionalEntityManager.create(Registration, {
+          academicInfo: { studentId },
+        });
+        await transactionalEntityManager.save(registration);
 
-    // Ensure all provided courses exist
-    if (courseCount < courseIds.length)
-      throw new NotFoundException('Some courses were not found');
+        // Create RegistrationCourse entries
+        const registrationCourses = courseIds.map((courseId) =>
+          transactionalEntityManager.create(RegistrationCourse, {
+            registrationId: registration.academicInfoId,
+            courseId,
+          }),
+        );
 
-    // Validate if the total credit hours fall within the allowed range
-    const { min: minHours, max: maxHours } =
-      await this.academicInfoService.getRegistrationHoursRange(studentId);
-
-    if (totalCreditHours < minHours || totalCreditHours > maxHours) {
-      throw new BadRequestException(
-        `Total registered credit hours must be between ${minHours} and ${maxHours}.`,
-      );
-    }
-
-    // Get the list of courses the student has already passed
-    const completedCourseIds =
-      await this.academicInfoService.getTakenCourseIds(studentId);
-
-    // Check if any selected course violates prerequisite requirements
-    const queryBuilder = this.courseRepo
-      .createQueryBuilder('course')
-      .where('course.id IN (:...courseIds)', { courseIds })
-      .andWhere('course.prerequisiteId IS NOT NULL');
-
-    if (completedCourseIds.length > 0) {
-      queryBuilder.andWhere(
-        'course.prerequisiteId NOT IN (:...completedCourseIds)',
-        { completedCourseIds },
-      );
-    }
-
-    const invalidCourse = await queryBuilder.getOne();
-    if (invalidCourse) {
-      throw new BadRequestException(
-        `Course with ID: ${invalidCourse.id} cannot be registered as prerequisites are not met.`,
-      );
-    }
-
-    // Get the number of courses the student has previously retaken
-    const previousRetakeCount = await this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'academicInfo')
-      .innerJoin('academicInfo.semesters', 'semester')
-      .innerJoin('semester.semesterCourses', 'semesterCourse')
-      .where('student.userId = :studentId', { studentId })
-      .groupBy('semesterCourse.courseId')
-      .having('COUNT(*) > 1')
-      .getCount();
-
-    // Get the maximum allowed retake courses from the regulations
-    const maxAllowedRetakes =
-      await this.academicInfoService.getMaxRetakeCourses(studentId);
-
-    // Calculate the remaining retakes the student is allowed
-    const remainingRetakes = maxAllowedRetakes - previousRetakeCount;
-
-    // Get the number of courses the student is attempting to retake this semester
-    const currentRetakeCount = await this.courseRepo
-      .createQueryBuilder('course')
-      .innerJoin('course.semesterCourses', 'semesterCourse')
-      .innerJoin('semesterCourse.semester', 'semester')
-      .innerJoin('semester.academicInfo', 'academicInfo')
-      .innerJoin('academicInfo.student', 'student')
-      .where('student.userId = :studentId', { studentId })
-      .andWhere('course.id IN (:...courseIds)', { courseIds })
-      .getCount();
-
-    // Validate if the student exceeds the allowed retake limit
-    if (currentRetakeCount > remainingRetakes) {
-      throw new BadRequestException(
-        `You can only retake up to ${remainingRetakes} more courses.`,
-      );
-    }
-
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      // Check if a registration already exists and delete it
-      await queryRunner.manager.delete(Registration, {
-        academicInfoId: studentId,
-      });
-      // Create a new Registration entry
-      const registration = queryRunner.manager.create(Registration, {
-        academicInfo: { studentId },
-      });
-      await queryRunner.manager.save(registration);
-
-      // Create RegistrationCourse entries
-      const registrationCourses = courseIds.map((courseId) =>
-        queryRunner.manager.create(RegistrationCourse, {
-          registrationId: registration.academicInfoId,
-          courseId,
-        }),
-      );
-
-      await queryRunner.manager.save(registrationCourses);
-      await queryRunner.commitTransaction();
-      return registration;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw new BadRequestException('Registration failed: ' + error.message);
-    } finally {
-      await queryRunner.release();
-    }
+        await transactionalEntityManager.save(registrationCourses);
+        return registration;
+      },
+    );
   }
 
   async getStudentRegisteredCourses(studentId: UUID) {
@@ -207,7 +116,6 @@ export class RegistrationService {
         'course.lectureHours AS lectureHours',
         'course.practicalHours AS practicalHours',
         'course.creditHours AS creditHours',
-        'course.prerequisite AS prerequisite',
       ])
       .getRawMany();
 

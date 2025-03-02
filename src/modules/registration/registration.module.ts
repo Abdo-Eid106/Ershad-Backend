@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { RegistrationValidationService } from './registration-validation.service';
 import { RegistrationController } from './registration.controller';
 import { RegistrationService } from './registration.service';
 import { AcademicInfoModule } from '../academic-info/academic-info.module';
@@ -13,6 +14,6 @@ import { Registration } from './entities/registration.entity';
     AcademicInfoModule,
   ],
   controllers: [RegistrationController],
-  providers: [RegistrationService],
+  providers: [RegistrationService, RegistrationValidationService],
 })
 export class RegistrationModule {}
