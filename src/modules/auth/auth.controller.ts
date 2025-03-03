@@ -1,8 +1,7 @@
 import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginInput } from './dto/input/login.input';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
-import { LoginOutput } from './dto/output/login.output';
+import { LoginInput, LoginOutput } from './dto';
 
 @Controller()
 export class AuthController {

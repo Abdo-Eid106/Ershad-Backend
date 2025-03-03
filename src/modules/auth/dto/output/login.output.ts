@@ -1,11 +1,14 @@
 import { Expose, Type } from 'class-transformer';
 
-class UserDto {
+export class LoggedInUser {
   @Expose()
   id: string;
 
   @Expose()
   email: string;
+
+  @Expose()
+  role: string;
 }
 
 export class LoginOutput {
@@ -13,6 +16,6 @@ export class LoginOutput {
   token: string;
 
   @Expose()
-  @Type(() => UserDto)
-  user: UserDto;
+  @Type(() => LoggedInUser)
+  user: LoggedInUser;
 }

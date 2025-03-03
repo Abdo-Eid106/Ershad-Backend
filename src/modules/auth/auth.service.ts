@@ -16,12 +16,26 @@ export class AuthService {
 
   async login(loginInput: LoginInput) {
     const { email, password } = loginInput;
-    const user = await this.userRepo.findOne({ where: { email } });
+
+    const user = await this.userRepo
+      .createQueryBuilder('user')
+      .innerJoin('user.role', 'role')
+      .select([
+        'user.id AS id',
+        'user.email AS email',
+        'user.password AS password',
+        'role.name AS role',
+      ])
+      .where('user.email = :email', { email })
+      .getRawOne();
 
     if (!user || !(await compare(password, user.password)))
       throw new UnauthorizedException('email or password is incorrect');
 
-    const token = await this.jwtService.signAsync({ id: user.id });
+    const token = await this.jwtService.signAsync({
+      id: user.id,
+      role: user.role,
+    });
     return { token, user };
   }
 }

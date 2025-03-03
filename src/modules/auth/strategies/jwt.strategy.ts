@@ -22,10 +22,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payloud: IPayloud) {
-    const user = await this.userRepo.findOne({
-      where: { id: payloud.id },
-      relations: ['role'],
-    });
+    const user = await this.userRepo
+      .createQueryBuilder('user')
+      .innerJoin('user.role', 'role')
+      .select(['user.id AS id', 'user.email AS email', 'role.name AS role'])
+      .where('user.id = :id', { id: payloud.id })
+      .getRawOne();
     if (!user) throw new UnauthorizedException();
     return user;
   }
