@@ -6,11 +6,13 @@ import { Plan } from '../plan/entities/plan.entity';
 import { Course } from '../course/entites/course.entity';
 import { AcademicInfo } from '../academic-info/entities/academic-info.entity';
 import { AcademicInfoModule } from '../academic-info/academic-info.module';
+import { PlanModule } from '../plan/plan.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Plan, Course, AcademicInfo]),
     AcademicInfoModule,
+    PlanModule,
   ],
   controllers: [CourseRecommendationController],
   providers: [CourseRecommendationService],

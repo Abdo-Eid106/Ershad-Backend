@@ -25,5 +25,6 @@ import { AcademicInfo } from '../academic-info/entities/academic-info.entity';
   ],
   controllers: [PlanController],
   providers: [PlanService, PlanValidationService],
+  exports: [PlanService],
 })
 export class PlanModule {}

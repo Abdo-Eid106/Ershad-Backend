@@ -6,22 +6,22 @@ import { Plan } from '../plan/entities/plan.entity';
 import { AcademicInfoService } from '../academic-info/academic-info.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { COURSE_SELECT_FIELDS } from '../course/constants';
+import { PlanService } from '../plan/plan.service';
 
 @Injectable()
 export class CourseRecommendationService {
   constructor(
-    @InjectRepository(AcademicInfo)
-    private readonly academicInfoRepo: Repository<AcademicInfo>,
     @InjectRepository(Plan)
     private readonly planRepo: Repository<Plan>,
+    private readonly planService: PlanService,
     private readonly academicInfoService: AcademicInfoService,
     private readonly entityManager: EntityManager,
   ) {}
 
   async getRecommenedCourses(studentId: UUID) {
     const plan =
-      (await this.getProgramPlan(studentId)) ||
-      (await this.getAlternativeProgramPlan(studentId));
+      (await this.planService.getProgramPlan(studentId)) ||
+      (await this.planService.getAlternativeProgramPlan(studentId));
     if (!plan) {
       throw new ServiceUnavailableException(
         'recommendation service is currently unavailable',
@@ -68,30 +68,5 @@ export class CourseRecommendationService {
       .andWhere('sub.semesterOrder <= :currentSemester', { currentSemester })
       .setParameters(coursesSubQuery.getParameters())
       .getRawMany();
-  }
-
-  async getProgramPlan(studentId: UUID) {
-    const plan = await this.academicInfoRepo
-      .createQueryBuilder('ac')
-      .innerJoin('ac.program', 'program')
-      .innerJoin('program.plan', 'plan')
-      .where('ac.studentId = :studentId', { studentId })
-      .select('plan.programId AS programId')
-      .getRawOne();
-    return plan as Plan;
-  }
-
-  async getAlternativeProgramPlan(studentId: UUID) {
-    const plan = await this.academicInfoRepo
-      .createQueryBuilder('ac')
-      .innerJoin('ac.regulation', 'regulation')
-      .innerJoin('regulation.programs', 'program')
-      .innerJoin('program.plan', 'plan')
-      .where('ac.studentId = :studentId', { studentId })
-      .andWhere('plan.programId IS NOT NULL')
-      .select('plan.programId AS programId')
-      .getRawOne();
-
-    return plan as Plan;
   }
 }
