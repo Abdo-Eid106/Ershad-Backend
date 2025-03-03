@@ -32,6 +32,7 @@ export class AcademicInfoService {
       relations: [
         'academicInfo',
         'academicInfo.regulation',
+        'academicInfo.regulation.academicRequirements',
         'academicInfo.program',
       ],
     });

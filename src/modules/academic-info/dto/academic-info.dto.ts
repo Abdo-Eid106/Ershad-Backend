@@ -10,6 +10,11 @@ class NameDto {
   ar: string;
 }
 
+class AcademicRequirementsDto {
+  @Expose()
+  regulationHours: number;
+}
+
 class RegulationDto {
   @Expose()
   id: UUID;
@@ -17,6 +22,10 @@ class RegulationDto {
   @Expose()
   @Type(() => NameDto)
   name: NameDto;
+
+  @Expose()
+  @Type(() => AcademicRequirementsDto)
+  academicRequirements: AcademicRequirementsDto;
 }
 
 export class AcademicInfoDto {
