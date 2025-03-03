@@ -19,30 +19,38 @@ import { Roles } from '../role/decorators/roles.decorator';
 import { RoleEnum } from '../role/enums/role.enum';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { RegulationDto } from './dto/regulation.dto';
+import { currentUser } from 'src/shared/decorators/current-user.decorator';
+import { IPayloud } from 'src/shared/interfaces/payloud.interface';
 
-@Controller('regulations')
+@Controller()
 @UseGuards(JwtGuard, RolesGuard)
 @Serialize(RegulationDto)
 export class RegulationController {
   constructor(private readonly regulationService: RegulationService) {}
 
-  @Post()
+  @Post('regulations')
   @Roles(RoleEnum.ADMIN)
   async create(@Body() createRegulationDto: CreateRegulationDto) {
     return this.regulationService.create(createRegulationDto);
   }
 
-  @Get()
+  @Get('regulations')
   findAll() {
     return this.regulationService.findAll();
   }
 
-  @Get(':id')
+  @Get('regulations/:id')
   findOne(@Param('id', ParseUUIDPipe) id: UUID) {
     return this.regulationService.findOne(id);
   }
 
-  @Put(':id')
+  @Get('me/regulation')
+  @Roles(RoleEnum.STUDENT)
+  getMyregulation(@currentUser() user: IPayloud) {
+    return this.regulationService.getStudentRegulation(user.id);
+  }
+
+  @Put('regulations/:id')
   @Roles(RoleEnum.ADMIN)
   update(
     @Param('id', ParseUUIDPipe) id: UUID,
@@ -52,7 +60,7 @@ export class RegulationController {
   }
 
   @HttpCode(204)
-  @Delete(':id')
+  @Delete('regulations/:id')
   @Roles(RoleEnum.ADMIN)
   remove(@Param('id', ParseUUIDPipe) id: UUID) {
     return this.regulationService.remove(id);

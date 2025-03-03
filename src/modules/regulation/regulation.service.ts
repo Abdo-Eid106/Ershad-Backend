@@ -216,6 +216,51 @@ export class RegulationService {
     return regulation;
   }
 
+  async getStudentRegulation(studentId: UUID) {
+    const regulation = await this.regulationRepo
+      .createQueryBuilder('regulation')
+      .innerJoinAndSelect('regulation.levels', 'levels')
+      .innerJoinAndSelect('regulation.cumGpaRanges', 'cumGpaRanges')
+      .innerJoinAndSelect('regulation.courseGpaRanges', 'courseGpaRanges')
+      .innerJoinAndSelect('regulation.registrationRules', 'registrationRules')
+      .innerJoinAndSelect(
+        'regulation.academicRequirements',
+        'academicRequirements',
+      )
+      .innerJoinAndSelect(
+        'regulation.universityRequirements',
+        'universityRequirements',
+      )
+      .innerJoinAndSelect(
+        'regulation.specializationRequirements',
+        'specializationRequirements',
+      )
+      .innerJoinAndSelect(
+        'specializationRequirements.trainingRequirements',
+        'trainingRequirements',
+      )
+      .innerJoinAndSelect(
+        'specializationRequirements.gradProjectRequirements',
+        'gradProjectRequirements',
+      )
+      .innerJoinAndSelect(
+        'regulation.facultyRequirements',
+        'facultyRequirements',
+      )
+      .innerJoinAndSelect(
+        'regulation.basicScienceRequirements',
+        'basicScienceRequirements',
+      )
+      .innerJoinAndSelect('regulation.retakeRules', 'retakeRules')
+      .innerJoinAndSelect('regulation.dismissalRules', 'dismissalRules')
+      .innerJoin('regulation.academicInfos', 'ac')
+      .where('ac.studentId = :studentId', { studentId })
+      .getOne();
+
+    if (!regulation) throw new NotFoundException('Regulation not found');
+    return regulation;
+  }
+
   async update(id: UUID, updateRegulationDto: CreateRegulationDto) {
     this.regulationValidationService.validateRegulation(updateRegulationDto);
     await this.findOne(id);
