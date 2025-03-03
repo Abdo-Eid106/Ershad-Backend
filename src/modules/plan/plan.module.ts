@@ -9,6 +9,7 @@ import { Course } from '../course/entites/course.entity';
 import { PlanValidationService } from './plan-validation.service';
 import { SemesterPlan } from './entities/semester-plan.entity';
 import { SemesterPlanCourse } from './entities/semester-plan-course.entity';
+import { AcademicInfo } from '../academic-info/entities/academic-info.entity';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SemesterPlanCourse } from './entities/semester-plan-course.entity';
       Plan,
       Program,
       Course,
+      AcademicInfo,
       SemesterPlan,
       SemesterPlanCourse,
     ]),

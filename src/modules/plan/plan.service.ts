@@ -8,6 +8,7 @@ import { PlanValidationService } from './plan-validation.service';
 import { SemesterPlan } from './entities/semester-plan.entity';
 import { SemesterPlanCourse } from './entities/semester-plan-course.entity';
 import { getCourseWithPreFragment } from '../course/fragments';
+import { AcademicInfo } from '../academic-info/entities/academic-info.entity';
 
 @Injectable()
 export class PlanService {
@@ -19,6 +20,8 @@ export class PlanService {
     private readonly semesterPlanRepo: Repository<SemesterPlan>,
     @InjectRepository(SemesterPlanCourse)
     private readonly semesterPlanCourseRepo: Repository<SemesterPlanCourse>,
+    @InjectRepository(AcademicInfo)
+    private readonly academicInfoRepo: Repository<AcademicInfo>,
     private readonly planValidationService: PlanValidationService,
   ) {}
 
@@ -92,20 +95,22 @@ export class PlanService {
     return this.savePlan(planId, updatePlanDto, true);
   }
 
-  async findOne(id: UUID) {
+  async findOne(programId: UUID) {
     const plan = await this.planRepo
       .createQueryBuilder('plan')
       .innerJoin('plan.semesterPlans', 'semesterPlan')
       .innerJoin('semesterPlan.semesterPlanCourses', 'semesterPlanCourse')
       .innerJoin('semesterPlanCourse.course', 'course')
       .leftJoin('course.prerequisite', 'prerequisite')
-      .where('plan.programId = :id', { id })
+      .where('plan.programId = :programId', { programId })
       .groupBy('semesterPlan.id')
       .select([
         'semesterPlan.level AS level',
         'semesterPlan.semester AS semester',
         getCourseWithPreFragment('course', 'prerequisite'),
       ])
+      .orderBy('semesterPlan.level', 'ASC')
+      .addOrderBy('semesterPlan.semester', 'ASC')
       .getRawMany();
 
     if (plan.length === 0) {
@@ -113,5 +118,39 @@ export class PlanService {
     }
 
     return plan;
+  }
+
+  async getStudentPlan(studentId: UUID) {
+    const plan =
+      (await this.getProgramPlan(studentId)) ||
+      (await this.getAlternativeProgramPlan(studentId));
+    if (!plan) throw new NotFoundException('plan not found');
+    return this.findOne(plan.programId);
+  }
+
+  async getProgramPlan(studentId: UUID) {
+    const plan = await this.academicInfoRepo
+      .createQueryBuilder('ac')
+      .innerJoin('ac.program', 'program')
+      .innerJoin('program.plan', 'plan')
+      .where('ac.studentId = :studentId', { studentId })
+      .select('plan.programId AS programId')
+      .getRawOne();
+
+    return plan as Plan;
+  }
+
+  async getAlternativeProgramPlan(studentId: UUID) {
+    const plan = await this.academicInfoRepo
+      .createQueryBuilder('ac')
+      .innerJoin('ac.regulation', 'regulation')
+      .innerJoin('regulation.programs', 'program')
+      .innerJoin('program.plan', 'plan')
+      .where('ac.studentId = :studentId', { studentId })
+      .andWhere('plan.programId IS NOT NULL')
+      .select('plan.programId AS programId')
+      .getRawOne();
+
+    return plan as Plan;
   }
 }

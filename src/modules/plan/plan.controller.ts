@@ -17,13 +17,16 @@ import { RolesGuard } from '../role/guards/roles.guard';
 import { Roles } from '../role/decorators/roles.decorator';
 import { RoleEnum } from '../role/enums/role.enum';
 import { SemesterPlanDto } from './dto/semester-plan.dto';
+import { Role } from '../auth/entities/role.entity';
+import { currentUser } from 'src/shared/decorators/current-user.decorator';
+import { IPayloud } from 'src/shared/interfaces/payloud.interface';
 
-@Controller('programs/:programId/plans')
+@Controller()
 @UseGuards(JwtGuard, RolesGuard)
 export class PlanController {
   constructor(private readonly planService: PlanService) {}
 
-  @Post()
+  @Post('programs/:programId/plans')
   @Roles(RoleEnum.ADMIN)
   create(
     @Param('programId', ParseUUIDPipe) programId: UUID,
@@ -32,18 +35,24 @@ export class PlanController {
     return this.planService.create(programId, CreatePlanDto);
   }
 
-  @Get()
+  @Get('programs/:programId/plans')
   @Serialize(SemesterPlanDto)
   findOne(@Param('programId', ParseUUIDPipe) programId: UUID) {
     return this.planService.findOne(programId);
   }
 
-  @Put()
+  @Put('programs/:programId/plans')
   @Roles(RoleEnum.ADMIN)
   update(
     @Param('programId', ParseUUIDPipe) programId: UUID,
     @Body() updatePlanDto: CreatePlanDto,
   ) {
     return this.planService.update(programId, updatePlanDto);
+  }
+
+  @Roles(RoleEnum.STUDENT)
+  @Get('/me/plan')
+  getMyPlan(@currentUser() user: IPayloud) {
+    return this.planService.getStudentPlan(user.id);
   }
 }
