@@ -33,6 +33,7 @@ import { Semester } from 'src/modules/semester/entities/semester.entity';
 import { SemesterCourse } from 'src/modules/semester/entities/semester-course.entity';
 import { Officer } from 'src/modules/officer/entities/officer.entity';
 import { Admin } from 'src/modules/admin/entities/admin.entity';
+import { Otp } from 'src/modules/otp/entities/otp.entity';
 import { Role } from 'src/modules/auth/entities/role.entity';
 
 @Module({
@@ -80,6 +81,7 @@ import { Role } from 'src/modules/auth/entities/role.entity';
           Role,
           Registration,
           RegistrationCourse,
+          Otp,
         ],
         synchronize: true,
       }),

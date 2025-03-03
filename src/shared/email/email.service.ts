@@ -31,15 +31,7 @@ export class EmailService {
     }
   }
 
-  async sendResetPasswordEmail(email: string, resetToken: string) {
-    const resetUrl = `${this.configService.get<string>(
-      'FRONTEND_URL',
-    )}/reset-password/${resetToken}`;
-
-    await this.sendEmail(
-      email,
-      'Reset Password',
-      `Click here to reset your password: ${resetUrl}`,
-    );
+  async sendResetPasswordEmail(email: string, otp: string) {
+    await this.sendEmail(email, 'Reset Password', `your otp is: ${otp}`);
   }
 }

@@ -23,6 +23,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { RegistrationModule } from './modules/registration/registration.module';
 import { SummaryModule } from './modules/summary/summary.module';
 import { CourseRecommendationModule } from './modules/course-recommendation/course-recommendation.module';
+import { OtpModule } from './modules/otp/otp.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { CourseRecommendationModule } from './modules/course-recommendation/cour
     RegistrationModule,
     SummaryModule,
     CourseRecommendationModule,
+    OtpModule,
   ],
   controllers: [AppController],
   providers: [

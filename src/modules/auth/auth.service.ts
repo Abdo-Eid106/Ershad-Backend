@@ -1,10 +1,16 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { Repository } from 'typeorm';
-import { LoginInput } from './dto';
-import { compare } from 'bcrypt';
+import { DataSource, Repository } from 'typeorm';
+import { LoginInput, ResetPasswordInput } from './dto';
+import { compare, hash } from 'bcrypt';
+import { Otp } from '../otp/entities/otp.entity';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +18,7 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
     private readonly jwtService: JwtService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async login(loginInput: LoginInput) {
@@ -37,5 +44,30 @@ export class AuthService {
       role: user.role,
     });
     return { token, user };
+  }
+
+  async resetPassword(resetPasswordInput: ResetPasswordInput) {
+    const { email, otp, password } = resetPasswordInput;
+
+    return this.dataSource.transaction(async (manager) => {
+      const user = await manager.findOne(User, {
+        where: { email },
+        relations: ['otp'],
+      });
+
+      if (!user) throw new NotFoundException('No user found with this email');
+
+      if (
+        !user.otp ||
+        user.otp.expiresAt < new Date() ||
+        !(await compare(otp, user.otp.value))
+      ) {
+        throw new BadRequestException('Invalid OTP');
+      }
+
+      user.password = await hash(password, 12);
+      await manager.save(user);
+      await manager.remove(Otp, user.otp);
+    });
   }
 }

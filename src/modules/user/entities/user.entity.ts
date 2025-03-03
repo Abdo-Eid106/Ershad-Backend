@@ -4,6 +4,7 @@ import { Column, Entity, ManyToOne, OneToOne } from 'typeorm';
 import { Officer } from 'src/modules/officer/entities/officer.entity';
 import { Role } from 'src/modules/auth/entities/role.entity';
 import { Admin } from 'src/modules/admin/entities/admin.entity';
+import { Otp } from 'src/modules/otp/entities/otp.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -27,4 +28,7 @@ export class User extends BaseEntity {
     onDelete: 'SET NULL',
   })
   role?: Role;
+
+  @OneToOne(() => Otp, (otp) => otp.user)
+  otp?: Otp;
 }
