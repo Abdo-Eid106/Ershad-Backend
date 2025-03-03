@@ -21,7 +21,6 @@ import {
 import { Course } from 'src/modules/course/entites/course.entity';
 import { Program } from 'src/modules/program/entities/program.entitiy';
 import { Plan } from 'src/modules/plan/entities/plan.entity';
-import { PlanCourse } from 'src/modules/plan/entities/plan-course.entity';
 import { RequirementCourse } from 'src/modules/requirement/entities/requirement-course.entity';
 import { Registration } from 'src/modules/registration/entities/registration.entity';
 import { RegistrationCourse } from 'src/modules/registration/entities/registration-course.entity';
@@ -73,6 +72,9 @@ const semesters = JSON.parse(
 const semesterCourses = JSON.parse(
   readFileSync(join(__dirname, 'data', 'semester-courses.json'), 'utf-8'),
 ) as SemesterCourse[];
+const officers = JSON.parse(
+  readFileSync(join(__dirname, 'data', 'officers.json'), 'utf-8'),
+) as Officer[];
 
 const configService = new ConfigService();
 const dataSource = new DataSource({
@@ -100,7 +102,6 @@ const dataSource = new DataSource({
     Course,
     Program,
     Plan,
-    PlanCourse,
     RequirementCourse,
     User,
     Student,
@@ -131,6 +132,7 @@ const seedDatabase = async () => {
     const academicInfoRepo = dataSource.getRepository(AcademicInfo);
     const semesterRepo = dataSource.getRepository(Semester);
     const semesterCourseRepo = dataSource.getRepository(SemesterCourse);
+    const officerRepo = dataSource.getRepository(Officer);
 
     await roleRepo
       .createQueryBuilder()
@@ -331,6 +333,14 @@ const seedDatabase = async () => {
       .insert()
       .into(SemesterCourse)
       .values(semesterCourses)
+      .orIgnore()
+      .execute();
+
+    await officerRepo
+      .createQueryBuilder()
+      .insert()
+      .into(Officer)
+      .values(officers)
       .orIgnore()
       .execute();
 
