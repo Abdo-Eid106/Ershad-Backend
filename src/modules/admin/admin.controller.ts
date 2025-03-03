@@ -9,10 +9,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { CreateAdminDto } from './dto/create-Admin.dto';
+import { CreateAdminDto } from './dto/create-admin.dto';
 import { UUID } from 'crypto';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
-import { AdminDto } from './dto/Admin.dto';
+import { AdminDto } from './dto/admin.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
 import { Roles } from '../role/decorators/roles.decorator';
