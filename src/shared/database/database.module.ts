@@ -35,6 +35,7 @@ import { Officer } from 'src/modules/officer/entities/officer.entity';
 import { Admin } from 'src/modules/admin/entities/admin.entity';
 import { Otp } from 'src/modules/otp/entities/otp.entity';
 import { Role } from 'src/modules/auth/entities/role.entity';
+import { RegistrationSettings } from 'src/modules/registration/entities/registration-settings.entity';
 
 @Module({
   imports: [
@@ -82,6 +83,7 @@ import { Role } from 'src/modules/auth/entities/role.entity';
           Registration,
           RegistrationCourse,
           Otp,
+          RegistrationSettings,
         ],
         synchronize: true,
       }),

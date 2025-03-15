@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { RegistrationService } from './registration.service';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
@@ -9,14 +9,16 @@ import { RoleEnum } from '../role/enums/role.enum';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { CourseDto } from '../course/dto/course.dto';
+import { UpdateRegistrationStatus } from './dto/update-registration-status.dto';
+import { RegistrationSettingsDto } from './dto/registration-settings.dto';
 
 @Controller('/registrations')
 @UseGuards(JwtGuard, RolesGuard)
-@Roles(RoleEnum.STUDENT)
 export class RegistrationController {
   constructor(private readonly registrationService: RegistrationService) {}
 
   @Post()
+  @Roles(RoleEnum.STUDENT)
   async create(
     @currentUser() user: IPayloud,
     @Body() createRegistrationDto: CreateRegistrationDto,
@@ -25,7 +27,25 @@ export class RegistrationController {
     return { message: 'Registration completed successfully.' };
   }
 
+  @Patch('/status')
+  @Roles(RoleEnum.ADMIN)
+  async updateRegistrationStatus(
+    @Body() updateRegistrationStatus: UpdateRegistrationStatus,
+  ) {
+    await this.registrationService.updateRegistrationStatus(
+      updateRegistrationStatus,
+    );
+    return { message: 'registration settings updated successfully' };
+  }
+
+  @Get('/status')
+  @Serialize(RegistrationSettingsDto)
+  getRegistrationStatus() {
+    return this.registrationService.getSettings();
+  }
+
   @Get('/me')
+  @Roles(RoleEnum.STUDENT)
   @Serialize(CourseDto)
   async getMyRegistration(@currentUser() user: IPayloud) {
     return this.registrationService.getStudentRegisteredCourses(user.id);

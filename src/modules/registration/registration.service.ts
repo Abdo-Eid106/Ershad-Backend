@@ -1,31 +1,42 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { UUID } from 'crypto';
 import { DataSource, Repository } from 'typeorm';
-import { Course } from '../course/entites/course.entity';
-import { AcademicInfoService } from '../academic-info/academic-info.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from '../student/entities/student.entity';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { Registration } from './entities/registration.entity';
 import { RegistrationCourse } from './entities/registration-course.entity';
 import { RegistrationValidationService } from './registration-validation.service';
+import { RegistrationSettings } from './entities/registration-settings.entity';
+import { UpdateRegistrationStatus } from './dto/update-registration-status.dto';
+import { COURSE_SELECT_FIELDS } from '../course/constants';
 
 @Injectable()
 export class RegistrationService {
   constructor(
     @InjectRepository(Student)
     private readonly studentRepo: Repository<Student>,
+
     @InjectRepository(Registration)
     private readonly registrationRepo: Repository<Registration>,
+
+    @InjectRepository(RegistrationSettings)
+    private readonly registrationSettingsRepo: Repository<RegistrationSettings>,
+
     private readonly registrationValidationService: RegistrationValidationService,
     private readonly dataSource: DataSource,
   ) {}
 
   async create(studentId: UUID, createRegistrationDto: CreateRegistrationDto) {
+    const registrationSettings = await this.getSettings();
+    if (!registrationSettings.isOpen)
+      throw new ForbiddenException('registration is currently closed');
+
     await this.registrationValidationService.validate(
       studentId,
       createRegistrationDto,
@@ -64,24 +75,42 @@ export class RegistrationService {
     if (!(await this.studentRepo.existsBy({ userId: studentId })))
       throw new NotFoundException('Student not found');
 
-    const registeredCourses = await this.registrationRepo
+    return this.registrationRepo
       .createQueryBuilder('registration')
       .innerJoin('registration.registrationCourses', 'registrationCourse')
       .innerJoin('registrationCourse.course', 'course')
       .where('registration.academicInfoId = :studentId', { studentId })
-      .select([
-        'course.id AS id',
-        'course.name AS name',
-        'course.code AS code',
-        'course.lectureHours AS lectureHours',
-        'course.practicalHours AS practicalHours',
-        'course.creditHours AS creditHours',
-      ])
+      .select(COURSE_SELECT_FIELDS)
       .getRawMany();
+  }
 
-    if (registeredCourses.length === 0)
-      throw new NotFoundException(`Student hasn't registered yet`);
+  async updateRegistrationStatus(
+    updateRegistrationStatus: UpdateRegistrationStatus,
+  ) {
+    const settings = await this.getSettings();
 
-    return registeredCourses;
+    return this.dataSource.transaction(async (transactionalEntityManager) => {
+      await transactionalEntityManager.update(
+        RegistrationSettings,
+        settings.id,
+        updateRegistrationStatus,
+      );
+
+      if (updateRegistrationStatus.isOpen) {
+        await transactionalEntityManager.delete(Registration, {});
+      }
+    });
+  }
+
+  async getRegistrationStatus() {
+    return (await this.getSettings()).isOpen;
+  }
+
+  async getSettings() {
+    const settings = await this.registrationSettingsRepo.findOne({ where: {} });
+    if (settings) return settings;
+    return await this.registrationSettingsRepo.save(
+      this.registrationSettingsRepo.create({}),
+    );
   }
 }
