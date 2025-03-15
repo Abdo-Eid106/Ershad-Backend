@@ -24,6 +24,7 @@ import { RegistrationModule } from './modules/registration/registration.module';
 import { SummaryModule } from './modules/summary/summary.module';
 import { CourseRecommendationModule } from './modules/course-recommendation/course-recommendation.module';
 import { OtpModule } from './modules/otp/otp.module';
+import { GradProjectModule } from './modules/grad-project/grad-project.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { OtpModule } from './modules/otp/otp.module';
     SummaryModule,
     CourseRecommendationModule,
     OtpModule,
+    GradProjectModule,
   ],
   controllers: [AppController],
   providers: [
