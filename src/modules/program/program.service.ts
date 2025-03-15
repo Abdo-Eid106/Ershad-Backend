@@ -9,12 +9,14 @@ import { Repository } from 'typeorm';
 import { CreateProgramDto, GetProgramsDto, UpdateProgramDto } from './dto';
 import { Regulation } from '../regulation/entities';
 import { UUID } from 'crypto';
+import { Course } from '../course/entites/course.entity';
 
 @Injectable()
 export class ProgramService {
   constructor(
     @InjectRepository(Program)
     private readonly programRepo: Repository<Program>,
+
     @InjectRepository(Regulation)
     private readonly regulationRepo: Repository<Regulation>,
   ) {}
@@ -44,16 +46,20 @@ export class ProgramService {
       .createQueryBuilder('program')
       .innerJoin('program.regulation', 'regulation')
       .leftJoin('program.plan', 'plan')
+      .leftJoin(Course, 'course', 'program.id = course.id')
       .select([
         'program.id AS id',
         'program.name AS name',
         'program.code AS code',
         'program.degree AS degree',
-        'plan.programId AS planId',
         `CASE 
           WHEN plan.programId IS NOT NULL THEN TRUE 
           ELSE FALSE 
         END AS hasPlan`,
+        `CASE 
+          WHEN course.id IS NOT NULL THEN TRUE 
+          ELSE FALSE 
+        END AS hasGradProject`,
       ])
       .where('regulation.id = :regulationId', { regulationId })
       .getRawMany();

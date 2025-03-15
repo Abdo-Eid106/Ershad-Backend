@@ -26,5 +26,10 @@ export class ProgramDto {
   hasPlan?: boolean;
 
   @Expose()
-  planId?: UUID;
+  @Transform(({ value }) =>
+    value !== undefined && value !== null
+      ? value === '1' || value === 1
+      : undefined,
+  )
+  hasGradProject?: boolean;
 }
