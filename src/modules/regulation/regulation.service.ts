@@ -193,24 +193,46 @@ export class RegulationService {
   }
 
   async findOne(id: UUID) {
-    const regulation = await this.regulationRepo.findOne({
-      where: { id },
-      relations: [
-        'levels',
-        'cumGpaRanges',
-        'courseGpaRanges',
-        'registrationRules',
+    const regulation = await this.regulationRepo
+      .createQueryBuilder('regulation')
+      .innerJoinAndSelect('regulation.levels', 'levels')
+      .innerJoinAndSelect('regulation.cumGpaRanges', 'cumGpaRanges')
+      .orderBy('cumGpaRanges.from', 'DESC')
+      .innerJoinAndSelect('regulation.courseGpaRanges', 'courseGpaRanges')
+      .addOrderBy('courseGpaRanges.from', 'DESC')
+      .innerJoinAndSelect('regulation.registrationRules', 'registrationRules')
+      .innerJoinAndSelect(
+        'regulation.academicRequirements',
         'academicRequirements',
+      )
+      .innerJoinAndSelect(
+        'regulation.universityRequirements',
         'universityRequirements',
+      )
+      .innerJoinAndSelect(
+        'regulation.specializationRequirements',
         'specializationRequirements',
+      )
+      .innerJoinAndSelect(
         'specializationRequirements.trainingRequirements',
+        'trainingRequirements',
+      )
+      .innerJoinAndSelect(
         'specializationRequirements.gradProjectRequirements',
+        'gradProjectRequirements',
+      )
+      .innerJoinAndSelect(
+        'regulation.facultyRequirements',
         'facultyRequirements',
+      )
+      .innerJoinAndSelect(
+        'regulation.basicScienceRequirements',
         'basicScienceRequirements',
-        'retakeRules',
-        'dismissalRules',
-      ],
-    });
+      )
+      .innerJoinAndSelect('regulation.retakeRules', 'retakeRules')
+      .innerJoinAndSelect('regulation.dismissalRules', 'dismissalRules')
+      .where('regulation.id = :id', { id })
+      .getOne();
 
     if (!regulation) throw new NotFoundException('Regulation not found');
     return regulation;
@@ -221,7 +243,9 @@ export class RegulationService {
       .createQueryBuilder('regulation')
       .innerJoinAndSelect('regulation.levels', 'levels')
       .innerJoinAndSelect('regulation.cumGpaRanges', 'cumGpaRanges')
+      .orderBy('cumGpaRanges.from', 'DESC')
       .innerJoinAndSelect('regulation.courseGpaRanges', 'courseGpaRanges')
+      .addOrderBy('courseGpaRanges.from', 'DESC')
       .innerJoinAndSelect('regulation.registrationRules', 'registrationRules')
       .innerJoinAndSelect(
         'regulation.academicRequirements',
