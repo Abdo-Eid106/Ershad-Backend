@@ -1,5 +1,7 @@
 import {
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -17,6 +19,7 @@ import { COURSE_SELECT_FIELDS } from '../course/constants';
 import { Program } from '../program/entities/program.entitiy';
 import { Course } from '../course/entites/course.entity';
 import { AcademicInfoService } from '../academic-info/academic-info.service';
+import { CourseDto } from '../course/dto/course.dto';
 
 @Injectable()
 export class RegistrationService {
@@ -36,8 +39,9 @@ export class RegistrationService {
     @InjectRepository(Course)
     private readonly courseRepo: Repository<Course>,
 
-    private readonly academicInfoService: AcademicInfoService,
+    @Inject(forwardRef(() => RegistrationValidationService))
     private readonly registrationValidationService: RegistrationValidationService,
+    private readonly academicInfoService: AcademicInfoService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -124,9 +128,6 @@ export class RegistrationService {
   }
 
   async getStudentAvailableCourses(studentId: UUID) {
-    if (!(await this.studentRepo.existsBy({ userId: studentId })))
-      throw new NotFoundException('student not found');
-
     const program = await this.getStudentProgram(studentId);
     const gradProject = program
       ? await this.getGradProjectCourse(program.id)
@@ -163,7 +164,7 @@ export class RegistrationService {
       });
     }
 
-    return query.getRawMany();
+    return (await query.getRawMany()) as Course[];
   }
 
   private async getStudentProgram(studentId: UUID) {

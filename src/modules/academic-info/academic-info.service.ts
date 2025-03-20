@@ -122,6 +122,18 @@ export class AcademicInfoService {
     return result.gpa;
   }
 
+  async getMinGpaToGraduate(studentId: UUID) {
+    const result = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
+      .innerJoin('academicInfo.regulation', 'regulation')
+      .innerJoin('regulation.dismissalRules', 'dismissalRules')
+      .select('dismissalRules.minGpaForGraduation', 'minGpaForGraduation')
+      .where('academicInfo.studentId = :studentId', { studentId })
+      .getRawOne();
+
+    return result.minGpaForGraduation;
+  }
+
   async getLevel(studentId: UUID) {
     const gainedHours = await this.getGainedHours(studentId);
     const result = await this.studentRepo
@@ -320,5 +332,28 @@ export class AcademicInfoService {
       .where('student.userId = :userId', { userId: studentId })
       .getRawOne();
     return (result?.requiredHoursToTakeGradProject ?? 0) as number;
+  }
+
+  async getPreviousRetakeAttempts(studentId: UUID) {
+    const { totalAttempts, uniqueCourses } = await this.studentRepo
+      .createQueryBuilder('student')
+      .innerJoin('student.academicInfo', 'academicInfo')
+      .innerJoin('academicInfo.semesters', 'semester')
+      .innerJoin('semester.semesterCourses', 'semesterCourse')
+      .where('student.userId = :studentId', { studentId })
+      .select([
+        'COUNT(semesterCourse.courseId) AS totalAttempts',
+        'COUNT(DISTINCT semesterCourse.courseId) AS uniqueCourses',
+      ])
+      .getRawOne();
+
+    return Number(totalAttempts) - Number(uniqueCourses);
+  }
+
+  async canStudentRetakeCourseWithoutLimit(studentId: UUID) {
+    const gpa = await this.getGpa(studentId);
+    const minGpaForGraduation = await this.getMinGpaToGraduate(studentId);
+  
+    return gpa < minGpaForGraduation;
   }
 }

@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from '../student/entities/student.entity';
 import { Repository } from 'typeorm';
@@ -6,6 +11,7 @@ import { Course } from '../course/entites/course.entity';
 import { AcademicInfoService } from '../academic-info/academic-info.service';
 import { UUID } from 'crypto';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
+import { RegistrationService } from './registration.service';
 
 enum CreditHourStatus {
   EXCEEDS_MAX = 'EXCEEDS_MAX',
@@ -16,10 +22,10 @@ enum CreditHourStatus {
 @Injectable()
 export class RegistrationValidationService {
   constructor(
-    @InjectRepository(Student)
-    private readonly studentRepo: Repository<Student>,
     @InjectRepository(Course)
     private readonly courseRepo: Repository<Course>,
+    @Inject(forwardRef(() => RegistrationService))
+    private readonly registrationService: RegistrationService,
     private readonly academicInfoService: AcademicInfoService,
   ) {}
 
@@ -29,58 +35,59 @@ export class RegistrationValidationService {
   ) {
     const { courseIds } = createRegistrationDto;
 
-    if (courseIds.length === 0)
-      throw new BadRequestException(`You haven't registered for any courses`);
+    // if (courseIds.length === 0)
+    //   throw new BadRequestException(`You haven't registered for any courses`);
 
-    // Check for duplicate courses
-    if (this.hasDuplicateCourses(courseIds)) {
-      throw new BadRequestException('Duplicate courses are not allowed.');
-    }
+    // if (this.hasDuplicateCourses(courseIds)) {
+    //   throw new BadRequestException('Duplicate courses are not allowed.');
+    // }
 
-    // Ensure all selected courses exist
-    if (!(await this.doAllCoursesExist(courseIds))) {
-      throw new BadRequestException(
-        'One or more selected courses do not exist.',
-      );
-    }
+    // if (!(await this.doAllCoursesExist(courseIds))) {
+    //   throw new BadRequestException(
+    //     'One or more selected courses do not exist.',
+    //   );
+    // }
 
-    // Check if credit hours are within the allowed range
-    const { creditHourStatus, minHours, maxHours, totalCreditHours } =
-      await this.isCreditHoursWithinRange(studentId, courseIds);
+    // const { creditHourStatus, minHours, maxHours, totalCreditHours } =
+    //   await this.isCreditHoursWithinRange(studentId, courseIds);
 
-    if (creditHourStatus === CreditHourStatus.EXCEEDS_MAX) {
-      throw new BadRequestException(
-        `Total credit hours (${totalCreditHours}) exceeds the maximum allowed (${maxHours}).`,
-      );
-    }
+    // if (creditHourStatus === CreditHourStatus.EXCEEDS_MAX) {
+    //   throw new BadRequestException(
+    //     `Total credit hours (${totalCreditHours}) exceeds the maximum allowed (${maxHours}).`,
+    //   );
+    // }
 
-    if (creditHourStatus === CreditHourStatus.BELOW_MIN) {
-      throw new BadRequestException(
-        `Total credit hours (${totalCreditHours}) is less than the minimum required (${minHours}).`,
-      );
-    }
+    // if (creditHourStatus === CreditHourStatus.BELOW_MIN) {
+    //   throw new BadRequestException(
+    //     `Total credit hours (${totalCreditHours}) is less than the minimum required (${minHours}).`,
+    //   );
+    // }
 
-    // Check if prerequisites are met
     if (!(await this.hasAllPrerequisitesMet(studentId, courseIds))) {
       throw new BadRequestException(
         'One or more selected courses do not meet prerequisite requirements.',
       );
     }
 
-    // Validate if the student is within the allowed retake limits
-    const {
-      isValid,
-      previousRetakeAttempts,
-      maxAllowedRetakes,
-      availableRetakeSlots,
-      selectedRetakeCount,
-    } = await this.validateCourseRegistrationLimits(studentId, courseIds);
+    if (
+      !(await this.academicInfoService.canStudentRetakeCourseWithoutLimit(
+        studentId,
+      ))
+    ) {
+      const {
+        isValid,
+        previousRetakeAttempts,
+        maxAllowedRetakes,
+        availableRetakeSlots,
+        selectedRetakeCount,
+      } = await this.validateCourseRegistrationLimits(studentId, courseIds);
 
-    if (!isValid) {
-      throw new BadRequestException(
-        `Retake limit exceeded. You have retaken ${previousRetakeAttempts} courses (max: ${maxAllowedRetakes}). ` +
-          `You are attempting to retake ${selectedRetakeCount} courses, but only ${availableRetakeSlots} slots are available.`,
-      );
+      if (!isValid) {
+        throw new BadRequestException(
+          `Retake limit exceeded. You have retaken ${previousRetakeAttempts} courses (max: ${maxAllowedRetakes}). ` +
+            `You are attempting to retake ${selectedRetakeCount} courses, but only ${availableRetakeSlots} slots are available.`,
+        );
+      }
     }
 
     return true;
@@ -121,44 +128,25 @@ export class RegistrationValidationService {
     studentId: UUID,
     selectedCourseIds: UUID[],
   ): Promise<boolean> {
-    const completedCourseIds =
-      await this.academicInfoService.getTakenCourseIds(studentId);
+    const availableCourses =
+      await this.registrationService.getStudentAvailableCourses(studentId);
+    const availableCourseIds = new Set(
+      availableCourses.map((course) => course.id),
+    );
 
-    const courseQuery = this.courseRepo
-      .createQueryBuilder('course')
-      .where('course.id IN (:...selectedCourseIds)', { selectedCourseIds })
-      .andWhere('course.prerequisiteId IS NOT NULL');
-
-    if (completedCourseIds.length > 0) {
-      courseQuery.andWhere(
-        'course.prerequisiteId NOT IN (:...completedCourseIds)',
-        { completedCourseIds },
-      );
-    }
-
-    return !(await courseQuery.getExists());
+    return selectedCourseIds.every((courseId) =>
+      availableCourseIds.has(courseId),
+    );
   }
 
   async validateCourseRegistrationLimits(studentId: UUID, courseIds: UUID[]) {
-    // Get the number of courses the student has previously retaken
-    const previousRetakeAttempts = await this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'academicInfo')
-      .innerJoin('academicInfo.semesters', 'semester')
-      .innerJoin('semester.semesterCourses', 'semesterCourse')
-      .where('student.userId = :studentId', { studentId })
-      .groupBy('semesterCourse.courseId')
-      .having('COUNT(*) > 1')
-      .getCount();
+    const [previousRetakeAttempts, maxAllowedRetakes] = await Promise.all([
+      this.academicInfoService.getPreviousRetakeAttempts(studentId),
+      this.academicInfoService.getMaxRetakeCourses(studentId),
+    ]);
 
-    // Get the maximum number of allowed retake attempts from academic regulations
-    const maxAllowedRetakes =
-      await this.academicInfoService.getMaxRetakeCourses(studentId);
-
-    // Calculate the remaining retakes the student is allowed
     const availableRetakeSlots = maxAllowedRetakes - previousRetakeAttempts;
 
-    // Get the number of courses the student is attempting to retake this semester
     const selectedRetakeCount = await this.courseRepo
       .createQueryBuilder('course')
       .innerJoin('course.semesterCourses', 'semesterCourse')
