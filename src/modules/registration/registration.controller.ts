@@ -12,12 +12,12 @@ import { CourseDto } from '../course/dto/course.dto';
 import { UpdateRegistrationStatus } from './dto/update-registration-status.dto';
 import { RegistrationSettingsDto } from './dto/registration-settings.dto';
 
-@Controller('/registrations')
+@Controller()
 @UseGuards(JwtGuard, RolesGuard)
 export class RegistrationController {
   constructor(private readonly registrationService: RegistrationService) {}
 
-  @Post()
+  @Post('/registrations')
   @Roles(RoleEnum.STUDENT)
   async create(
     @currentUser() user: IPayloud,
@@ -27,7 +27,7 @@ export class RegistrationController {
     return { message: 'Registration completed successfully.' };
   }
 
-  @Patch('/status')
+  @Patch('/registrations/status')
   @Roles(RoleEnum.ADMIN)
   async updateRegistrationStatus(
     @Body() updateRegistrationStatus: UpdateRegistrationStatus,
@@ -38,16 +38,23 @@ export class RegistrationController {
     return { message: 'registration settings updated successfully' };
   }
 
-  @Get('/status')
+  @Get('/registrations/status')
   @Serialize(RegistrationSettingsDto)
   getRegistrationStatus() {
     return this.registrationService.getSettings();
   }
 
-  @Get('/me')
+  @Get('/registrations/me')
   @Roles(RoleEnum.STUDENT)
   @Serialize(CourseDto)
   async getMyRegistration(@currentUser() user: IPayloud) {
     return this.registrationService.getStudentRegisteredCourses(user.id);
+  }
+
+  @Get('/available-courses')
+  @Serialize(CourseDto)
+  @Roles(RoleEnum.STUDENT)
+  async getAvailableCourses(@currentUser() user: IPayloud) {
+    return this.registrationService.getStudentAvailableCourses(user.id);
   }
 }

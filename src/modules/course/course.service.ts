@@ -92,24 +92,24 @@ export class CourseService {
     return this.courseRepo.remove(course);
   }
 
-  async findAvailableCourses(studentId: UUID) {
-    const courseIds =
-      await this.academicInfoService.getTakenCourseIds(studentId);
+  // async findAvailableCourses(studentId: UUID) {
+  //   const courseIds =
+  //     await this.academicInfoService.getTakenCourseIds(studentId);
 
-    return this.courseRepo
-      .createQueryBuilder('course')
-      .leftJoinAndSelect('course.prerequisite', 'prerequisite')
-      .innerJoin('course.requirementCourses', 'requirementCourse')
-      .innerJoin('requirementCourse.regulation', 'regulation')
-      .innerJoin('regulation.academicInfos', 'academicInfo')
-      .innerJoin('academicInfo.student', 'student')
-      .where('student.userId = :studentId', { studentId })
-      .andWhere(
-        'prerequisite.id IS NULL OR prerequisite.id IN (:...courseIds)',
-        { courseIds: courseIds.length ? courseIds : [null] },
-      )
-      .getMany();
-  }
+  //   return this.courseRepo
+  //     .createQueryBuilder('course')
+  //     .leftJoinAndSelect('course.prerequisite', 'prerequisite')
+  //     .innerJoin('course.requirementCourses', 'requirementCourse')
+  //     .innerJoin('requirementCourse.regulation', 'regulation')
+  //     .innerJoin('regulation.academicInfos', 'academicInfo')
+  //     .innerJoin('academicInfo.student', 'student')
+  //     .where('student.userId = :studentId', { studentId })
+  //     .andWhere(
+  //       'prerequisite.id IS NULL OR prerequisite.id IN (:...courseIds)',
+  //       { courseIds: courseIds.length ? courseIds : [null] },
+  //     )
+  //     .getMany();
+  // }
 
   async findCourseDetails(courseId: UUID) {
     const course = await this.courseRepo

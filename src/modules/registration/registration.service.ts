@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -15,6 +14,9 @@ import { RegistrationValidationService } from './registration-validation.service
 import { RegistrationSettings } from './entities/registration-settings.entity';
 import { UpdateRegistrationStatus } from './dto/update-registration-status.dto';
 import { COURSE_SELECT_FIELDS } from '../course/constants';
+import { Program } from '../program/entities/program.entitiy';
+import { Course } from '../course/entites/course.entity';
+import { AcademicInfoService } from '../academic-info/academic-info.service';
 
 @Injectable()
 export class RegistrationService {
@@ -28,6 +30,13 @@ export class RegistrationService {
     @InjectRepository(RegistrationSettings)
     private readonly registrationSettingsRepo: Repository<RegistrationSettings>,
 
+    @InjectRepository(Program)
+    private readonly programRepo: Repository<Program>,
+
+    @InjectRepository(Course)
+    private readonly courseRepo: Repository<Course>,
+
+    private readonly academicInfoService: AcademicInfoService,
     private readonly registrationValidationService: RegistrationValidationService,
     private readonly dataSource: DataSource,
   ) {}
@@ -112,5 +121,60 @@ export class RegistrationService {
     return await this.registrationSettingsRepo.save(
       this.registrationSettingsRepo.create({}),
     );
+  }
+
+  async getStudentAvailableCourses(studentId: UUID) {
+    if (!(await this.studentRepo.existsBy({ userId: studentId })))
+      throw new NotFoundException('student not found');
+
+    const program = await this.getStudentProgram(studentId);
+    const gradProject = program
+      ? await this.getGradProjectCourse(program.id)
+      : null;
+
+    const [requiredHoursToTakeGradProject, gainedHours, takenCourseIds] =
+      await Promise.all([
+        this.academicInfoService.getRequiredHoursToTakeGradProject(studentId),
+        this.academicInfoService.getGainedHours(studentId),
+        this.academicInfoService.getTakenCourseIds(studentId),
+      ]);
+
+    const query = this.studentRepo
+      .createQueryBuilder('student')
+      .innerJoin('student.academicInfo', 'academicInfo')
+      .innerJoin('academicInfo.regulation', 'regulation')
+      .innerJoin('regulation.requirementCourses', 'requirementCourses')
+      .leftJoin('requirementCourses.program', 'program')
+      .innerJoin('requirementCourses.course', 'course')
+      .leftJoin('course.prerequisite', 'prerequisite')
+      .select(COURSE_SELECT_FIELDS)
+      .where('student.userId = :studentId', { studentId })
+      .andWhere('(program.id IS NULL OR program.id = :programId)', {
+        programId: program?.id,
+      })
+      .andWhere(
+        '(prerequisite.id IS NULL OR prerequisite.id IN (:...takenCourseIds))',
+        { takenCourseIds },
+      );
+
+    if (gradProject && gainedHours < requiredHoursToTakeGradProject) {
+      query.andWhere('course.id != :gradProjectId', {
+        gradProjectId: gradProject.id,
+      });
+    }
+
+    return query.getRawMany();
+  }
+
+  private async getStudentProgram(studentId: UUID) {
+    return this.programRepo
+      .createQueryBuilder('program')
+      .innerJoin('program.academicInfos', 'academicInfo')
+      .where('academicInfo.studentId = :studentId', { studentId })
+      .getOne();
+  }
+
+  private async getGradProjectCourse(programId: UUID) {
+    return this.courseRepo.findOne({ where: { id: programId } });
   }
 }

@@ -49,11 +49,11 @@ export class CourseController {
     return this.courseService.findAll();
   }
 
-  @Get('/available')
-  @Roles(RoleEnum.STUDENT)
-  findAvailable(@currentUser() user: IPayloud) {
-    return this.courseService.findAvailableCourses(user.id);
-  }
+  // @Get('/available')
+  // @Roles(RoleEnum.STUDENT)
+  // findAvailable(@currentUser() user: IPayloud) {
+  //   return this.courseService.findAvailableCourses(user.id);
+  // }
 
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: UUID) {

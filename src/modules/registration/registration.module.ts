@@ -8,6 +8,7 @@ import { Student } from '../student/entities/student.entity';
 import { Course } from '../course/entites/course.entity';
 import { Registration } from './entities/registration.entity';
 import { RegistrationSettings } from './entities/registration-settings.entity';
+import { Program } from '../program/entities/program.entitiy';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { RegistrationSettings } from './entities/registration-settings.entity';
       Course,
       Registration,
       RegistrationSettings,
+      Program,
     ]),
     AcademicInfoModule,
   ],
