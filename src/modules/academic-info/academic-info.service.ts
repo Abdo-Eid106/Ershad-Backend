@@ -300,4 +300,25 @@ export class AcademicInfoService {
         .getCount()) + 1
     );
   }
+
+  async getRequiredHoursToTakeGradProject(studentId: UUID) {
+    const result = await this.studentRepo
+      .createQueryBuilder('student')
+      .innerJoin('student.academicInfo', 'academicInfo')
+      .innerJoin('academicInfo.regulation', 'regulation')
+      .innerJoin(
+        'regulation.specializationRequirements',
+        'specializationRequirements',
+      )
+      .innerJoin(
+        'specializationRequirements.gradProjectRequirements',
+        'gradProjectRequirements',
+      )
+      .select(
+        'gradProjectRequirements.requiredHours AS requiredHoursToTakeGradProject',
+      )
+      .where('student.userId = :userId', { userId: studentId })
+      .getRawOne();
+    return (result?.requiredHoursToTakeGradProject ?? 0) as number;
+  }
 }
