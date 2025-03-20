@@ -35,33 +35,33 @@ export class RegistrationValidationService {
   ) {
     const { courseIds } = createRegistrationDto;
 
-    // if (courseIds.length === 0)
-    //   throw new BadRequestException(`You haven't registered for any courses`);
+    if (courseIds.length === 0)
+      throw new BadRequestException(`You haven't registered for any courses`);
 
-    // if (this.hasDuplicateCourses(courseIds)) {
-    //   throw new BadRequestException('Duplicate courses are not allowed.');
-    // }
+    if (this.hasDuplicateCourses(courseIds)) {
+      throw new BadRequestException('Duplicate courses are not allowed.');
+    }
 
-    // if (!(await this.doAllCoursesExist(courseIds))) {
-    //   throw new BadRequestException(
-    //     'One or more selected courses do not exist.',
-    //   );
-    // }
+    if (!(await this.doAllCoursesExist(courseIds))) {
+      throw new BadRequestException(
+        'One or more selected courses do not exist.',
+      );
+    }
 
-    // const { creditHourStatus, minHours, maxHours, totalCreditHours } =
-    //   await this.isCreditHoursWithinRange(studentId, courseIds);
+    const { creditHourStatus, minHours, maxHours, totalCreditHours } =
+      await this.isCreditHoursWithinRange(studentId, courseIds);
 
-    // if (creditHourStatus === CreditHourStatus.EXCEEDS_MAX) {
-    //   throw new BadRequestException(
-    //     `Total credit hours (${totalCreditHours}) exceeds the maximum allowed (${maxHours}).`,
-    //   );
-    // }
+    if (creditHourStatus === CreditHourStatus.EXCEEDS_MAX) {
+      throw new BadRequestException(
+        `Total credit hours (${totalCreditHours}) exceeds the maximum allowed (${maxHours}).`,
+      );
+    }
 
-    // if (creditHourStatus === CreditHourStatus.BELOW_MIN) {
-    //   throw new BadRequestException(
-    //     `Total credit hours (${totalCreditHours}) is less than the minimum required (${minHours}).`,
-    //   );
-    // }
+    if (creditHourStatus === CreditHourStatus.BELOW_MIN) {
+      throw new BadRequestException(
+        `Total credit hours (${totalCreditHours}) is less than the minimum required (${minHours}).`,
+      );
+    }
 
     if (!(await this.hasAllPrerequisitesMet(studentId, courseIds))) {
       throw new BadRequestException(
