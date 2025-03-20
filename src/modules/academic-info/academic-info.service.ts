@@ -204,7 +204,7 @@ export class AcademicInfoService {
     return result?.maxRetakeGrade ?? 0;
   }
 
-  async getTakenCourseIds(studentId: UUID) {
+  async getTakenCourseIds(studentId: UUID): Promise<UUID[] | [null]> {
     const successDegree = await this.getSuccessDegree(studentId);
 
     const result = await this.studentRepo
@@ -217,7 +217,7 @@ export class AcademicInfoService {
       .select('DISTINCT semesterCourse.courseId', 'id')
       .getRawMany();
 
-    return result.map((result) => result.id) as UUID[];
+    return result.length ? (result.map((res) => res.id) as UUID[]) : [null];
   }
 
   async isUnderGpaRules(studentId: UUID) {
