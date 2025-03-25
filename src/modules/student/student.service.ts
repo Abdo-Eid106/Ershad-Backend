@@ -113,12 +113,9 @@ export class StudentService {
         'personalInfo.avatar AS avatar',
       ])
       .where(
-        'LOWER(JSON_UNQUOTE(JSON_EXTRACT(personalInfo.name, "$.en"))) LIKE LOWER(:searchEn) OR ' +
-          'JSON_UNQUOTE(JSON_EXTRACT(personalInfo.name, "$.ar")) LIKE :searchAr',
-        {
-          searchEn: `%${search}%`,
-          searchAr: `%${search}%`,
-        },
+        `LOWER(personalInfo.name->>'$.en') LIKE LOWER(:search) OR 
+         LOWER(personalInfo.name->>'$.ar') LIKE LOWER(:search)`,
+        { search: `%${search}%` },
       );
 
     const students = await queryBuilder
@@ -136,7 +133,6 @@ export class StudentService {
       },
     };
   }
-
 
   async remove(id: UUID) {
     const user = await this.userRepo.findOne({ where: { id } });
