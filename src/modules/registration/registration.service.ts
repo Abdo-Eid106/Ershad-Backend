@@ -19,7 +19,6 @@ import { COURSE_SELECT_FIELDS } from '../course/constants';
 import { Program } from '../program/entities/program.entitiy';
 import { Course } from '../course/entites/course.entity';
 import { AcademicInfoService } from '../academic-info/academic-info.service';
-import { CourseDto } from '../course/dto/course.dto';
 
 @Injectable()
 export class RegistrationService {
@@ -150,9 +149,6 @@ export class RegistrationService {
       .leftJoin('course.prerequisite', 'prerequisite')
       .select(COURSE_SELECT_FIELDS)
       .where('student.userId = :studentId', { studentId })
-      .andWhere('(program.id IS NULL OR program.id = :programId)', {
-        programId: program?.id,
-      })
       .andWhere(
         '(prerequisite.id IS NULL OR prerequisite.id IN (:...takenCourseIds))',
         { takenCourseIds },
