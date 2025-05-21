@@ -5,18 +5,15 @@ import {
 } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UUID } from 'crypto';
-import { GetCoursesDto } from './dto';
 import { Repository } from 'typeorm';
 import { Course } from './entites/course.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AcademicInfoService } from '../academic-info/academic-info.service';
 
 @Injectable()
 export class CourseService {
   constructor(
     @InjectRepository(Course)
     private readonly courseRepo: Repository<Course>,
-    private readonly academicInfoService: AcademicInfoService,
   ) {}
 
   async create(createCourseDto: CreateCourseDto) {
@@ -91,25 +88,6 @@ export class CourseService {
     const course = await this.findOne(id);
     return this.courseRepo.remove(course);
   }
-
-  // async findAvailableCourses(studentId: UUID) {
-  //   const courseIds =
-  //     await this.academicInfoService.getTakenCourseIds(studentId);
-
-  //   return this.courseRepo
-  //     .createQueryBuilder('course')
-  //     .leftJoinAndSelect('course.prerequisite', 'prerequisite')
-  //     .innerJoin('course.requirementCourses', 'requirementCourse')
-  //     .innerJoin('requirementCourse.regulation', 'regulation')
-  //     .innerJoin('regulation.academicInfos', 'academicInfo')
-  //     .innerJoin('academicInfo.student', 'student')
-  //     .where('student.userId = :studentId', { studentId })
-  //     .andWhere(
-  //       'prerequisite.id IS NULL OR prerequisite.id IN (:...courseIds)',
-  //       { courseIds: courseIds.length ? courseIds : [null] },
-  //     )
-  //     .getMany();
-  // }
 
   async findCourseDetails(courseId: UUID) {
     const course = await this.courseRepo
