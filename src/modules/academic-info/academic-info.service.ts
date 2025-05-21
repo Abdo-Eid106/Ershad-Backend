@@ -233,12 +233,15 @@ export class AcademicInfoService {
   }
 
   async isUnderGpaRules(studentId: UUID) {
-    const semesters = await this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'ac')
-      .innerJoin('ac.semesters', 'semesters')
-      .where('student.userId = :studentId', { studentId })
-      .getCount();
+    const semesters = (
+      await this.studentRepo
+        .createQueryBuilder('student')
+        .innerJoin('student.academicInfo', 'ac')
+        .innerJoin('ac.semesters', 'semester')
+        .where('student.userId = :studentId', { studentId })
+        .select('semester.id')
+        .getRawMany()
+    ).length;
 
     const { semestersWithoutGpaRules } = await this.studentRepo
       .createQueryBuilder('student')
@@ -353,7 +356,7 @@ export class AcademicInfoService {
   async canStudentRetakeCourseWithoutLimit(studentId: UUID) {
     const gpa = await this.getGpa(studentId);
     const minGpaForGraduation = await this.getMinGpaToGraduate(studentId);
-  
+
     return gpa < minGpaForGraduation;
   }
 }
