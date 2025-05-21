@@ -95,14 +95,4 @@ export class ProgramService {
     const program = await this.findOne(id);
     return this.programRepo.remove(program);
   }
-
-  async getProgramLevel(id: UUID) {
-    const { levelsCount } = await this.programRepo
-      .createQueryBuilder('program')
-      .innerJoin('program.regulation', 'regulation')
-      .innerJoin('regulation.academicRequirements', 'ac')
-      .select('ac.levelsCount', 'levelsCount')
-      .getRawOne();
-    return levelsCount;
-  }
 }
