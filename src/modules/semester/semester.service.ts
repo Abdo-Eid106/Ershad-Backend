@@ -27,6 +27,7 @@ export class SemesterService {
 
   async create(studentId: UUID, createSemesterDto: CreateSemesterDto) {
     const { startYear, endYear, semester, semesterCourses } = createSemesterDto;
+
     //check if the end year is equal to the start year + 1
     if (startYear != endYear - 1)
       throw new BadRequestException('not a valid year range');
@@ -36,7 +37,13 @@ export class SemesterService {
       throw new NotFoundException('student not found');
 
     //check if this semester already exist
-    if (await this.semesterRepo.existsBy({ startYear, semester }))
+    if (
+      await this.semesterRepo.existsBy({
+        startYear,
+        semester,
+        academicInfo: { studentId },
+      })
+    )
       throw new ConflictException('semester already exist');
 
     //check if the courses exist and check that they are not repeated
