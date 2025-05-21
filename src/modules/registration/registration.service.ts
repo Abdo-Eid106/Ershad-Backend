@@ -141,11 +141,11 @@ export class RegistrationService {
 
     const query = this.studentRepo
       .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'academicInfo')
-      .innerJoin('academicInfo.regulation', 'regulation')
-      .innerJoin('regulation.requirementCourses', 'requirementCourses')
+      .leftJoin('student.academicInfo', 'academicInfo')
+      .leftJoin('academicInfo.regulation', 'regulation')
+      .leftJoin('regulation.requirementCourses', 'requirementCourses')
       .leftJoin('requirementCourses.program', 'program')
-      .innerJoin('requirementCourses.course', 'course')
+      .leftJoin('requirementCourses.course', 'course')
       .leftJoin('course.prerequisite', 'prerequisite')
       .select(COURSE_SELECT_FIELDS)
       .where('student.userId = :studentId', { studentId })

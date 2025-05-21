@@ -87,7 +87,7 @@ export class StudentService {
       this.personalInfoRepo.create({
         studentId: student.userId,
         ...createStudentDto,
-      }),
+      }), 
     );
 
     //create the academicInfo of the stundent

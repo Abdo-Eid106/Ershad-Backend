@@ -2,10 +2,11 @@ import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { UUID } from 'crypto';
 import { Repository } from 'typeorm';
 import { Plan } from '../plan/entities/plan.entity';
-import { AcademicInfoService } from '../academic-info/academic-info.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { COURSE_SELECT_FIELDS } from '../course/constants';
 import { PlanService } from '../plan/plan.service';
+import { RegistrationService } from '../registration/registration.service';
+import { AcademicInfoService } from '../academic-info/academic-info.service';
 
 @Injectable()
 export class CourseRecommendationService {
@@ -13,6 +14,7 @@ export class CourseRecommendationService {
     @InjectRepository(Plan)
     private readonly planRepo: Repository<Plan>,
     private readonly planService: PlanService,
+    private readonly registrationService: RegistrationService,
     private readonly academicInfoService: AcademicInfoService,
   ) {}
 
@@ -27,8 +29,15 @@ export class CourseRecommendationService {
       );
     }
 
-    const courseIds =
-      await this.academicInfoService.getTakenCourseIds(studentId);
+    const availableCourses =
+      await this.registrationService.getStudentAvailableCourses(studentId);
+    const availableCourseIds = availableCourses.map((course) => course.id);
+    const takenCourseIds = new Set(
+      await this.academicInfoService.getTakenCourseIds(studentId),
+    );
+    const targetCourseIds = availableCourseIds.filter(
+      (id) => !takenCourseIds.has(id),
+    );
 
     return this.planRepo
       .createQueryBuilder('plan')
@@ -37,15 +46,9 @@ export class CourseRecommendationService {
       .leftJoin('semesterPlanCourse.course', 'course')
       .leftJoin('course.prerequisite', 'prerequisite')
       .where('plan.programId = :programId', { programId: plan.programId })
-      .andWhere('course.id NOT IN (:...courseIds)', {
-        courseIds: courseIds.length ? courseIds : [null],
+      .andWhere('course.id IN (:...courseIds)', {
+        courseIds: targetCourseIds.length ? targetCourseIds : [null],
       })
-      .andWhere(
-        '(prerequisite.id IS NULL OR prerequisite.id IN (:...courseIds))',
-        {
-          courseIds: courseIds.length ? courseIds : [null],
-        },
-      )
       .select([...COURSE_SELECT_FIELDS])
       .orderBy('semesterPlan.level', 'ASC')
       .addOrderBy('semesterPlan.semester', 'ASC')

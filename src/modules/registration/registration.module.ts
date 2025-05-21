@@ -16,12 +16,13 @@ import { Program } from '../program/entities/program.entitiy';
       Student,
       Course,
       Registration,
-      RegistrationSettings,
       Program,
+      RegistrationSettings,
     ]),
     AcademicInfoModule,
   ],
   controllers: [RegistrationController],
   providers: [RegistrationService, RegistrationValidationService],
+  exports: [RegistrationService],
 })
 export class RegistrationModule {}

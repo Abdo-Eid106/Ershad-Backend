@@ -5,14 +5,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Plan } from '../plan/entities/plan.entity';
 import { Course } from '../course/entites/course.entity';
 import { AcademicInfo } from '../academic-info/entities/academic-info.entity';
+import { RegistrationModule } from '../registration/registration.module';
 import { AcademicInfoModule } from '../academic-info/academic-info.module';
 import { PlanModule } from '../plan/plan.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Plan, Course, AcademicInfo]),
-    AcademicInfoModule,
     PlanModule,
+    RegistrationModule,
+    AcademicInfoModule,
   ],
   controllers: [CourseRecommendationController],
   providers: [CourseRecommendationService],
