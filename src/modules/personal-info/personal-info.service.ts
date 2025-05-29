@@ -6,7 +6,6 @@ import {
 import { PersonalInfo } from './entities/personal-info.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UUID } from 'crypto';
 import { UpdatePersonalInfoDto } from './dto/update-personal-info.dto';
 import { User } from '../user/entities/user.entity';
 import { CloudinaryService } from 'src/shared/upload/cloudinary.service';
