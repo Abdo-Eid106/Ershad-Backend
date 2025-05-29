@@ -7,12 +7,13 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 class NameDto {
-  @IsString()
+  @IsString({ message: ErrorEnum.OFFICER_NAME_EN_REQUIRED })
   en: string;
 
-  @IsString()
+  @IsString({ message: ErrorEnum.OFFICER_NAME_AR_REQUIRED })
   ar: string;
 }
 
@@ -22,27 +23,26 @@ export class CreateOfficerDto {
   @Type(() => NameDto)
   name: NameDto;
 
-  @IsString()
-  @IsEmail()
+  @IsString({ message: ErrorEnum.OFFICER_EMAIL_REQUIRED })
+  @IsEmail({}, { message: ErrorEnum.OFFICER_EMAIL_INVALID })
   email: string;
 
-  @IsString()
-  @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  @IsString({ message: ErrorEnum.OFFICER_PASSWORD_REQUIRED })
+  @MinLength(8, { message: ErrorEnum.OFFICER_PASSWORD_MIN_LENGTH })
   @Matches(/(?=.*[a-z])/, {
-    message: 'Password must contain at least one lowercase letter',
+    message: ErrorEnum.OFFICER_PASSWORD_LOWERCASE,
   })
   @Matches(/(?=.*[A-Z])/, {
-    message: 'Password must contain at least one uppercase letter',
+    message: ErrorEnum.OFFICER_PASSWORD_UPPERCASE,
   })
   @Matches(/(?=.*\d)/, {
-    message: 'Password must contain at least one number',
+    message: ErrorEnum.OFFICER_PASSWORD_NUMBER,
   })
   @Matches(/(?=.*[@$!%*?&])/, {
-    message: 'Password must contain at least one special character (@$!%*?&)',
+    message: ErrorEnum.OFFICER_PASSWORD_SPECIAL_CHAR,
   })
   @Matches(/^[A-Za-z\d@$!%*?&]*$/, {
-    message:
-      'Password can only contain letters, numbers, and special characters (@$!%*?&)',
+    message: ErrorEnum.OFFICER_PASSWORD_ALLOWED_CHARS,
   })
   password: string;
 }

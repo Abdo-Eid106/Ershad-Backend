@@ -1,0 +1,15 @@
+{
+  "PERSONAL_INFO_NOT_FOUND": "Personal information not found.",
+  "NATIONAL_ID_IN_USE": "National ID is already in use.",
+  "UNIVERSITY_ID_IN_USE": "University ID is already in use.",
+  "PHONE_IN_USE": "Phone number is already in use.",
+  "PERSONAL_INFO_NAME_EN_REQUIRED": "Name (English) is required.",
+  "PERSONAL_INFO_NAME_AR_REQUIRED": "Name (Arabic) is required.",
+  "PERSONAL_INFO_GENDER_INVALID": "Gender is invalid.",
+  "PERSONAL_INFO_NATIONAL_ID_STRING": "National ID must be a string.",
+  "PERSONAL_INFO_UNIVERSITY_ID_STRING": "University ID must be a string.",
+  "PERSONAL_INFO_EMAIL_STRING": "Email must be a string.",
+  "PERSONAL_INFO_EMAIL_INVALID": "Email must be a valid email address.",
+  "PERSONAL_INFO_PHONE_STRING": "Phone must be a string.",
+  "PERSONAL_INFO_PHONE_INVALID": "Phone must be a valid phone number."
+}

@@ -1,0 +1,21 @@
+{
+  "SEMESTER_INVALID_YEAR_RANGE": "End year must be exactly one greater than start year.",
+  "SEMESTER_STUDENT_NOT_FOUND": "Student not found.",
+  "SEMESTER_ALREADY_EXISTS": "Semester already exists.",
+  "SEMESTER_COURSE_REPEATED": "Courses must not be repeated in the semester.",
+  "SEMESTER_NO_COURSES": "You should add at least one course.",
+  "SEMESTER_NOT_FOUND": "Semester not found.",
+  "SEMESTER_COURSE_ID_UUID": "Course ID must be a valid UUID.",
+  "SEMESTER_DEGREE_INT": "Degree must be an integer.",
+  "SEMESTER_DEGREE_MIN": "Degree must be at least 0.",
+  "SEMESTER_DEGREE_MAX": "Degree must be at most 100.",
+  "SEMESTER_START_YEAR_INT": "Start year must be an integer.",
+  "SEMESTER_START_YEAR_MIN": "Start year must be at least 2019.",
+  "SEMESTER_END_YEAR_INT": "End year must be an integer.",
+  "SEMESTER_END_YEAR_MIN": "End year must be at least 2020.",
+  "SEMESTER_SEMESTER_INT": "Semester must be an integer.",
+  "SEMESTER_SEMESTER_MIN": "Semester must be at least 1.",
+  "SEMESTER_SEMESTER_MAX": "Semester must be at most 2.",
+  "SEMESTER_COURSES_ARRAY": "Semester courses must be an array.",
+  "SEMESTER_COURSES_NESTED": "Each semester course must be valid."
+} 

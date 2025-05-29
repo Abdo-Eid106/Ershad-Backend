@@ -7,12 +7,13 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 class NameDto {
-  @IsString()
+  @IsString({ message: ErrorEnum.ADMIN_NAME_EN_REQUIRED })
   en: string;
 
-  @IsString()
+  @IsString({ message: ErrorEnum.ADMIN_NAME_AR_REQUIRED })
   ar: string;
 }
 
@@ -22,12 +23,12 @@ export class CreateAdminDto {
   @Type(() => NameDto)
   name: NameDto;
 
-  @IsString()
-  @IsEmail()
+  @IsString({ message: ErrorEnum.ADMIN_EMAIL_REQUIRED })
+  @IsEmail({}, { message: ErrorEnum.ADMIN_EMAIL_INVALID })
   email: string;
 
-  @IsString()
-  @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  @IsString({ message: ErrorEnum.ADMIN_PASSWORD_REQUIRED })
+  @MinLength(8, { message: ErrorEnum.ADMIN_PASSWORD_MIN_LENGTH })
   // @Matches(/(?=.*[a-z])/, {
   //   message: 'Password must contain at least one lowercase letter',
   // })

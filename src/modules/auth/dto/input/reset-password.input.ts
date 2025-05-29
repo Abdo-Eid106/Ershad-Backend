@@ -1,29 +1,29 @@
 import { IsString, Matches, MinLength } from 'class-validator';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 export class ResetPasswordInput {
-  @IsString()
+  @IsString({ message: ErrorEnum.EMAIL_REQUIRED })
   email: string;
 
-  @IsString()
+  @IsString({ message: ErrorEnum.OTP_REQUIRED })
   otp: string;
 
-  @IsString()
-  @MinLength(8, { message: 'Password must be at least 8 characters long' })
-  // @Matches(/(?=.*[a-z])/, {
-  //   message: 'Password must contain at least one lowercase letter',
-  // })
-  // @Matches(/(?=.*[A-Z])/, {
-  //   message: 'Password must contain at least one uppercase letter',
-  // })
-  // @Matches(/(?=.*\d)/, {
-  //   message: 'Password must contain at least one number',
-  // })
-  // @Matches(/(?=.*[@$!%*?&])/, {
-  //   message: 'Password must contain at least one special character (@$!%*?&)',
-  // })
-  // @Matches(/^[A-Za-z\d@$!%*?&]*$/, {
-  //   message:
-  //     'Password can only contain letters, numbers, and special characters (@$!%*?&)',
-  // })
+  @IsString({ message: ErrorEnum.PASSWORD_REQUIRED })
+  @MinLength(8, { message: ErrorEnum.PASSWORD_MIN_LENGTH })
+  @Matches(/(?=.*[a-z])/, {
+    message: ErrorEnum.PASSWORD_LOWERCASE,
+  })
+  @Matches(/(?=.*[A-Z])/, {
+    message: ErrorEnum.PASSWORD_UPPERCASE,
+  })
+  @Matches(/(?=.*\d)/, {
+    message: ErrorEnum.PASSWORD_NUMBER,
+  })
+  @Matches(/(?=.*[@$!%*?&])/, {
+    message: ErrorEnum.PASSWORD_SPECIAL_CHAR,
+  })
+  @Matches(/^[A-Za-z\d@$!%*?&]*$/, {
+    message: ErrorEnum.PASSWORD_ALLOWED_CHARS,
+  })
   password: string;
 }

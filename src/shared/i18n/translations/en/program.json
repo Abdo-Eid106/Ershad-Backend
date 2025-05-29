@@ -1,0 +1,8 @@
+{
+  "PROGRAM_NOT_FOUND": "Program not found.",
+  "PROGRAM_ALREADY_EXISTS": "Program already exists.",
+  "PROGRAM_NAME_OBJECT": "Program name must be an object.",
+  "PROGRAM_CODE_STRING": "Program code must be a string.",
+  "PROGRAM_DEGREE_STRING": "Degree must be a string.",
+  "PROGRAM_REGULATION_ID_UUID": "Regulation ID must be a valid UUID."
+}

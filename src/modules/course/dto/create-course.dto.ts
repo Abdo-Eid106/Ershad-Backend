@@ -8,46 +8,45 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { UUID } from 'crypto';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 export class CourseName {
-  @IsString()
+  @IsString({ message: ErrorEnum.COURSE_NAME_EN_REQUIRED })
   en: string;
 
-  @IsString()
+  @IsString({ message: ErrorEnum.COURSE_NAME_AR_REQUIRED })
   ar: string;
 }
 
 export class CreateCourseDto {
   @Type(() => CourseName)
-  @ValidateNested({
-    message: 'course name must be like this { en: string, ar: string }',
-  })
+  @ValidateNested({ message: ErrorEnum.COURSE_NAME_OBJECT })
   name: CourseName;
 
-  @IsString()
+  @IsString({ message: ErrorEnum.COURSE_CODE_REQUIRED })
   code: string;
 
-  @IsInt()
-  @Min(1)
+  @IsInt({ message: ErrorEnum.LECTURE_HOURS_MIN })
+  @Min(1, { message: ErrorEnum.LECTURE_HOURS_MIN })
   lectureHours: number;
 
-  @IsInt()
-  @Min(1)
+  @IsInt({ message: ErrorEnum.PRACTICAL_HOURS_MIN })
+  @Min(1, { message: ErrorEnum.PRACTICAL_HOURS_MIN })
   practicalHours: number;
 
-  @IsInt()
-  @Min(1)
+  @IsInt({ message: ErrorEnum.CREDIT_HOURS_MIN })
+  @Min(1, { message: ErrorEnum.CREDIT_HOURS_MIN })
   creditHours: number;
 
-  @IsInt()
-  @Min(1)
+  @IsInt({ message: ErrorEnum.LEVEL_MIN })
+  @Min(1, { message: ErrorEnum.LEVEL_MIN })
   level: number;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: ErrorEnum.DESCRIPTION_STRING })
   description: string = '';
 
   @IsOptional()
-  @IsUUID()
+  @IsUUID(undefined, { message: ErrorEnum.PREREQUISITE_UUID })
   prerequisiteId?: UUID;
 }

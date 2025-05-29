@@ -1,0 +1,17 @@
+{
+  "COURSE_NOT_FOUND": "المقرر غير موجود.",
+  "COURSE_ALREADY_EXISTS": "المقرر موجود بالفعل.",
+  "COURSE_NAME_OBJECT": "اسم المقرر يجب أن يكون كائنًا مثل { en: string, ar: string }.",
+  "COURSE_NAME_EN_REQUIRED": "اسم المقرر باللغة الإنجليزية مطلوب.",
+  "COURSE_NAME_AR_REQUIRED": "اسم المقرر باللغة العربية مطلوب.",
+  "COURSE_CODE_REQUIRED": "رمز المقرر مطلوب.",
+  "LECTURE_HOURS_MIN": "عدد ساعات المحاضرة يجب أن يكون 1 على الأقل.",
+  "PRACTICAL_HOURS_MIN": "عدد الساعات العملية يجب أن يكون 1 على الأقل.",
+  "CREDIT_HOURS_MIN": "عدد الساعات المعتمدة يجب أن يكون 1 على الأقل.",
+  "LEVEL_MIN": "المستوى يجب أن يكون 1 على الأقل.",
+  "DESCRIPTION_STRING": "الوصف يجب أن يكون نصًا.",
+  "PREREQUISITE_UUID": "معرف المتطلب السابق يجب أن يكون UUID صالحًا.",
+  "GET_COURSES_SEARCH_STRING": "البحث يجب أن يكون نصًا.",
+  "GET_COURSES_PAGE_INT": "رقم الصفحة يجب أن يكون عددًا صحيحًا.",
+  "GET_COURSES_LIMIT_INT": "الحد يجب أن يكون عددًا صحيحًا."
+}

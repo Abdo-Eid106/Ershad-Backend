@@ -11,6 +11,7 @@ import { CreatePlanDto, CreateSemesterPlan } from './dto/create-plan.dto';
 import { UUID } from 'crypto';
 import { Course } from '../course/entites/course.entity';
 import { Plan } from './entities/plan.entity';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
 export class PlanValidationService {
@@ -26,7 +27,7 @@ export class PlanValidationService {
   ) {}
 
   async validate(
-    programId: UUID,
+    programId: Program['id'],
     createPlanDto: CreatePlanDto,
     isUpdate?: boolean,
   ) {
@@ -34,55 +35,42 @@ export class PlanValidationService {
 
     const planExist = await this.doesPlanExist(programId);
     if (!isUpdate && planExist)
-      throw new ConflictException(
-        `A plan already exists for the program with ID: ${programId}`,
-      );
+      throw new ConflictException(ErrorEnum.PLAN_ALREADY_EXISTS);
 
-    if (isUpdate && !planExist) throw new NotFoundException(`plan not found`);
+    if (isUpdate && !planExist)
+      throw new NotFoundException(ErrorEnum.PLAN_NOT_FOUND);
 
     if (!(await this.doesProgramExist(programId)))
-      throw new NotFoundException(
-        `Program with ID: ${programId} not found. Please provide a valid program.`,
-      );
+      throw new NotFoundException(ErrorEnum.PROGRAM_NOT_FOUND);
 
     const maxLevels = await this.getProgramTotalLevels(programId);
     if (!this.areSemesterLevelsValid(semesters, maxLevels))
-      throw new BadRequestException(
-        `Invalid semester levels detected. A semester's level cannot exceed ${maxLevels}.`,
-      );
+      throw new BadRequestException(ErrorEnum.INVALID_SEMESTER_LEVELS);
 
     if (!this.areAllSemestersProvided(semesters, maxLevels))
-      throw new BadRequestException(
-        `Incomplete semester data. You must provide all semesters for each level up to ${maxLevels}.`,
-      );
+      throw new BadRequestException(ErrorEnum.INCOMPLETE_SEMESTER_DATA);
 
     if (this.hasEmptySemester(semesters))
-      throw new BadRequestException(
-        `A semester cannot be empty. Each semester must have at least one course.`,
-      );
+      throw new BadRequestException(ErrorEnum.EMPTY_SEMESTER);
 
     const courseIds = semesters.flatMap(
       (planSemester) => planSemester.courseIds,
     );
 
     if (this.hasDuplicateCourses(courseIds))
-      throw new BadRequestException(
-        `Duplicate courses found within the plan. Each course should only appear once.`,
-      );
+      throw new BadRequestException(ErrorEnum.DUPLICATE_COURSES);
 
     if (!(await this.doAllCoursesExist(courseIds)))
-      throw new NotFoundException(
-        `One or more courses in the plan do not exist. Please verify course IDs.`,
-      );
+      throw new NotFoundException(ErrorEnum.COURSE_NOT_FOUND);
 
     return true;
   }
 
-  async doesPlanExist(programId: UUID) {
+  async doesPlanExist(programId: Program['id']) {
     return this.planRepo.existsBy({ programId });
   }
 
-  async doesProgramExist(programId: UUID) {
+  async doesProgramExist(programId: Program['id']) {
     return this.programRepo.existsBy({ id: programId });
   }
 
@@ -114,7 +102,7 @@ export class PlanValidationService {
     return new Set(courseIds).size !== courseIds.length;
   }
 
-  async doAllCoursesExist(courseIds: UUID[]) {
+  async doAllCoursesExist(courseIds: Course['id'][]) {
     const count = await this.courseRepo
       .createQueryBuilder('course')
       .where('course.id IN (:...courseIds)', { courseIds })
@@ -122,7 +110,7 @@ export class PlanValidationService {
     return count === courseIds.length;
   }
 
-  async getProgramTotalLevels(programId: UUID) {
+  async getProgramTotalLevels(programId: Program['id']) {
     const { levelsCount } = await this.programRepo
       .createQueryBuilder('program')
       .innerJoin('program.regulation', 'regulation')

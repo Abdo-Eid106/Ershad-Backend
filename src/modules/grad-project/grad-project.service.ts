@@ -11,6 +11,7 @@ import { CreateCourseDto } from '../course/dto';
 import { Program } from '../program/entities/program.entitiy';
 import { RequirementCourse } from '../requirement/entities/requirement-course.entity';
 import { RequirementCategory } from '../requirement/enums/requirement-category.enum';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
 export class GradProjectService {
@@ -26,16 +27,15 @@ export class GradProjectService {
 
   async create(programId: UUID, createGradProjectDto: CreateCourseDto) {
     if (!(await this.programRepo.existsBy({ id: programId })))
-      throw new NotFoundException('program not found');
+      throw new NotFoundException(ErrorEnum.PROGRAM_NOT_FOUND);
 
     const course = await this.courseRepo.findOne({
       where: { id: programId },
     });
-    if (course)
-      throw new ConflictException('graduation project is already exist');
+    if (course) throw new ConflictException(ErrorEnum.COURSE_ALREADY_EXISTS);
 
     if (await this.courseRepo.existsBy({ code: createGradProjectDto.code }))
-      throw new ConflictException('there is a course with this code');
+      throw new ConflictException(ErrorEnum.COURSE_ALREADY_EXISTS);
 
     const { regulationId } = await this.programRepo
       .createQueryBuilder('program')
@@ -66,7 +66,7 @@ export class GradProjectService {
 
   async findOne(programId: UUID) {
     const course = await this.courseRepo.findOne({ where: { id: programId } });
-    if (!course) throw new NotFoundException('graduation project not found');
+    if (!course) throw new NotFoundException(ErrorEnum.GRAD_PROJECT_NOT_FOUND);
     return course;
   }
 
@@ -77,7 +77,7 @@ export class GradProjectService {
       course.code != updateGradProjectDto.code &&
       (await this.courseRepo.existsBy({ code: updateGradProjectDto.code }))
     )
-      throw new ConflictException('there is a course with this code');
+      throw new ConflictException(ErrorEnum.COURSE_ALREADY_EXISTS);
 
     return this.courseRepo.save({ ...course, ...updateGradProjectDto });
   }

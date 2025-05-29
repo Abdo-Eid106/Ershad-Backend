@@ -10,6 +10,7 @@ import { CreateProgramDto, GetProgramsDto, UpdateProgramDto } from './dto';
 import { Regulation } from '../regulation/entities';
 import { UUID } from 'crypto';
 import { Course } from '../course/entites/course.entity';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
 export class ProgramService {
@@ -27,10 +28,11 @@ export class ProgramService {
     const regulation = await this.regulationRepo.findOne({
       where: { id: regulationId },
     });
-    if (!regulation) throw new NotFoundException('regulation not found');
+    if (!regulation)
+      throw new NotFoundException(ErrorEnum.REGULATION_NOT_FOUND);
 
     if (await this.programRepo.existsBy({ code }))
-      throw new ConflictException('Program with this code already exists');
+      throw new ConflictException(ErrorEnum.PROGRAM_ALREADY_EXISTS);
 
     const program = this.programRepo.create({
       ...createProgramDto,
@@ -79,7 +81,7 @@ export class ProgramService {
       ])
       .where('program.id = :id', { id })
       .getRawOne();
-    if (!program) throw new NotFoundException('Program not found');
+    if (!program) throw new NotFoundException(ErrorEnum.PROGRAM_NOT_FOUND);
     return program;
   }
 
@@ -87,7 +89,7 @@ export class ProgramService {
     const { code } = updateProgramDto;
     const program = await this.findOne(id);
     if (program.code != code && (await this.programRepo.existsBy({ code })))
-      throw new ConflictException('Program with this code already exists');
+      throw new ConflictException(ErrorEnum.PROGRAM_ALREADY_EXISTS);
     this.programRepo.save({ ...program, ...updateProgramDto });
   }
 

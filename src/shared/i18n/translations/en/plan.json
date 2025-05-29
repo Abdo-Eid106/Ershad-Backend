@@ -1,0 +1,16 @@
+{
+  "PLAN_NOT_FOUND": "Plan not found.",
+  "PLAN_ALREADY_EXISTS": "Plan already exists.",
+  "INVALID_SEMESTER_LEVELS": "Invalid semester levels detected. A semester's level cannot exceed the maximum allowed.",
+  "INCOMPLETE_SEMESTER_DATA": "Incomplete semester data. You must provide all semesters for each level.",
+  "EMPTY_SEMESTER": "A semester cannot be empty. Each semester must have at least one course.",
+  "DUPLICATE_COURSES": "Duplicate courses found within the plan. Each course should only appear once.",
+  "PLAN_SEMESTERS_ARRAY": "Semesters must be an array.",
+  "SEMESTER_PLAN_LEVEL_INT": "Level must be an integer.",
+  "SEMESTER_PLAN_LEVEL_MIN": "Level must be at least 1.",
+  "SEMESTER_PLAN_SEMESTER_INT": "Semester must be an integer.",
+  "SEMESTER_PLAN_SEMESTER_MIN": "Semester must be at least 1.",
+  "SEMESTER_PLAN_SEMESTER_MAX": "Semester must be at most 2.",
+  "SEMESTER_PLAN_COURSE_IDS_ARRAY": "Course IDs must be an array.",
+  "SEMESTER_PLAN_COURSE_IDS_UUID": "Each course ID must be a valid UUID."
+}

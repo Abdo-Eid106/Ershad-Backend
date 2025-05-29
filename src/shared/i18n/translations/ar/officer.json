@@ -1,0 +1,15 @@
+{
+  "OFFICER_NOT_FOUND": "الضابط غير موجود.",
+  "OFFICER_ALREADY_EXISTS": "الضابط موجود بالفعل.",
+  "OFFICER_NAME_EN_REQUIRED": "اسم الضابط باللغة الإنجليزية مطلوب.",
+  "OFFICER_NAME_AR_REQUIRED": "اسم الضابط باللغة العربية مطلوب.",
+  "OFFICER_EMAIL_REQUIRED": "البريد الإلكتروني مطلوب.",
+  "OFFICER_EMAIL_INVALID": "يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالح.",
+  "OFFICER_PASSWORD_REQUIRED": "كلمة المرور مطلوبة.",
+  "OFFICER_PASSWORD_MIN_LENGTH": "يجب أن تكون كلمة المرور 8 أحرف على الأقل.",
+  "OFFICER_PASSWORD_LOWERCASE": "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل.",
+  "OFFICER_PASSWORD_UPPERCASE": "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل.",
+  "OFFICER_PASSWORD_NUMBER": "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل.",
+  "OFFICER_PASSWORD_SPECIAL_CHAR": "يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل (@$!%*?&).",
+  "OFFICER_PASSWORD_ALLOWED_CHARS": "يمكن أن تحتوي كلمة المرور فقط على أحرف وأرقام ورموز خاصة (@$!%*?&)."
+}

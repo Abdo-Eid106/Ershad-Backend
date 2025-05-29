@@ -1,0 +1,21 @@
+{
+  "SEMESTER_INVALID_YEAR_RANGE": "يجب أن تكون سنة النهاية أكبر من سنة البداية بواحد فقط.",
+  "SEMESTER_STUDENT_NOT_FOUND": "الطالب غير موجود.",
+  "SEMESTER_ALREADY_EXISTS": "الفصل الدراسي موجود بالفعل.",
+  "SEMESTER_COURSE_REPEATED": "يجب ألا تتكرر المقررات في الفصل الدراسي.",
+  "SEMESTER_NO_COURSES": "يجب إضافة مقرر واحد على الأقل.",
+  "SEMESTER_NOT_FOUND": "الفصل الدراسي غير موجود.",
+  "SEMESTER_COURSE_ID_UUID": "معرف المقرر يجب أن يكون UUID صالحًا.",
+  "SEMESTER_DEGREE_INT": "الدرجة يجب أن تكون عددًا صحيحًا.",
+  "SEMESTER_DEGREE_MIN": "الدرجة يجب ألا تقل عن 0.",
+  "SEMESTER_DEGREE_MAX": "الدرجة يجب ألا تتجاوز 100.",
+  "SEMESTER_START_YEAR_INT": "سنة البداية يجب أن تكون عددًا صحيحًا.",
+  "SEMESTER_START_YEAR_MIN": "سنة البداية يجب ألا تقل عن 2019.",
+  "SEMESTER_END_YEAR_INT": "سنة النهاية يجب أن تكون عددًا صحيحًا.",
+  "SEMESTER_END_YEAR_MIN": "سنة النهاية يجب ألا تقل عن 2020.",
+  "SEMESTER_SEMESTER_INT": "الفصل يجب أن يكون عددًا صحيحًا.",
+  "SEMESTER_SEMESTER_MIN": "الفصل يجب ألا يقل عن 1.",
+  "SEMESTER_SEMESTER_MAX": "الفصل يجب ألا يتجاوز 2.",
+  "SEMESTER_COURSES_ARRAY": "مقررات الفصل يجب أن تكون مصفوفة.",
+  "SEMESTER_COURSES_NESTED": "كل مقرر في الفصل يجب أن يكون صالحًا."
+} 

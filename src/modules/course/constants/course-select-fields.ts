@@ -1,4 +1,3 @@
-// src/course/constants.ts
 export const COURSE_SELECT_FIELDS = [
   'course.id AS id',
   'course.name AS name',

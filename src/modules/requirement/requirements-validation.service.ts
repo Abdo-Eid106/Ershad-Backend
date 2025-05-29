@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -8,24 +7,21 @@ import { Repository } from 'typeorm';
 import { RequirementCourse } from './entities/requirement-course.entity';
 import { RequirementCategory } from './enums/requirement-category.enum';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UUID } from 'crypto';
 import { Regulation } from '../regulation/entities';
 import { Program } from '../program/entities/program.entitiy';
 import { Course } from '../course/entites/course.entity';
 import { CreateRequirementDto } from './dto/create-requirement.dto';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
 export class RequirementValidationService {
   constructor(
     @InjectRepository(RequirementCourse)
     private readonly requirementCourseRepo: Repository<RequirementCourse>,
-
     @InjectRepository(Regulation)
     private readonly regulationRepo: Repository<Regulation>,
-
     @InjectRepository(Program)
     private readonly programRepo: Repository<Program>,
-
     @InjectRepository(Course)
     private readonly courseRepo: Repository<Course>,
   ) {}
@@ -36,18 +32,18 @@ export class RequirementValidationService {
 
     const regulationExists = await this.doesRegulationExist(regulationId);
     if (!regulationExists) {
-      throw new NotFoundException(`Regulation not found`);
+      throw new NotFoundException(ErrorEnum.REGULATION_NOT_FOUND);
     }
 
     const courseExists = await this.doesCourseExist(courseId);
     if (!courseExists) {
-      throw new NotFoundException(`Course not found`);
+      throw new NotFoundException(ErrorEnum.COURSES_NOT_EXIST);
     }
 
     if (category === RequirementCategory.SPECIALIZATION) {
       const programExists = await this.doesProgramExist(programId);
       if (!programExists) {
-        throw new NotFoundException(`Program not found`);
+        throw new NotFoundException(ErrorEnum.PROGRAM_NOT_FOUND);
       }
 
       const programRequirementExists = await this.doesProgramRequirementExist(
@@ -55,30 +51,30 @@ export class RequirementValidationService {
         programId,
       );
       if (programRequirementExists) {
-        throw new ConflictException(`Requirement already exists.`);
+        throw new ConflictException(ErrorEnum.REQUIREMENT_ALREADY_EXISTS);
       }
     } else {
       const regulationRequirementExists =
         await this.doesRegulationRequirementExist(courseId, regulationId);
       if (regulationRequirementExists) {
-        throw new ConflictException(`Requirement already exists.`);
+        throw new ConflictException(ErrorEnum.REQUIREMENT_ALREADY_EXISTS);
       }
     }
   }
 
-  async doesRegulationExist(regulationId: UUID) {
+  async doesRegulationExist(regulationId: Regulation['id']) {
     return this.regulationRepo.existsBy({ id: regulationId });
   }
 
-  async doesCourseExist(courseId: UUID) {
+  async doesCourseExist(courseId: Course['id']) {
     return this.courseRepo.existsBy({ id: courseId });
   }
 
-  async doesProgramExist(programId?: UUID) {
+  async doesProgramExist(programId?: Program['id']) {
     return this.programRepo.existsBy({ id: programId });
   }
 
-  async doesProgramRequirementExist(courseId: UUID, programId: UUID) {
+  async doesProgramRequirementExist(courseId: Course['id'], programId: Program['id']) {
     return this.requirementCourseRepo
       .createQueryBuilder('requirement')
       .innerJoin('requirement.course', 'course')
@@ -88,7 +84,7 @@ export class RequirementValidationService {
       .getExists();
   }
 
-  async doesRegulationRequirementExist(courseId: UUID, regulationId: UUID) {
+  async doesRegulationRequirementExist(courseId: Course['id'], regulationId: Regulation['id']) {
     return this.requirementCourseRepo
       .createQueryBuilder('requirement')
       .innerJoin('requirement.regulation', 'regulation')

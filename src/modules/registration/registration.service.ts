@@ -19,6 +19,7 @@ import { COURSE_SELECT_FIELDS } from '../course/constants';
 import { Program } from '../program/entities/program.entitiy';
 import { Course } from '../course/entites/course.entity';
 import { AcademicInfoService } from '../academic-info/academic-info.service';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
 export class RegistrationService {
@@ -47,7 +48,7 @@ export class RegistrationService {
   async create(studentId: UUID, createRegistrationDto: CreateRegistrationDto) {
     const registrationSettings = await this.getSettings();
     if (!registrationSettings.isOpen)
-      throw new ForbiddenException('registration is currently closed');
+      throw new ForbiddenException(ErrorEnum.REGISTRATION_LIMIT_EXCEEDED);
 
     await this.registrationValidationService.validate(
       studentId,
@@ -85,7 +86,7 @@ export class RegistrationService {
 
   async getStudentRegisteredCourses(studentId: UUID) {
     if (!(await this.studentRepo.existsBy({ userId: studentId })))
-      throw new NotFoundException('Student not found');
+      throw new NotFoundException(ErrorEnum.STUDENT_NOT_FOUND);
 
     return this.registrationRepo
       .createQueryBuilder('registration')

@@ -1,0 +1,16 @@
+{
+  "PLAN_NOT_FOUND": "الخطة غير موجودة.",
+  "PLAN_ALREADY_EXISTS": "الخطة موجودة بالفعل.",
+  "INVALID_SEMESTER_LEVELS": "تم اكتشاف مستويات فصل غير صحيحة. لا يمكن أن يتجاوز مستوى الفصل الحد الأقصى المسموح به.",
+  "INCOMPLETE_SEMESTER_DATA": "بيانات الفصول غير مكتملة. يجب توفير جميع الفصول لكل مستوى.",
+  "EMPTY_SEMESTER": "لا يمكن أن يكون الفصل فارغًا. يجب أن يحتوي كل فصل على مقرر واحد على الأقل.",
+  "DUPLICATE_COURSES": "تم العثور على مقررات مكررة في الخطة. يجب أن يظهر كل مقرر مرة واحدة فقط.",
+  "PLAN_SEMESTERS_ARRAY": "يجب أن تكون الفصول مصفوفة.",
+  "SEMESTER_PLAN_LEVEL_INT": "يجب أن يكون المستوى عددًا صحيحًا.",
+  "SEMESTER_PLAN_LEVEL_MIN": "يجب أن يكون المستوى 1 على الأقل.",
+  "SEMESTER_PLAN_SEMESTER_INT": "يجب أن يكون الفصل عددًا صحيحًا.",
+  "SEMESTER_PLAN_SEMESTER_MIN": "يجب أن يكون الفصل 1 على الأقل.",
+  "SEMESTER_PLAN_SEMESTER_MAX": "يجب أن يكون الفصل 2 على الأكثر.",
+  "SEMESTER_PLAN_COURSE_IDS_ARRAY": "يجب أن تكون معرفات المقررات مصفوفة.",
+  "SEMESTER_PLAN_COURSE_IDS_UUID": "يجب أن يكون كل معرف مقرر UUID صالحًا."
+}

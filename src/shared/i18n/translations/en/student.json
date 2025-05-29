@@ -1,0 +1,20 @@
+{
+  "STUDENT_NOT_FOUND": "Student not found.",
+  "STUDENT_NAME_EN_STRING": "English name must be a string.",
+  "STUDENT_NAME_AR_STRING": "Arabic name must be a string.",
+  "STUDENT_NAME_NESTED": "Name must be a valid object.",
+  "STUDENT_NATIONAL_ID_STRING": "National ID must be a string.",
+  "STUDENT_UNIVERSITY_ID_STRING": "University ID must be a string.",
+  "STUDENT_EMAIL_STRING": "Email must be a string.",
+  "STUDENT_EMAIL_INVALID": "Email must be a valid email address.",
+  "STUDENT_PASSWORD_STRING": "Password must be a string.",
+  "STUDENT_PASSWORD_MIN_LENGTH": "Password must be at least 8 characters long.",
+  "STUDENT_PASSWORD_LOWERCASE": "Password must contain at least one lowercase letter.",
+  "STUDENT_PASSWORD_UPPERCASE": "Password must contain at least one uppercase letter.",
+  "STUDENT_PASSWORD_NUMBER": "Password must contain at least one number.",
+  "STUDENT_PASSWORD_SPECIAL_CHAR": "Password must contain at least one special character (@$!%*?&).",
+  "STUDENT_PASSWORD_ALLOWED_CHARS": "Password can only contain letters, numbers, and special characters (@$!%*?&).",
+  "STUDENT_PHONE_STRING": "Phone number must be valid.",
+  "STUDENT_GENDER_IN": "Gender must be one of the allowed values.",
+  "STUDENT_REGULATION_ID_UUID": "Regulation ID must be a valid UUID."
+}

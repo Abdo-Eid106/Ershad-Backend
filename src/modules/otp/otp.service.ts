@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { Otp } from './entities/otp.entity';
 import { EmailService } from 'src/shared/email/email.service';
 import { ConfigService } from '@nestjs/config';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
 export class OtpService {
@@ -25,7 +26,7 @@ export class OtpService {
 
   async sendOtp(email: string) {
     const user = await this.userRepo.findOne({ where: { email } });
-    if (!user) throw new NotFoundException('no user found with this email');
+    if (!user) throw new NotFoundException(ErrorEnum.USER_NOT_FOUND);
 
     const otp = randomInt(0, 10000).toString().padStart(4, '0');
     const hashedOtp = await hash(otp, 10);
@@ -48,14 +49,14 @@ export class OtpService {
       where: { email },
       relations: ['otp'],
     });
-    if (!user) throw new NotFoundException('No user found with this email');
+    if (!user) throw new NotFoundException(ErrorEnum.USER_NOT_FOUND);
 
     if (
       !user.otp ||
       user.otp.expiresAt < new Date() ||
       !(await compare(otp, user.otp.value))
     )
-      throw new BadRequestException('Invalid OTP');
+      throw new BadRequestException(ErrorEnum.INVALID_OTP);
     return true;
   }
 }

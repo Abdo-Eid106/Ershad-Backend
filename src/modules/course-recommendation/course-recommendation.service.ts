@@ -7,6 +7,7 @@ import { COURSE_SELECT_FIELDS } from '../course/constants';
 import { PlanService } from '../plan/plan.service';
 import { RegistrationService } from '../registration/registration.service';
 import { AcademicInfoService } from '../academic-info/academic-info.service';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
 export class CourseRecommendationService {
@@ -25,7 +26,7 @@ export class CourseRecommendationService {
 
     if (!plan) {
       throw new ServiceUnavailableException(
-        'recommendation service is currently unavailable',
+        ErrorEnum.RECOMMENDATION_SERVICE_UNAVAILABLE,
       );
     }
 

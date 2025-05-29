@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RequirementCourse } from './entities/requirement-course.entity';
 import { RequirementValidationService } from './requirements-validation.service';
 import { GetRequiremetsDto } from './dto/get-requirements.dto';
-import { UUID } from 'crypto';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
 export class RequirementService {
@@ -54,12 +54,13 @@ export class RequirementService {
     return query.getMany();
   }
 
-  async remove(id: UUID) {
+  async remove(id: RequirementCourse['id']) {
     const requirement = await this.requirementCourseRepo.findOne({
       where: { id },
     });
 
-    if (!requirement) throw new NotFoundException('requirement not found');
+    if (!requirement)
+      throw new NotFoundException(ErrorEnum.REQUIREMENT_NOT_FOUND);
     return this.requirementCourseRepo.remove(requirement);
   }
 }

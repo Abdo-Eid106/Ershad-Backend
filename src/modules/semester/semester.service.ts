@@ -12,6 +12,7 @@ import { Repository } from 'typeorm';
 import { SemesterCourse } from './entities/semester-course.entity';
 import { UUID } from 'crypto';
 import { Student } from '../student/entities/student.entity';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
 export class SemesterService {
@@ -30,11 +31,11 @@ export class SemesterService {
 
     //check if the end year is equal to the start year + 1
     if (startYear != endYear - 1)
-      throw new BadRequestException('not a valid year range');
+      throw new BadRequestException(ErrorEnum.SEMESTER_INVALID_YEAR_RANGE);
 
     //check if the student is exist
     if (!(await this.studentRepo.existsBy({ userId: studentId })))
-      throw new NotFoundException('student not found');
+      throw new NotFoundException(ErrorEnum.SEMESTER_STUDENT_NOT_FOUND);
 
     //check if this semester already exist
     if (
@@ -44,7 +45,7 @@ export class SemesterService {
         academicInfo: { studentId },
       })
     )
-      throw new ConflictException('semester already exist');
+      throw new ConflictException(ErrorEnum.SEMESTER_ALREADY_EXISTS);
 
     //check if the courses exist and check that they are not repeated
     const courseIds = [
@@ -53,11 +54,11 @@ export class SemesterService {
       ),
     ];
     if (courseIds.length != semesterCourses.length)
-      throw new ConflictException('course repeated');
+      throw new ConflictException(ErrorEnum.SEMESTER_COURSE_REPEATED);
     await this.courseService.findByIds(courseIds);
 
     if (!courseIds.length)
-      throw new BadRequestException('you should add at least course');
+      throw new BadRequestException(ErrorEnum.SEMESTER_NO_COURSES);
 
     const semesterRecord = await this.semesterRepo.save(
       this.semesterRepo.create({
@@ -79,7 +80,7 @@ export class SemesterService {
 
   async findStudentSemesters(studentId: UUID) {
     if (!(await this.studentRepo.existsBy({ userId: studentId })))
-      throw new NotFoundException('student not found');
+      throw new NotFoundException(ErrorEnum.SEMESTER_STUDENT_NOT_FOUND);
 
     return this.studentRepo
       .createQueryBuilder('student')
@@ -154,7 +155,7 @@ export class SemesterService {
       .where('semester.id = :id', { id })
       .getRawOne();
 
-    if (!semester) throw new NotFoundException('semester not found');
+    if (!semester) throw new NotFoundException(ErrorEnum.SEMESTER_NOT_FOUND);
     return semester;
   }
 
@@ -163,7 +164,7 @@ export class SemesterService {
 
     //check if the semester exist and get it
     const semester = await this.semesterRepo.findOne({ where: { id } });
-    if (!semester) throw new NotFoundException('semester not found');
+    if (!semester) throw new NotFoundException(ErrorEnum.SEMESTER_NOT_FOUND);
 
     //check if the courses exist and check that they are not repeated
     const courseIds = [
@@ -172,11 +173,11 @@ export class SemesterService {
       ),
     ];
     if (courseIds.length != semesterCourses.length)
-      throw new ConflictException('course repeated');
+      throw new ConflictException(ErrorEnum.SEMESTER_COURSE_REPEATED);
     await this.courseService.findByIds(courseIds);
 
     if (!courseIds.length)
-      throw new BadRequestException('you should add at least course');
+      throw new BadRequestException(ErrorEnum.SEMESTER_NO_COURSES);
 
     //remove semesterCourses
     await this.semesterCourseRepo.remove(
@@ -197,7 +198,7 @@ export class SemesterService {
 
   async remove(id: UUID) {
     const semester = await this.semesterRepo.findOne({ where: { id } });
-    if (!semester) throw new NotFoundException('semester not found');
+    if (!semester) throw new NotFoundException(ErrorEnum.SEMESTER_NOT_FOUND);
     return this.semesterRepo.remove(semester);
   }
 }

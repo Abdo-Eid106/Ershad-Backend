@@ -11,6 +11,7 @@ import { DataSource, Repository } from 'typeorm';
 import { LoginInput, ResetPasswordInput } from './dto';
 import { compare, hash } from 'bcrypt';
 import { Otp } from '../otp/entities/otp.entity';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
 export class AuthService {
@@ -37,7 +38,7 @@ export class AuthService {
       .getRawOne();
 
     if (!user || !(await compare(password, user.password)))
-      throw new UnauthorizedException('email or password is incorrect');
+      throw new UnauthorizedException(ErrorEnum.INVALID_CREDENTIALS);
 
     const token = await this.jwtService.signAsync({
       id: user.id,
@@ -55,14 +56,14 @@ export class AuthService {
         relations: ['otp'],
       });
 
-      if (!user) throw new NotFoundException('No user found with this email');
+      if (!user) throw new NotFoundException(ErrorEnum.USER_NOT_FOUND);
 
       if (
         !user.otp ||
         user.otp.expiresAt < new Date() ||
         !(await compare(otp, user.otp.value))
       ) {
-        throw new BadRequestException('Invalid OTP');
+        throw new BadRequestException(ErrorEnum.INVALID_OTP);
       }
 
       user.password = await hash(password, 12);

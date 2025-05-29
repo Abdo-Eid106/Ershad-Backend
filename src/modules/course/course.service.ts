@@ -8,6 +8,7 @@ import { UUID } from 'crypto';
 import { Repository } from 'typeorm';
 import { Course } from './entites/course.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
 export class CourseService {
@@ -20,7 +21,7 @@ export class CourseService {
     const { code, prerequisiteId } = createCourseDto;
 
     if (await this.courseRepo.exist({ where: { code } }))
-      throw new ConflictException('Course with this code already exists');
+      throw new ConflictException(ErrorEnum.COURSE_ALREADY_EXISTS);
 
     const course = this.courseRepo.create(createCourseDto);
     course.prerequisite = prerequisiteId
@@ -34,7 +35,7 @@ export class CourseService {
     const prerequisite = await this.courseRepo.findOne({
       where: { id: prerequisiteId },
     });
-    if (!prerequisite) throw new NotFoundException('Prerequisite not found');
+    if (!prerequisite) throw new NotFoundException(ErrorEnum.COURSE_NOT_FOUND);
     return prerequisite;
   }
 
@@ -55,7 +56,7 @@ export class CourseService {
       .getMany();
 
     if (courses.length != ids.length)
-      throw new NotFoundException('Some courses not found');
+      throw new NotFoundException(ErrorEnum.COURSE_NOT_FOUND);
     return courses;
   }
 
@@ -64,7 +65,7 @@ export class CourseService {
       where: { id },
       relations: ['prerequisite'],
     });
-    if (!course) throw new NotFoundException('course not found');
+    if (!course) throw new NotFoundException(ErrorEnum.COURSE_NOT_FOUND);
     return course;
   }
 
@@ -73,7 +74,7 @@ export class CourseService {
 
     const course = await this.findOne(id);
     if (code != course.code && (await this.courseRepo.existsBy({ code }))) {
-      throw new ConflictException('Course with this code already exists');
+      throw new ConflictException(ErrorEnum.COURSE_ALREADY_EXISTS);
     }
 
     this.courseRepo.merge(course, updateCourseDto);
@@ -95,7 +96,7 @@ export class CourseService {
       .leftJoinAndSelect('course.prerequisite', 'prerequisite')
       .where('course.id = :courseId', { courseId })
       .getOne();
-    if (!course) throw new NotFoundException('course not found');
+    if (!course) throw new NotFoundException(ErrorEnum.COURSE_NOT_FOUND);
 
     const dependentCourses = await this.courseRepo.find({
       where: { prerequisite: { id: courseId } },

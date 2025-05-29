@@ -1,0 +1,20 @@
+{
+  "STUDENT_NOT_FOUND": "الطالب غير موجود.",
+  "STUDENT_NAME_EN_STRING": "الاسم باللغة الإنجليزية يجب أن يكون نصًا.",
+  "STUDENT_NAME_AR_STRING": "الاسم باللغة العربية يجب أن يكون نصًا.",
+  "STUDENT_NAME_NESTED": "الاسم يجب أن يكون كائنًا صالحًا.",
+  "STUDENT_NATIONAL_ID_STRING": "الرقم القومي يجب أن يكون نصًا.",
+  "STUDENT_UNIVERSITY_ID_STRING": "رقم الجامعة يجب أن يكون نصًا.",
+  "STUDENT_EMAIL_STRING": "البريد الإلكتروني يجب أن يكون نصًا.",
+  "STUDENT_EMAIL_INVALID": "يجب أن يكون البريد الإلكتروني صحيحًا.",
+  "STUDENT_PASSWORD_STRING": "كلمة المرور يجب أن تكون نصًا.",
+  "STUDENT_PASSWORD_MIN_LENGTH": "يجب ألا تقل كلمة المرور عن 8 أحرف.",
+  "STUDENT_PASSWORD_LOWERCASE": "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل.",
+  "STUDENT_PASSWORD_UPPERCASE": "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل.",
+  "STUDENT_PASSWORD_NUMBER": "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل.",
+  "STUDENT_PASSWORD_SPECIAL_CHAR": "يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل (@$!%*?&).",
+  "STUDENT_PASSWORD_ALLOWED_CHARS": "يمكن أن تحتوي كلمة المرور فقط على أحرف وأرقام ورموز خاصة (@$!%*?&).",
+  "STUDENT_PHONE_STRING": "رقم الهاتف يجب أن يكون صحيحًا.",
+  "STUDENT_GENDER_IN": "الجنس يجب أن يكون من القيم المسموح بها.",
+  "STUDENT_REGULATION_ID_UUID": "معرف اللائحة يجب أن يكون UUID صالحًا."
+}

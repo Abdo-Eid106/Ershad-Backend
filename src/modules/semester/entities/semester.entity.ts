@@ -1,11 +1,5 @@
 import { AcademicInfo } from 'src/modules/academic-info/entities/academic-info.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { SemesterCourse } from './semester-course.entity';
 import { BaseEntity } from 'src/shared/entities/Base.entity';
 

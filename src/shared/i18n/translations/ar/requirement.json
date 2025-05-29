@@ -1,0 +1,10 @@
+{
+  "REQUIREMENT_NOT_FOUND": "المتطلب غير موجود.",
+  "REQUIREMENT_ALREADY_EXISTS": "المتطلب موجود بالفعل.",
+  "REQUIREMENT_COURSE_ID_UUID": "معرف المقرر يجب أن يكون UUID صالحًا.",
+  "REQUIREMENT_REGULATION_ID_UUID": "معرف اللائحة يجب أن يكون UUID صالحًا.",
+  "REQUIREMENT_OPTIONAL_BOOLEAN": "قيمة الاختياري يجب أن تكون منطقية (Boolean).",
+  "REQUIREMENT_CATEGORY_IN": "الفئة يجب أن تكون من القيم المسموح بها.",
+  "REQUIREMENT_PROGRAM_ID_UUID": "معرف البرنامج يجب أن يكون UUID صالحًا.",
+  "REQUIREMENT_OPTIONAL_STRING": "قيمة الاختياري يجب أن تكون نصًا."
+}

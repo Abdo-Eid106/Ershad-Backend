@@ -1,0 +1,15 @@
+{
+  "ADMIN_NOT_FOUND": "المسؤول غير موجود.",
+  "ADMIN_ALREADY_EXISTS": "المسؤول موجود بالفعل.",
+  "ADMIN_NAME_EN_REQUIRED": "اسم المسؤول باللغة الإنجليزية مطلوب.",
+  "ADMIN_NAME_AR_REQUIRED": "اسم المسؤول باللغة العربية مطلوب.",
+  "ADMIN_EMAIL_REQUIRED": "البريد الإلكتروني مطلوب.",
+  "ADMIN_EMAIL_INVALID": "يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالح.",
+  "ADMIN_PASSWORD_REQUIRED": "كلمة المرور مطلوبة.",
+  "ADMIN_PASSWORD_MIN_LENGTH": "يجب أن تكون كلمة المرور 8 أحرف على الأقل.",
+  "ADMIN_PASSWORD_LOWERCASE": "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل.",
+  "ADMIN_PASSWORD_UPPERCASE": "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل.",
+  "ADMIN_PASSWORD_NUMBER": "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل.",
+  "ADMIN_PASSWORD_SPECIAL_CHAR": "يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل (@$!%*?&).",
+  "ADMIN_PASSWORD_ALLOWED_CHARS": "يمكن أن تحتوي كلمة المرور فقط على أحرف وأرقام ورموز خاصة (@$!%*?&)."
+}

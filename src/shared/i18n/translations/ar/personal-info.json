@@ -1,0 +1,15 @@
+{
+  "PERSONAL_INFO_NOT_FOUND": "المعلومات الشخصية غير موجودة.",
+  "NATIONAL_ID_IN_USE": "رقم الهوية مستخدم بالفعل.",
+  "UNIVERSITY_ID_IN_USE": "رقم الجامعة مستخدم بالفعل.",
+  "PHONE_IN_USE": "رقم الهاتف مستخدم بالفعل.",
+  "PERSONAL_INFO_NAME_EN_REQUIRED": "الاسم باللغة الإنجليزية مطلوب.",
+  "PERSONAL_INFO_NAME_AR_REQUIRED": "الاسم باللغة العربية مطلوب.",
+  "PERSONAL_INFO_GENDER_INVALID": "الجنس غير صحيح.",
+  "PERSONAL_INFO_NATIONAL_ID_STRING": "رقم الهوية يجب أن يكون نصًا.",
+  "PERSONAL_INFO_UNIVERSITY_ID_STRING": "رقم الجامعة يجب أن يكون نصًا.",
+  "PERSONAL_INFO_EMAIL_STRING": "البريد الإلكتروني يجب أن يكون نصًا.",
+  "PERSONAL_INFO_EMAIL_INVALID": "يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالح.",
+  "PERSONAL_INFO_PHONE_STRING": "رقم الهاتف يجب أن يكون نصًا.",
+  "PERSONAL_INFO_PHONE_INVALID": "رقم الهاتف يجب أن يكون صحيحًا."
+}

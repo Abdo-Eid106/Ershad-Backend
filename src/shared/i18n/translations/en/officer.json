@@ -1,0 +1,15 @@
+{
+  "OFFICER_NOT_FOUND": "Officer not found.",
+  "OFFICER_ALREADY_EXISTS": "Officer already exists.",
+  "OFFICER_NAME_EN_REQUIRED": "Officer name (English) is required.",
+  "OFFICER_NAME_AR_REQUIRED": "Officer name (Arabic) is required.",
+  "OFFICER_EMAIL_REQUIRED": "Email is required.",
+  "OFFICER_EMAIL_INVALID": "Email must be a valid email address.",
+  "OFFICER_PASSWORD_REQUIRED": "Password is required.",
+  "OFFICER_PASSWORD_MIN_LENGTH": "Password must be at least 8 characters long.",
+  "OFFICER_PASSWORD_LOWERCASE": "Password must contain at least one lowercase letter.",
+  "OFFICER_PASSWORD_UPPERCASE": "Password must contain at least one uppercase letter.",
+  "OFFICER_PASSWORD_NUMBER": "Password must contain at least one number.",
+  "OFFICER_PASSWORD_SPECIAL_CHAR": "Password must contain at least one special character (@$!%*?&).",
+  "OFFICER_PASSWORD_ALLOWED_CHARS": "Password can only contain letters, numbers, and special characters (@$!%*?&)."
+}

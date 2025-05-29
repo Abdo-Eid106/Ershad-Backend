@@ -1,0 +1,23 @@
+{
+  "REGISTRATION_NOT_FOUND": "التسجيل غير موجود.",
+  "REGISTRATION_ALREADY_EXISTS": "التسجيل موجود بالفعل.",
+  "REGISTRATION_LIMIT_EXCEEDED": "تم تجاوز حد التسجيل.",
+  "REGISTRATION_COURSE_LIMIT_EXCEEDED": "تم تجاوز حد تسجيل المقررات.",
+  "REGISTRATION_CREDIT_HOURS_LIMIT_EXCEEDED": "تم تجاوز حد الساعات المعتمدة للتسجيل.",
+  "REGISTRATION_DUPLICATE_COURSES": "هناك مقررات مكررة في التسجيل.",
+  "REGISTRATION_COURSE_EXISTS": "المقرر مسجل بالفعل.",
+  "REGISTRATION_COURSE_NOT_FOUND": "المقرر غير موجود في التسجيل.",
+  "REGISTRATION_COURSE_ALREADY_EXISTS": "المقرر موجود بالفعل في التسجيل.",
+  "REGISTRATION_COURSE_LEVEL_NOT_FOUND": "مستوى المقرر غير موجود في التسجيل.",
+  "REGISTRATION_COURSE_LEVEL_ALREADY_EXISTS": "مستوى المقرر موجود بالفعل في التسجيل.",
+  "NO_COURSES_REGISTERED": "لم تقم بتسجيل أي مقررات.",
+  "DUPLICATE_COURSES_NOT_ALLOWED": "لا يُسمح بتكرار المقررات.",
+  "COURSES_NOT_EXIST": "واحد أو أكثر من المقررات المحددة غير موجود.",
+  "CREDIT_HOURS_EXCEED_MAX": "إجمالي الساعات المعتمدة ({{total}}) يتجاوز الحد الأقصى المسموح به ({{max}}).",
+  "CREDIT_HOURS_BELOW_MIN": "إجمالي الساعات المعتمدة ({{total}}) أقل من الحد الأدنى المطلوب ({{min}}).",
+  "PREREQUISITE_NOT_MET": "واحد أو أكثر من المقررات المحددة لا يستوفي المتطلبات السابقة.",
+  "RETAKE_LIMIT_EXCEEDED": "تم تجاوز حد الإعادة. لقد أعدت {{previous}} مقررات (الحد الأقصى: {{max}}). تحاول إعادة {{selected}} مقررات، ولكن هناك فقط {{available}} أماكن متاحة.",
+  "REGISTRATION_COURSE_IDS_ARRAY": "يجب أن تكون معرفات المقررات مصفوفة.",
+  "REGISTRATION_COURSE_IDS_UUID": "يجب أن يكون كل معرف مقرر UUID صالحًا.",
+  "REGISTRATION_STATUS_IS_OPEN_BOOLEAN": "يجب أن تكون قيمة isOpen منطقية (boolean)."
+}

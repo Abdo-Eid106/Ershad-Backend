@@ -1,0 +1,15 @@
+{
+  "ADMIN_NOT_FOUND": "Admin not found.",
+  "ADMIN_ALREADY_EXISTS": "Admin already exists.",
+  "ADMIN_NAME_EN_REQUIRED": "Admin name (English) is required.",
+  "ADMIN_NAME_AR_REQUIRED": "Admin name (Arabic) is required.",
+  "ADMIN_EMAIL_REQUIRED": "Email is required.",
+  "ADMIN_EMAIL_INVALID": "Email must be a valid email address.",
+  "ADMIN_PASSWORD_REQUIRED": "Password is required.",
+  "ADMIN_PASSWORD_MIN_LENGTH": "Password must be at least 8 characters long.",
+  "ADMIN_PASSWORD_LOWERCASE": "Password must contain at least one lowercase letter.",
+  "ADMIN_PASSWORD_UPPERCASE": "Password must contain at least one uppercase letter.",
+  "ADMIN_PASSWORD_NUMBER": "Password must contain at least one number.",
+  "ADMIN_PASSWORD_SPECIAL_CHAR": "Password must contain at least one special character (@$!%*?&).",
+  "ADMIN_PASSWORD_ALLOWED_CHARS": "Password can only contain letters, numbers, and special characters (@$!%*?&)."
+}

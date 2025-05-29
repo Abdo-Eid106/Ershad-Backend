@@ -11,6 +11,7 @@ import { AcademicInfoService } from '../academic-info/academic-info.service';
 import { UUID } from 'crypto';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { RegistrationService } from './registration.service';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 enum CreditHourStatus {
   EXCEEDS_MAX = 'EXCEEDS_MAX',
@@ -35,37 +36,35 @@ export class RegistrationValidationService {
     const { courseIds } = createRegistrationDto;
 
     if (courseIds.length === 0)
-      throw new BadRequestException(`You haven't registered for any courses`);
+      throw new BadRequestException(ErrorEnum.NO_COURSES_REGISTERED);
 
     if (this.hasDuplicateCourses(courseIds)) {
-      throw new BadRequestException('Duplicate courses are not allowed.');
+      throw new BadRequestException(ErrorEnum.DUPLICATE_COURSES_NOT_ALLOWED);
     }
 
     if (!(await this.doAllCoursesExist(courseIds))) {
-      throw new BadRequestException(
-        'One or more selected courses do not exist.',
-      );
+      throw new BadRequestException(ErrorEnum.COURSES_NOT_EXIST);
     }
 
     const { creditHourStatus, minHours, maxHours, totalCreditHours } =
       await this.isCreditHoursWithinRange(studentId, courseIds);
 
     if (creditHourStatus === CreditHourStatus.EXCEEDS_MAX) {
-      throw new BadRequestException(
-        `Total credit hours (${totalCreditHours}) exceeds the maximum allowed (${maxHours}).`,
-      );
+      throw new BadRequestException({
+        message: ErrorEnum.CREDIT_HOURS_EXCEED_MAX,
+        args: { total: totalCreditHours, max: maxHours },
+      });
     }
 
     if (creditHourStatus === CreditHourStatus.BELOW_MIN) {
-      throw new BadRequestException(
-        `Total credit hours (${totalCreditHours}) is less than the minimum required (${minHours}).`,
-      );
+      throw new BadRequestException({
+        message: ErrorEnum.CREDIT_HOURS_BELOW_MIN,
+        args: { total: totalCreditHours, min: minHours },
+      });
     }
 
     if (!(await this.hasAllPrerequisitesMet(studentId, courseIds))) {
-      throw new BadRequestException(
-        'One or more selected courses do not meet prerequisite requirements.',
-      );
+      throw new BadRequestException(ErrorEnum.PREREQUISITE_NOT_MET);
     }
 
     if (
@@ -82,10 +81,15 @@ export class RegistrationValidationService {
       } = await this.validateCourseRegistrationLimits(studentId, courseIds);
 
       if (!isValid) {
-        throw new BadRequestException(
-          `Retake limit exceeded. You have retaken ${previousRetakeAttempts} courses (max: ${maxAllowedRetakes}). ` +
-            `You are attempting to retake ${selectedRetakeCount} courses, but only ${availableRetakeSlots} slots are available.`,
-        );
+        throw new BadRequestException({
+          message: ErrorEnum.RETAKE_LIMIT_EXCEEDED,
+          args: {
+            previous: previousRetakeAttempts,
+            max: maxAllowedRetakes,
+            selected: selectedRetakeCount,
+            available: availableRetakeSlots,
+          },
+        });
       }
     }
 

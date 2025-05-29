@@ -1,0 +1,10 @@
+{
+  "REQUIREMENT_NOT_FOUND": "Requirement not found.",
+  "REQUIREMENT_ALREADY_EXISTS": "Requirement already exists.",
+  "REQUIREMENT_COURSE_ID_UUID": "Course ID must be a valid UUID.",
+  "REQUIREMENT_REGULATION_ID_UUID": "Regulation ID must be a valid UUID.",
+  "REQUIREMENT_OPTIONAL_BOOLEAN": "Optional must be a boolean value.",
+  "REQUIREMENT_CATEGORY_IN": "Category must be one of the allowed values.",
+  "REQUIREMENT_PROGRAM_ID_UUID": "Program ID must be a valid UUID.",
+  "REQUIREMENT_OPTIONAL_STRING": "Optional must be a string."
+}

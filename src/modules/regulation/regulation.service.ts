@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { CreateRegulationDto } from './dto/create-regulation.dto';
@@ -20,54 +24,14 @@ import {
 } from './entities';
 import { UUID } from 'crypto';
 import { RegulationValidationService } from './regulation-validation.service';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
 export class RegulationService {
   constructor(
     private readonly dataSource: DataSource,
-
     @InjectRepository(Regulation)
     private readonly regulationRepo: Repository<Regulation>,
-
-    @InjectRepository(Level)
-    private readonly levelRepo: Repository<Level>,
-
-    @InjectRepository(CumGpaRange)
-    private readonly cumGpaRangeRepo: Repository<CumGpaRange>,
-
-    @InjectRepository(CourseGpaRange)
-    private readonly courseGpaRangeRepo: Repository<CourseGpaRange>,
-
-    @InjectRepository(RegistrationRules)
-    private readonly registrationRulesRepo: Repository<RegistrationRules>,
-
-    @InjectRepository(AcademicRequirements)
-    private readonly academicRequirementsRepo: Repository<AcademicRequirements>,
-
-    @InjectRepository(UniversityRequirements)
-    private readonly universityRequirementsRepo: Repository<UniversityRequirements>,
-
-    @InjectRepository(FacultyRequirements)
-    private readonly facultyRequirementsRepo: Repository<FacultyRequirements>,
-
-    @InjectRepository(BasicScienceRequirements)
-    private readonly basicScienceRequirementsRepo: Repository<BasicScienceRequirements>,
-
-    @InjectRepository(SpecializationRequirements)
-    private readonly specializationRequirementsRepo: Repository<SpecializationRequirements>,
-
-    @InjectRepository(GradProjectRequirements)
-    private readonly gradProjectRequirementsRepo: Repository<GradProjectRequirements>,
-
-    @InjectRepository(TrainingRequirements)
-    private readonly trainingRequirementsRepo: Repository<TrainingRequirements>,
-
-    @InjectRepository(RetakeRules)
-    private readonly retakeRulesRepo: Repository<RetakeRules>,
-
-    @InjectRepository(DismissalRules)
-    private readonly dismissalRulesRepo: Repository<DismissalRules>,
-
     private readonly regulationValidationService: RegulationValidationService,
   ) {}
 
@@ -234,7 +198,8 @@ export class RegulationService {
       .where('regulation.id = :id', { id })
       .getOne();
 
-    if (!regulation) throw new NotFoundException('Regulation not found');
+    if (!regulation)
+      throw new NotFoundException(ErrorEnum.REGULATION_NOT_FOUND);
     return regulation;
   }
 
@@ -281,7 +246,8 @@ export class RegulationService {
       .where('ac.studentId = :studentId', { studentId })
       .getOne();
 
-    if (!regulation) throw new NotFoundException('Regulation not found');
+    if (!regulation)
+      throw new NotFoundException(ErrorEnum.REGULATION_NOT_FOUND);
     return regulation;
   }
 
@@ -363,7 +329,9 @@ export class RegulationService {
       );
 
       if (!spec) {
-        throw new Error('Specialization requirements not found after update');
+        throw new BadRequestException(
+          ErrorEnum.SPECIALIZATION_REQUIREMENTS_NOT_FOUND,
+        );
       }
 
       // Update trainingRequirements

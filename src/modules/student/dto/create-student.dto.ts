@@ -11,56 +11,56 @@ import {
 } from 'class-validator';
 import { UUID } from 'crypto';
 import { Gender } from 'src/shared/enums/gender.enum';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 class NameDto {
-  @IsString()
+  @IsString({ message: ErrorEnum.STUDENT_NAME_EN_STRING })
   en: string;
 
-  @IsString()
+  @IsString({ message: ErrorEnum.STUDENT_NAME_AR_STRING })
   ar: string;
 }
 
 export class CreateStudentDto {
-  @ValidateNested()
+  @ValidateNested({ message: ErrorEnum.STUDENT_NAME_NESTED })
   @Type(() => NameDto)
   name: NameDto;
 
-  @IsString()
+  @IsString({ message: ErrorEnum.STUDENT_NATIONAL_ID_STRING })
   nationalId: string;
 
-  @IsString()
+  @IsString({ message: ErrorEnum.STUDENT_UNIVERSITY_ID_STRING })
   universityId: string;
 
-  @IsString()
-  @IsEmail()
+  @IsString({ message: ErrorEnum.STUDENT_EMAIL_STRING })
+  @IsEmail({}, { message: ErrorEnum.STUDENT_EMAIL_INVALID })
   email: string;
 
-  @IsString()
-  @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  @IsString({ message: ErrorEnum.STUDENT_PASSWORD_STRING })
+  @MinLength(8, { message: ErrorEnum.STUDENT_PASSWORD_MIN_LENGTH })
   @Matches(/(?=.*[a-z])/, {
-    message: 'Password must contain at least one lowercase letter',
+    message: ErrorEnum.STUDENT_PASSWORD_LOWERCASE,
   })
   @Matches(/(?=.*[A-Z])/, {
-    message: 'Password must contain at least one uppercase letter',
+    message: ErrorEnum.STUDENT_PASSWORD_UPPERCASE,
   })
   @Matches(/(?=.*\d)/, {
-    message: 'Password must contain at least one number',
+    message: ErrorEnum.STUDENT_PASSWORD_NUMBER,
   })
   @Matches(/(?=.*[@$!%*?&])/, {
-    message: 'Password must contain at least one special character (@$!%*?&)',
+    message: ErrorEnum.STUDENT_PASSWORD_SPECIAL_CHAR,
   })
   @Matches(/^[A-Za-z\d@$!%*?&]*$/, {
-    message:
-      'Password can only contain letters, numbers, and special characters (@$!%*?&)',
+    message: ErrorEnum.STUDENT_PASSWORD_ALLOWED_CHARS,
   })
   password: string;
 
-  @IsPhoneNumber()
+  @IsPhoneNumber(undefined, { message: ErrorEnum.STUDENT_PHONE_STRING })
   phone: string;
 
-  @IsIn(Object.values(Gender))
+  @IsIn(Object.values(Gender), { message: ErrorEnum.STUDENT_GENDER_IN })
   gender: Gender;
 
-  @IsUUID()
+  @IsUUID('4', { message: ErrorEnum.STUDENT_REGULATION_ID_UUID })
   regulationId: UUID;
 }

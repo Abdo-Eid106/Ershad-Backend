@@ -7,12 +7,13 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Gender } from 'src/shared/enums/gender.enum';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 class NameDto {
-  @IsString()
+  @IsString({ message: ErrorEnum.PERSONAL_INFO_NAME_EN_REQUIRED })
   en: string;
 
-  @IsString()
+  @IsString({ message: ErrorEnum.PERSONAL_INFO_NAME_AR_REQUIRED })
   ar: string;
 }
 
@@ -21,20 +22,22 @@ export class UpdatePersonalInfoDto {
   @Type(() => NameDto)
   name: NameDto;
 
-  @IsIn(Object.values(Gender))
+  @IsIn(Object.values(Gender), {
+    message: ErrorEnum.PERSONAL_INFO_GENDER_INVALID,
+  })
   gender: Gender;
 
-  @IsString()
+  @IsString({ message: ErrorEnum.PERSONAL_INFO_NATIONAL_ID_STRING })
   nationalId: string;
 
-  @IsString()
+  @IsString({ message: ErrorEnum.PERSONAL_INFO_UNIVERSITY_ID_STRING })
   universityId: string;
 
-  @IsString()
-  @IsEmail()
+  @IsString({ message: ErrorEnum.PERSONAL_INFO_EMAIL_STRING })
+  @IsEmail({}, { message: ErrorEnum.PERSONAL_INFO_EMAIL_INVALID })
   email: string;
 
-  @IsString()
-  @IsPhoneNumber()
+  @IsString({ message: ErrorEnum.PERSONAL_INFO_PHONE_STRING })
+  @IsPhoneNumber(undefined, { message: ErrorEnum.PERSONAL_INFO_PHONE_INVALID })
   phone: string;
 }

@@ -8,6 +8,7 @@ import { hash } from 'bcrypt';
 import { UUID } from 'crypto';
 import { Role } from '../auth/entities/role.entity';
 import { RoleEnum } from '../role/enums/role.enum';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 export class OfficerService {
   constructor(
@@ -23,7 +24,7 @@ export class OfficerService {
     const { email } = createOfficerDto;
 
     if (await this.userRepo.existsBy({ email }))
-      throw new ConflictException('email in use');
+      throw new ConflictException(ErrorEnum.EMAIL_IN_USE);
 
     const password = await hash(createOfficerDto.password, 12);
     const role = await this.roleRepo.findOne({
@@ -52,7 +53,7 @@ export class OfficerService {
 
   async remove(id: UUID) {
     const user = await this.userRepo.findOne({ where: { id } });
-    if (!user) throw new NotFoundException('officer not found');
+    if (!user) throw new NotFoundException(ErrorEnum.OFFICER_NOT_FOUND);
     return this.userRepo.remove(user);
   }
 }

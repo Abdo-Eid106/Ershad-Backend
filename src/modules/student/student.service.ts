@@ -16,6 +16,7 @@ import { GetStudentsDto } from './dto/get-students.dto';
 import { UUID } from 'crypto';
 import { Role } from '../auth/entities/role.entity';
 import { RoleEnum } from '../role/enums/role.enum';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
 export class StudentService {
@@ -39,25 +40,25 @@ export class StudentService {
       createStudentDto;
     //check if the email in user
     if (await this.userRepo.existsBy({ email }))
-      throw new ConflictException('email in use');
+      throw new ConflictException(ErrorEnum.EMAIL_IN_USE);
 
     //check if the nationalId in use
     if (await this.personalInfoRepo.existsBy({ nationalId }))
-      throw new ConflictException('nationalId in use');
+      throw new ConflictException(ErrorEnum.NATIONAL_ID_IN_USE);
 
     //check if the universityId in use
     if (await this.personalInfoRepo.existsBy({ universityId }))
-      throw new ConflictException('universityId in use');
+      throw new ConflictException(ErrorEnum.UNIVERSITY_ID_IN_USE);
 
     //check if the phone in use
     if (await this.personalInfoRepo.existsBy({ phone }))
-      throw new ConflictException('phone in use');
+      throw new ConflictException(ErrorEnum.PHONE_IN_USE);
 
     //check if the regulation is exist
     const regulation = await this.regulationRepo.findOne({
       where: { id: regulationId },
     });
-    if (!regulation) throw new NotFoundException('regulation not found');
+    if (!regulation) throw new NotFoundException(ErrorEnum.REGULATION_NOT_FOUND);
 
     //hash the password
     createStudentDto.password = await bcrypt.hash(
@@ -87,7 +88,7 @@ export class StudentService {
       this.personalInfoRepo.create({
         studentId: student.userId,
         ...createStudentDto,
-      }), 
+      }),
     );
 
     //create the academicInfo of the stundent
@@ -136,7 +137,7 @@ export class StudentService {
 
   async remove(id: UUID) {
     const user = await this.userRepo.findOne({ where: { id } });
-    if (!user) throw new NotFoundException('student not found');
+    if (!user) throw new NotFoundException(ErrorEnum.STUDENT_NOT_FOUND);
     return this.userRepo.remove(user);
   }
 }
