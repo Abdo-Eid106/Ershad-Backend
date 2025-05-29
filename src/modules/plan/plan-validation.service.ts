@@ -98,7 +98,7 @@ export class PlanValidationService {
     return planSemesters.some((semester) => semester.courseIds.length === 0);
   }
 
-  hasDuplicateCourses(courseIds: UUID[]) {
+  hasDuplicateCourses(courseIds: Course['id'][]) {
     return new Set(courseIds).size !== courseIds.length;
   }
 

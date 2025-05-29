@@ -3,12 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Plan } from './entities/plan.entity';
 import { CreatePlanDto } from './dto/create-plan.dto';
-import { UUID } from 'crypto';
 import { PlanValidationService } from './plan-validation.service';
 import { SemesterPlan } from './entities/semester-plan.entity';
 import { SemesterPlanCourse } from './entities/semester-plan-course.entity';
 import { getCourseWithPreFragment } from '../course/fragments';
 import { AcademicInfo } from '../academic-info/entities/academic-info.entity';
+import { User } from '../user/entities/user.entity';  
+import { Program } from '../program/entities/program.entitiy';
 
 @Injectable()
 export class PlanService {
@@ -26,7 +27,7 @@ export class PlanService {
   ) {}
 
   private async savePlan(
-    programId: UUID,
+    programId: Program['id'],
     planDto: CreatePlanDto,
     isUpdate = false,
   ) {
@@ -85,17 +86,17 @@ export class PlanService {
     }
   }
 
-  async create(programId: UUID, createPlanDto: CreatePlanDto) {
+  async create(programId: Program['id'], createPlanDto: CreatePlanDto) {
     await this.planValidationService.validate(programId, createPlanDto);
     await this.savePlan(programId, createPlanDto);
   }
 
-  async update(planId: UUID, updatePlanDto: CreatePlanDto) {
+  async update(planId: Program['id'], updatePlanDto: CreatePlanDto) {
     await this.planValidationService.validate(planId, updatePlanDto, true);
     return this.savePlan(planId, updatePlanDto, true);
   }
 
-  async findOne(programId: UUID) {
+  async findOne(programId: Program['id']) {
     const plan = await this.planRepo
       .createQueryBuilder('plan')
       .innerJoin('plan.semesterPlans', 'semesterPlan')
@@ -120,7 +121,7 @@ export class PlanService {
     return plan;
   }
 
-  async getStudentPlan(studentId: UUID) {
+  async getStudentPlan(studentId: User['id']) {
     const plan =
       (await this.getProgramPlan(studentId)) ||
       (await this.getAlternativeProgramPlan(studentId));
@@ -128,7 +129,7 @@ export class PlanService {
     return this.findOne(plan.programId);
   }
 
-  async getProgramPlan(studentId: UUID) {
+  async getProgramPlan(studentId: User['id']) {
     const plan = await this.academicInfoRepo
       .createQueryBuilder('ac')
       .innerJoin('ac.program', 'program')
@@ -140,7 +141,7 @@ export class PlanService {
     return plan as Plan;
   }
 
-  async getAlternativeProgramPlan(studentId: UUID) {
+  async getAlternativeProgramPlan(studentId: User['id']) {
     const plan = await this.academicInfoRepo
       .createQueryBuilder('ac')
       .innerJoin('ac.regulation', 'regulation')

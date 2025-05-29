@@ -1,6 +1,6 @@
 import { Expose, Type } from 'class-transformer';
-import { UUID } from 'crypto';
 import { CourseDto } from 'src/modules/course/dto/course.dto';
+import { Program } from 'src/modules/program/entities/program.entitiy';
 
 class NameDto {
   @Expose()
@@ -24,7 +24,7 @@ class PlanCourse {
 
 export class PlanDto {
   @Expose()
-  id: UUID;
+  id: Program['id'];
 
   @Expose()
   levels: number;

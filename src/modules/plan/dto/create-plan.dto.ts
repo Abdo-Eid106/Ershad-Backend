@@ -7,25 +7,25 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { UUID } from 'crypto';
+import { Course } from 'src/modules/course/entites/course.entity';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 export class CreateSemesterPlan {
-  @IsInt({ message: ErrorEnum.SEMESTER_PLAN_LEVEL_INT })
-  @Min(1, { message: ErrorEnum.SEMESTER_PLAN_LEVEL_MIN })
+  @IsInt({ message: ErrorEnum.PLAN_LEVEL_INT })
+  @Min(1, { message: ErrorEnum.PLAN_LEVEL_MIN })
   level: number;
 
-  @IsInt({ message: ErrorEnum.SEMESTER_PLAN_SEMESTER_INT })
-  @Min(1, { message: ErrorEnum.SEMESTER_PLAN_SEMESTER_MIN })
-  @Max(2, { message: ErrorEnum.SEMESTER_PLAN_SEMESTER_MAX })
+  @IsInt({ message: ErrorEnum.PLAN_SEMESTER_INT })
+  @Min(1, { message: ErrorEnum.PLAN_SEMESTER_MIN })
+  @Max(2, { message: ErrorEnum.PLAN_SEMESTER_MAX })
   semester: number;
 
-  @IsArray({ message: ErrorEnum.SEMESTER_PLAN_COURSE_IDS_ARRAY })
+  @IsArray({ message: ErrorEnum.PLAN_COURSE_IDS_ARRAY })
   @IsUUID('all', {
     each: true,
-    message: ErrorEnum.SEMESTER_PLAN_COURSE_IDS_UUID,
+    message: ErrorEnum.PLAN_COURSE_IDS_UUID,
   })
-  courseIds: UUID[];
+  courseIds: Course['id'][];
 }
 
 export class CreatePlanDto {
