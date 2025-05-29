@@ -1,8 +1,9 @@
 import { Expose, Type } from 'class-transformer';
+import { Course } from '../entites/course.entity';
 
 export class CourseDto {
   @Expose()
-  id: string;
+  id: Course['id'];
 
   @Expose()
   name: { en: string; ar: string };

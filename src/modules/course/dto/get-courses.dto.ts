@@ -3,14 +3,14 @@ import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 export class GetCoursesDto {
   @IsOptional()
-  @IsString({ message: ErrorEnum.GET_COURSES_SEARCH_STRING })
+  @IsString({ message: ErrorEnum.SEARCH_STRING })
   search: string = '';
 
   @IsOptional()
-  @IsInt({ message: ErrorEnum.GET_COURSES_PAGE_INT })
+  @IsInt({ message: ErrorEnum.PAGE_INT })
   page: number = 1;
 
   @IsOptional()
-  @IsInt({ message: ErrorEnum.GET_COURSES_LIMIT_INT })
+  @IsInt({ message: ErrorEnum.LIMIT_INT })
   limit: number = 10;
 }

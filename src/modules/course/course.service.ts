@@ -31,7 +31,7 @@ export class CourseService {
     return this.courseRepo.save(course);
   }
 
-  private async getPrerequisite(prerequisiteId: UUID): Promise<Course> {
+  private async getPrerequisite(prerequisiteId: Course['id']): Promise<Course> {
     const prerequisite = await this.courseRepo.findOne({
       where: { id: prerequisiteId },
     });
@@ -46,7 +46,7 @@ export class CourseService {
       .getMany();
   }
 
-  async findByIds(ids: UUID[]) {
+  async findByIds(ids: Course['id'][]) {
     if (!ids.length) return [];
     ids = [...new Set(ids)];
 
@@ -60,7 +60,7 @@ export class CourseService {
     return courses;
   }
 
-  async findOne(id: UUID) {
+  async findOne(id: Course['id']) {
     const course = await this.courseRepo.findOne({
       where: { id },
       relations: ['prerequisite'],
@@ -69,7 +69,7 @@ export class CourseService {
     return course;
   }
 
-  async update(id: UUID, updateCourseDto: Partial<CreateCourseDto>) {
+  async update(id: Course['id'], updateCourseDto: Partial<CreateCourseDto>) {
     const { code, prerequisiteId } = updateCourseDto;
 
     const course = await this.findOne(id);
@@ -85,12 +85,12 @@ export class CourseService {
     return this.courseRepo.save(course);
   }
 
-  async remove(id: UUID) {
+  async remove(id: Course['id']) {
     const course = await this.findOne(id);
     return this.courseRepo.remove(course);
   }
 
-  async findCourseDetails(courseId: UUID) {
+  async findCourseDetails(courseId: Course['id']) {
     const course = await this.courseRepo
       .createQueryBuilder('course')
       .leftJoinAndSelect('course.prerequisite', 'prerequisite')

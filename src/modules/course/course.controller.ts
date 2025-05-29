@@ -12,13 +12,13 @@ import {
 } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dto';
-import { UUID } from 'crypto';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { CourseDto } from './dto/course.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
 import { RoleEnum } from '../role/enums/role.enum';
 import { Roles } from '../role/decorators/roles.decorator';
+import { Course } from './entites/course.entity';
 
 @Controller('courses')
 @UseGuards(JwtGuard, RolesGuard)
@@ -35,7 +35,7 @@ export class CourseController {
   @Put(':id')
   @Roles(RoleEnum.ADMIN)
   update(
-    @Param('id', ParseUUIDPipe) id: UUID,
+    @Param('id', ParseUUIDPipe) id: Course['id'],
     @Body() UpdateCourseDto: CreateCourseDto,
   ) {
     return this.courseService.update(id, UpdateCourseDto);
@@ -47,19 +47,19 @@ export class CourseController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: UUID) {
+  findOne(@Param('id', ParseUUIDPipe) id: Course['id']) {
     return this.courseService.findOne(id);
   }
 
   @Get(':id/details')
-  findCourseDetails(@Param('id', ParseUUIDPipe) id: UUID) {
+  findCourseDetails(@Param('id', ParseUUIDPipe) id: Course['id']) {
     return this.courseService.findCourseDetails(id);
   }
 
   @Delete(':id')
   @HttpCode(204)
   @Roles(RoleEnum.ADMIN)
-  remove(@Param('id') id: UUID) {
+  remove(@Param('id') id: Course['id']) {
     return this.courseService.remove(id);
   }
 }
