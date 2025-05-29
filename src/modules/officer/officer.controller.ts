@@ -10,13 +10,13 @@ import {
 } from '@nestjs/common';
 import { OfficerService } from './officer.service';
 import { CreateOfficerDto } from './dto/create-officer.dto';
-import { UUID } from 'crypto';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { OfficerDto } from './dto/officer.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
 import { RoleEnum } from '../role/enums/role.enum';
 import { Roles } from '../role/decorators/roles.decorator';
+import { User } from '../user/entities/user.entity';
 
 @Controller('officers')
 @UseGuards(JwtGuard, RolesGuard)
@@ -36,7 +36,7 @@ export class OfficerController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: UUID) {
+  remove(@Param('id', ParseUUIDPipe) id: User['id']) {
     return this.officerService.remove(id);
   }
 }

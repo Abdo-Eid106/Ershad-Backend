@@ -10,10 +10,10 @@ import {
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 class NameDto {
-  @IsString({ message: ErrorEnum.OFFICER_NAME_EN_REQUIRED })
+  @IsString({ message: ErrorEnum.NAME_EN_REQUIRED })
   en: string;
 
-  @IsString({ message: ErrorEnum.OFFICER_NAME_AR_REQUIRED })
+  @IsString({ message: ErrorEnum.NAME_AR_REQUIRED })
   ar: string;
 }
 
@@ -23,26 +23,27 @@ export class CreateOfficerDto {
   @Type(() => NameDto)
   name: NameDto;
 
-  @IsString({ message: ErrorEnum.OFFICER_EMAIL_REQUIRED })
-  @IsEmail({}, { message: ErrorEnum.OFFICER_EMAIL_INVALID })
+  @IsNotEmpty({ message: ErrorEnum.EMAIL_REQUIRED })
+  @IsString({ message: ErrorEnum.EMAIL_STRING })
+  @IsEmail({}, { message: ErrorEnum.EMAIL_INVALID })
   email: string;
 
-  @IsString({ message: ErrorEnum.OFFICER_PASSWORD_REQUIRED })
-  @MinLength(8, { message: ErrorEnum.OFFICER_PASSWORD_MIN_LENGTH })
+  @IsString({ message: ErrorEnum.PASSWORD_REQUIRED })
+  @MinLength(8, { message: ErrorEnum.PASSWORD_MIN_LENGTH })
   @Matches(/(?=.*[a-z])/, {
-    message: ErrorEnum.OFFICER_PASSWORD_LOWERCASE,
+    message: ErrorEnum.PASSWORD_LOWERCASE,
   })
   @Matches(/(?=.*[A-Z])/, {
-    message: ErrorEnum.OFFICER_PASSWORD_UPPERCASE,
+    message: ErrorEnum.PASSWORD_UPPERCASE,
   })
   @Matches(/(?=.*\d)/, {
-    message: ErrorEnum.OFFICER_PASSWORD_NUMBER,
+    message: ErrorEnum.PASSWORD_NUMBER,
   })
   @Matches(/(?=.*[@$!%*?&])/, {
-    message: ErrorEnum.OFFICER_PASSWORD_SPECIAL_CHAR,
+    message: ErrorEnum.PASSWORD_SPECIAL_CHAR,
   })
   @Matches(/^[A-Za-z\d@$!%*?&]*$/, {
-    message: ErrorEnum.OFFICER_PASSWORD_ALLOWED_CHARS,
+    message: ErrorEnum.PASSWORD_ALLOWED_CHARS,
   })
   password: string;
 }

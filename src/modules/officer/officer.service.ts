@@ -5,7 +5,6 @@ import { CreateOfficerDto } from './dto/create-officer.dto';
 import { User } from '../user/entities/user.entity';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { hash } from 'bcrypt';
-import { UUID } from 'crypto';
 import { Role } from '../auth/entities/role.entity';
 import { RoleEnum } from '../role/enums/role.enum';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
@@ -51,7 +50,7 @@ export class OfficerService {
       .getRawMany();
   }
 
-  async remove(id: UUID) {
+  async remove(id: User['id']) {
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) throw new NotFoundException(ErrorEnum.OFFICER_NOT_FOUND);
     return this.userRepo.remove(user);
