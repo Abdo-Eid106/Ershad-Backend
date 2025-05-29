@@ -1,5 +1,5 @@
 import { Expose, Type } from 'class-transformer';
-import { UUID } from 'crypto';
+import { Student } from 'src/modules/student/entities/student.entity';
 import { Gender } from 'src/shared/enums/gender.enum';
 
 class NameDto {
@@ -12,7 +12,7 @@ class NameDto {
 
 export class PersonalInfoDto {
   @Expose()
-  id: UUID;
+  id: Student['userId'];
 
   @Expose()
   @Type(() => NameDto)

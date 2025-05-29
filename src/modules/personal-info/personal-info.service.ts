@@ -23,7 +23,7 @@ export class PersonalInfoService {
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async findOne(id: UUID) {
+  async findOne(id: User['id']) {
     const student = await this.personalInfoRepo
       .createQueryBuilder('PI')
       .innerJoin('PI.student', 'student')
@@ -44,7 +44,7 @@ export class PersonalInfoService {
     return student;
   }
 
-  async update(id: UUID, updatePersonalInfoDto: UpdatePersonalInfoDto) {
+  async update(id: User['id'], updatePersonalInfoDto: UpdatePersonalInfoDto) {
     const { email, nationalId, universityId, phone } = updatePersonalInfoDto;
     //check if the user exist
     const user = await this.userRepo.findOne({ where: { id } });
@@ -91,7 +91,7 @@ export class PersonalInfoService {
     return this.findOne(id);
   }
 
-  async updateAvatar(studentId: UUID, avatar: Express.Multer.File) {
+  async updateAvatar(studentId: User['id'], avatar: Express.Multer.File) {
     const personalInfo = await this.personalInfoRepo.findOne({
       where: { studentId },
     });

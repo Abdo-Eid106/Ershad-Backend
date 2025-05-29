@@ -5,15 +5,16 @@ import {
   IsPhoneNumber,
   IsString,
   ValidateNested,
+  IsNotEmpty,
 } from 'class-validator';
 import { Gender } from 'src/shared/enums/gender.enum';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 class NameDto {
-  @IsString({ message: ErrorEnum.PERSONAL_INFO_NAME_EN_REQUIRED })
+  @IsString({ message: ErrorEnum.NAME_EN_REQUIRED })
   en: string;
 
-  @IsString({ message: ErrorEnum.PERSONAL_INFO_NAME_AR_REQUIRED })
+  @IsString({ message: ErrorEnum.NAME_AR_REQUIRED })
   ar: string;
 }
 
@@ -23,21 +24,22 @@ export class UpdatePersonalInfoDto {
   name: NameDto;
 
   @IsIn(Object.values(Gender), {
-    message: ErrorEnum.PERSONAL_INFO_GENDER_INVALID,
+    message: ErrorEnum.GENDER_INVALID,
   })
   gender: Gender;
 
-  @IsString({ message: ErrorEnum.PERSONAL_INFO_NATIONAL_ID_STRING })
+  @IsString({ message: ErrorEnum.NATIONAL_ID_STRING })
   nationalId: string;
 
-  @IsString({ message: ErrorEnum.PERSONAL_INFO_UNIVERSITY_ID_STRING })
+  @IsString({ message: ErrorEnum.UNIVERSITY_ID_STRING })
   universityId: string;
 
-  @IsString({ message: ErrorEnum.PERSONAL_INFO_EMAIL_STRING })
-  @IsEmail({}, { message: ErrorEnum.PERSONAL_INFO_EMAIL_INVALID })
+  @IsNotEmpty({ message: ErrorEnum.EMAIL_REQUIRED })
+  @IsString({ message: ErrorEnum.EMAIL_STRING })
+  @IsEmail({}, { message: ErrorEnum.EMAIL_INVALID })
   email: string;
 
-  @IsString({ message: ErrorEnum.PERSONAL_INFO_PHONE_STRING })
-  @IsPhoneNumber(undefined, { message: ErrorEnum.PERSONAL_INFO_PHONE_INVALID })
+  @IsString({ message: ErrorEnum.PHONE_STRING })
+  @IsPhoneNumber(undefined, { message: ErrorEnum.PHONE_INVALID })
   phone: string;
 }
