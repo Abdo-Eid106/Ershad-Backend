@@ -22,9 +22,9 @@ import {
   GradProjectRequirements,
   TrainingRequirements,
 } from './entities';
-import { UUID } from 'crypto';
 import { RegulationValidationService } from './regulation-validation.service';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
+import { Student } from '../student/entities/student.entity';
 
 @Injectable()
 export class RegulationService {
@@ -156,7 +156,7 @@ export class RegulationService {
     return this.regulationRepo.find();
   }
 
-  async findOne(id: UUID) {
+  async findOne(id: Regulation['id']) {
     const regulation = await this.regulationRepo
       .createQueryBuilder('regulation')
       .innerJoinAndSelect('regulation.levels', 'levels')
@@ -203,7 +203,7 @@ export class RegulationService {
     return regulation;
   }
 
-  async getStudentRegulation(studentId: UUID) {
+  async getStudentRegulation(studentId: Student['userId']) {
     const regulation = await this.regulationRepo
       .createQueryBuilder('regulation')
       .innerJoinAndSelect('regulation.levels', 'levels')
@@ -251,7 +251,7 @@ export class RegulationService {
     return regulation;
   }
 
-  async update(id: UUID, updateRegulationDto: CreateRegulationDto) {
+  async update(id: Regulation['id'], updateRegulationDto: CreateRegulationDto) {
     this.regulationValidationService.validateRegulation(updateRegulationDto);
     await this.findOne(id);
 
@@ -384,7 +384,7 @@ export class RegulationService {
     }
   }
 
-  async remove(id: UUID) {
+  async remove(id: Regulation['id']) {
     const regulation = await this.findOne(id);
     return this.regulationRepo.remove(regulation);
   }
