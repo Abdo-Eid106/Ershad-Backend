@@ -343,4 +343,7 @@ export enum ErrorEnum {
 
   // New addition
   REGULATION_ID_UUID = 'regulation.REGULATION_ID_UUID',
+
+  COURSE_IDS_ARRAY = 'course.COURSE_IDS_ARRAY',
+  COURSE_IDS_UUID = 'course.COURSE_IDS_UUID',
 }
