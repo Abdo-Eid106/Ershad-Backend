@@ -16,5 +16,6 @@
   "STUDENT_PASSWORD_ALLOWED_CHARS": "Password can only contain letters, numbers, and special characters (@$!%*?&).",
   "STUDENT_PHONE_STRING": "Phone number must be valid.",
   "STUDENT_GENDER_IN": "Gender must be one of the allowed values.",
-  "STUDENT_REGULATION_ID_UUID": "Regulation ID must be a valid UUID."
+  "STUDENT_REGULATION_ID_UUID": "Regulation ID must be a valid UUID.",
+  "STUDENT_NOT_ELIGIBLE_FOR_SPECIALIZATION": "Student is not eligible for specialization."
 }

@@ -16,5 +16,6 @@
   "STUDENT_PASSWORD_ALLOWED_CHARS": "يمكن أن تحتوي كلمة المرور فقط على أحرف وأرقام ورموز خاصة (@$!%*?&).",
   "STUDENT_PHONE_STRING": "رقم الهاتف يجب أن يكون صحيحًا.",
   "STUDENT_GENDER_IN": "الجنس يجب أن يكون من القيم المسموح بها.",
-  "STUDENT_REGULATION_ID_UUID": "معرف اللائحة يجب أن يكون UUID صالحًا."
+  "STUDENT_REGULATION_ID_UUID": "معرف اللائحة يجب أن يكون UUID صالحًا.",
+  "STUDENT_NOT_ELIGIBLE_FOR_SPECIALIZATION": "الطالب غير مؤهل للتخصص."
 }

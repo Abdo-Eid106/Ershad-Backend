@@ -12,6 +12,7 @@ import { AcademicInfoService } from './academic-info.service';
 import { UpdateAcademicInfoDto } from './dto/update-academic-info.dto';
 import { UUID } from 'crypto';
 import { AcademicInfo } from './entities/academic-info.entity';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 export class AcademicInfoValidationService {
   constructor(
@@ -36,29 +37,25 @@ export class AcademicInfoValidationService {
 
     const studentExist = await this.doesStudentExist(studentId);
     if (!studentExist) {
-      throw new NotFoundException('Student not found');
+      throw new NotFoundException(ErrorEnum.STUDENT_NOT_FOUND);
     }
 
     const regulationExists = await this.doesRegulationExist(regulationId);
     if (!regulationExists) {
-      throw new NotFoundException('Regulation not found');
+      throw new NotFoundException(ErrorEnum.REGULATION_NOT_FOUND);
     }
     if (programId) {
       const programExists = await this.doesProgramExist(programId);
-      if (!programExists) throw new NotFoundException('Program  not found');
+      if (!programExists) throw new NotFoundException(ErrorEnum.PROGRAM_NOT_FOUND);
 
       const programInRegulation =
         await this.doesProgramExistWithinTheRegulation(programId, regulationId);
       if (!programInRegulation)
-        throw new NotFoundException(
-          'Program is not exist within this regulation',
-        );
+        throw new NotFoundException(ErrorEnum.PROGRAM_NOT_FOUND);
 
       const isEligible = await this.isEligibleForSpecialization(studentId);
       if (!isEligible) {
-        throw new BadRequestException(
-          'Student is not eligible for specialization',
-        );
+        throw new BadRequestException(ErrorEnum.STUDENT_NOT_ELIGIBLE_FOR_SPECIALIZATION);
       }
     }
     return true;
