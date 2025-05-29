@@ -74,7 +74,10 @@ export class RequirementValidationService {
     return this.programRepo.existsBy({ id: programId });
   }
 
-  async doesProgramRequirementExist(courseId: Course['id'], programId: Program['id']) {
+  async doesProgramRequirementExist(
+    courseId: Course['id'],
+    programId: Program['id'],
+  ) {
     return this.requirementCourseRepo
       .createQueryBuilder('requirement')
       .innerJoin('requirement.course', 'course')
@@ -84,7 +87,10 @@ export class RequirementValidationService {
       .getExists();
   }
 
-  async doesRegulationRequirementExist(courseId: Course['id'], regulationId: Regulation['id']) {
+  async doesRegulationRequirementExist(
+    courseId: Course['id'],
+    regulationId: Regulation['id'],
+  ) {
     return this.requirementCourseRepo
       .createQueryBuilder('requirement')
       .innerJoin('requirement.regulation', 'regulation')

@@ -3,5 +3,14 @@
   "EMAIL_STRING": "Email must be a string.",
   "SEARCH_STRING": "Search must be a string.",
   "PAGE_INT": "Page must be an integer.",
-  "LIMIT_INT": "Limit must be an integer."
+  "LIMIT_INT": "Limit must be an integer.",
+  "EMAIL_REQUIRED": "Email is required.",
+  "EMAIL_INVALID": "Email must be a valid email address.",
+  "NAME_EN_REQUIRED": "English name is required.",
+  "NAME_AR_REQUIRED": "Arabic name is required.",
+  "GENDER_INVALID": "Gender is invalid.",
+  "NATIONAL_ID_STRING": "National ID must be a string.",
+  "UNIVERSITY_ID_STRING": "University ID must be a string.",
+  "PHONE_STRING": "Phone must be a string.",
+  "PHONE_INVALID": "Phone must be a valid phone number."
 }

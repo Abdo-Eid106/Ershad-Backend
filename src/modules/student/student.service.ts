@@ -58,7 +58,8 @@ export class StudentService {
     const regulation = await this.regulationRepo.findOne({
       where: { id: regulationId },
     });
-    if (!regulation) throw new NotFoundException(ErrorEnum.REGULATION_NOT_FOUND);
+    if (!regulation)
+      throw new NotFoundException(ErrorEnum.REGULATION_NOT_FOUND);
 
     //hash the password
     createStudentDto.password = await bcrypt.hash(

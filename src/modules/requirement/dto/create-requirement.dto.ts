@@ -13,7 +13,9 @@ export class CreateRequirementDto {
   @IsBoolean({ message: ErrorEnum.REQUIREMENT_OPTIONAL_BOOLEAN })
   optional: boolean;
 
-  @IsIn(Object.values(RequirementCategory), { message: ErrorEnum.REQUIREMENT_CATEGORY_IN })
+  @IsIn(Object.values(RequirementCategory), {
+    message: ErrorEnum.REQUIREMENT_CATEGORY_IN,
+  })
   category: RequirementCategory;
 
   @ValidateIf((o) => o.type == RequirementCategory.SPECIALIZATION)

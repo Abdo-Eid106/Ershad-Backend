@@ -10,7 +10,9 @@ export class GetRequiremetsDto {
   @IsString({ message: ErrorEnum.REQUIREMENT_OPTIONAL_STRING })
   optional: string;
 
-  @IsIn(Object.values(RequirementCategory), { message: ErrorEnum.REQUIREMENT_CATEGORY_IN })
+  @IsIn(Object.values(RequirementCategory), {
+    message: ErrorEnum.REQUIREMENT_CATEGORY_IN,
+  })
   category: RequirementCategory;
 
   @ValidateIf((o) => o.type == RequirementCategory.SPECIALIZATION)

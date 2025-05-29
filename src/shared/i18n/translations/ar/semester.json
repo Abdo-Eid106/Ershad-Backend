@@ -18,4 +18,4 @@
   "SEMESTER_SEMESTER_MAX": "الفصل يجب ألا يتجاوز 2.",
   "SEMESTER_COURSES_ARRAY": "مقررات الفصل يجب أن تكون مصفوفة.",
   "SEMESTER_COURSES_NESTED": "كل مقرر في الفصل يجب أن يكون صالحًا."
-} 
+}
