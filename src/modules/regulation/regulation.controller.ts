@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { RegulationService } from './regulation.service';
 import { CreateRegulationDto } from './dto/create-regulation.dto';
-import { UUID } from 'crypto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
 import { Roles } from '../role/decorators/roles.decorator';
@@ -21,6 +20,7 @@ import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { RegulationDto } from './dto/regulation.dto';
 import { currentUser } from 'src/shared/decorators/current-user.decorator';
 import { IPayloud } from 'src/shared/interfaces/payloud.interface';
+import { Regulation } from './entities';
 
 @Controller()
 @UseGuards(JwtGuard, RolesGuard)
@@ -40,7 +40,7 @@ export class RegulationController {
   }
 
   @Get('regulations/:id')
-  findOne(@Param('id', ParseUUIDPipe) id: UUID) {
+  findOne(@Param('id', ParseUUIDPipe) id: Regulation['id']) {
     return this.regulationService.findOne(id);
   }
 
@@ -53,7 +53,7 @@ export class RegulationController {
   @Put('regulations/:id')
   @Roles(RoleEnum.ADMIN)
   update(
-    @Param('id', ParseUUIDPipe) id: UUID,
+    @Param('id', ParseUUIDPipe) id: Regulation['id'],
     @Body() updateRegulationDto: CreateRegulationDto,
   ) {
     return this.regulationService.update(id, updateRegulationDto);
@@ -62,7 +62,7 @@ export class RegulationController {
   @HttpCode(204)
   @Delete('regulations/:id')
   @Roles(RoleEnum.ADMIN)
-  remove(@Param('id', ParseUUIDPipe) id: UUID) {
+  remove(@Param('id', ParseUUIDPipe) id: Regulation['id']) {
     return this.regulationService.remove(id);
   }
 }
