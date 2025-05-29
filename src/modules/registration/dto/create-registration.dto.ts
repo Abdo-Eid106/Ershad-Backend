@@ -1,5 +1,5 @@
 import { IsArray, IsUUID } from 'class-validator';
-import { UUID } from 'crypto';
+import { Course } from 'src/modules/course/entites/course.entity';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 export class CreateRegistrationDto {
@@ -8,5 +8,5 @@ export class CreateRegistrationDto {
     each: true,
     message: ErrorEnum.REGISTRATION_COURSE_IDS_UUID,
   })
-  courseIds: UUID[];
+  courseIds: Course['id'][];
 }

@@ -1,4 +1,3 @@
-import { UUID } from 'crypto';
 import { AcademicInfo } from 'src/modules/academic-info/entities/academic-info.entity';
 import {
   Entity,
@@ -12,7 +11,7 @@ import { RegistrationCourse } from './registration-course.entity';
 @Entity()
 export class Registration {
   @PrimaryColumn('uuid')
-  academicInfoId: UUID;
+  academicInfoId: AcademicInfo['studentId'];
 
   @OneToOne(() => AcademicInfo, (academicInfo) => academicInfo.registration)
   @JoinColumn({ name: 'academicInfoId' })

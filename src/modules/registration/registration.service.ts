@@ -5,7 +5,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { UUID } from 'crypto';
 import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from '../student/entities/student.entity';
@@ -26,26 +25,24 @@ export class RegistrationService {
   constructor(
     @InjectRepository(Student)
     private readonly studentRepo: Repository<Student>,
-
     @InjectRepository(Registration)
     private readonly registrationRepo: Repository<Registration>,
-
     @InjectRepository(RegistrationSettings)
     private readonly registrationSettingsRepo: Repository<RegistrationSettings>,
-
     @InjectRepository(Program)
     private readonly programRepo: Repository<Program>,
-
     @InjectRepository(Course)
     private readonly courseRepo: Repository<Course>,
-
     @Inject(forwardRef(() => RegistrationValidationService))
     private readonly registrationValidationService: RegistrationValidationService,
     private readonly academicInfoService: AcademicInfoService,
     private readonly dataSource: DataSource,
   ) {}
 
-  async create(studentId: UUID, createRegistrationDto: CreateRegistrationDto) {
+  async create(
+    studentId: Student['userId'],
+    createRegistrationDto: CreateRegistrationDto,
+  ) {
     const registrationSettings = await this.getSettings();
     if (!registrationSettings.isOpen)
       throw new ForbiddenException(ErrorEnum.REGISTRATION_LIMIT_EXCEEDED);
@@ -84,7 +81,7 @@ export class RegistrationService {
     );
   }
 
-  async getStudentRegisteredCourses(studentId: UUID) {
+  async getStudentRegisteredCourses(studentId: Student['userId']) {
     if (!(await this.studentRepo.existsBy({ userId: studentId })))
       throw new NotFoundException(ErrorEnum.STUDENT_NOT_FOUND);
 
@@ -127,7 +124,7 @@ export class RegistrationService {
     );
   }
 
-  async getStudentAvailableCourses(studentId: UUID) {
+  async getStudentAvailableCourses(studentId: Student['userId']) {
     const program = await this.getStudentProgram(studentId);
     const gradProject = program
       ? await this.getGradProjectCourse(program.id)
@@ -164,7 +161,7 @@ export class RegistrationService {
     return (await query.getRawMany()) as Course[];
   }
 
-  private async getStudentProgram(studentId: UUID) {
+  private async getStudentProgram(studentId: Student['userId']) {
     return this.programRepo
       .createQueryBuilder('program')
       .innerJoin('program.academicInfos', 'academicInfo')
@@ -172,7 +169,7 @@ export class RegistrationService {
       .getOne();
   }
 
-  private async getGradProjectCourse(programId: UUID) {
+  private async getGradProjectCourse(programId: Program['id']) {
     return this.courseRepo.findOne({ where: { id: programId } });
   }
 }
