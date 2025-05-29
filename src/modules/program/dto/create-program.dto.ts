@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { UUID } from 'crypto';
+import { Regulation } from 'src/modules/regulation/entities';
 import { NameDto } from 'src/modules/regulation/dto/create-regulation.dto';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
@@ -15,6 +15,6 @@ export class CreateProgramDto {
   @IsString({ message: ErrorEnum.PROGRAM_DEGREE_STRING })
   degree: string;
 
-  @IsUUID(undefined, { message: ErrorEnum.PROGRAM_REGULATION_ID_UUID })
-  regulationId: UUID;
+  @IsUUID(undefined, { message: ErrorEnum.REGULATION_ID_UUID })
+  regulationId: Regulation['id'];
 }

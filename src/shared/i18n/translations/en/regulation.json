@@ -78,5 +78,6 @@
   "REGULATION_SPEC_REQ_MANDATORY_HOURS_INT": "Specialization mandatory hours must be an integer.",
   "REGULATION_SPEC_REQ_MANDATORY_HOURS_MIN": "Specialization mandatory hours must be at least 0.",
   "REGULATION_SPEC_REQ_OPTIONAL_HOURS_INT": "Specialization optional hours must be an integer.",
-  "REGULATION_SPEC_REQ_OPTIONAL_HOURS_MIN": "Specialization optional hours must be at least 0."
+  "REGULATION_SPEC_REQ_OPTIONAL_HOURS_MIN": "Specialization optional hours must be at least 0.",
+  "REGULATION_ID_UUID": "Regulation ID must be a valid UUID."
 }

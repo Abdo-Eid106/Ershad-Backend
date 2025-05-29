@@ -1,8 +1,8 @@
 import { IsOptional, IsUUID } from 'class-validator';
-import { UUID } from 'crypto';
+import { Regulation } from 'src/modules/regulation/entities';
 
 export class GetProgramsDto {
   @IsOptional()
   @IsUUID()
-  regulationId: UUID;
+  regulationId: Regulation['id'];
 }

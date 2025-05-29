@@ -4,7 +4,7 @@ import { NameDto } from 'src/modules/regulation/dto/create-regulation.dto';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 export class UpdateProgramDto {
-  @ValidateNested({ message: ErrorEnum.PROGRAM_NAME_OBJECT })
+  @ValidateNested()
   @Type(() => NameDto)
   name: object;
 

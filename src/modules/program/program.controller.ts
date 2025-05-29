@@ -19,11 +19,11 @@ import {
   ProgramDto,
 } from './dto';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
-import { UUID } from 'crypto';
 import { Roles } from '../role/decorators/roles.decorator';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
 import { RoleEnum } from '../role/enums/role.enum';
+import { Program } from './entities/program.entitiy';
 
 @Controller('programs')
 @UseGuards(JwtGuard, RolesGuard)
@@ -43,14 +43,14 @@ export class ProgramController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: UUID) {
+  findOne(@Param('id', ParseUUIDPipe) id: Program['id']) {
     return this.programService.findOne(id);
   }
 
   @Put(':id')
   @Roles(RoleEnum.ADMIN)
   update(
-    @Param('id', ParseUUIDPipe) id: UUID,
+    @Param('id', ParseUUIDPipe) id: Program['id'],
     @Body() updateProgramDto: UpdateProgramDto,
   ) {
     return this.programService.update(id, updateProgramDto);
@@ -59,7 +59,7 @@ export class ProgramController {
   @Delete(':id')
   @Roles(RoleEnum.ADMIN)
   @HttpCode(204)
-  remove(@Param('id', ParseUUIDPipe) id: UUID) {
+  remove(@Param('id', ParseUUIDPipe) id: Program['id']) {
     return this.programService.remove(id);
   }
 }

@@ -78,5 +78,6 @@
   "REGULATION_SPEC_REQ_MANDATORY_HOURS_INT": "ساعات التخصص الإجبارية يجب أن تكون عددًا صحيحًا.",
   "REGULATION_SPEC_REQ_MANDATORY_HOURS_MIN": "ساعات التخصص الإجبارية يجب ألا تقل عن 0.",
   "REGULATION_SPEC_REQ_OPTIONAL_HOURS_INT": "ساعات التخصص الاختيارية يجب أن تكون عددًا صحيحًا.",
-  "REGULATION_SPEC_REQ_OPTIONAL_HOURS_MIN": "ساعات التخصص الاختيارية يجب ألا تقل عن 0."
+  "REGULATION_SPEC_REQ_OPTIONAL_HOURS_MIN": "ساعات التخصص الاختيارية يجب ألا تقل عن 0.",
+  "REGULATION_ID_UUID": "معرف اللائحة يجب أن يكون UUID صالحًا."
 }

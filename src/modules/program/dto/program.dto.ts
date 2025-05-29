@@ -1,9 +1,9 @@
 import { Expose, Transform } from 'class-transformer';
-import { UUID } from 'crypto';
+import { Program } from '../entities/program.entitiy';
 
 export class ProgramDto {
   @Expose()
-  id: UUID;
+  id: Program['id'];
 
   @Expose()
   name: { en: string; ar: string };

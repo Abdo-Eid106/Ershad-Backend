@@ -8,7 +8,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateProgramDto, GetProgramsDto, UpdateProgramDto } from './dto';
 import { Regulation } from '../regulation/entities';
-import { UUID } from 'crypto';
 import { Course } from '../course/entites/course.entity';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
@@ -67,7 +66,7 @@ export class ProgramService {
       .getRawMany();
   }
 
-  async findOne(id: UUID) {
+  async findOne(id: Program['id']) {
     const program = await this.programRepo
       .createQueryBuilder('program')
       .innerJoin('program.regulation', 'regulation')
@@ -85,7 +84,7 @@ export class ProgramService {
     return program;
   }
 
-  async update(id: UUID, updateProgramDto: UpdateProgramDto) {
+  async update(id: Program['id'], updateProgramDto: UpdateProgramDto) {
     const { code } = updateProgramDto;
     const program = await this.findOne(id);
     if (program.code != code && (await this.programRepo.existsBy({ code })))
@@ -93,7 +92,7 @@ export class ProgramService {
     this.programRepo.save({ ...program, ...updateProgramDto });
   }
 
-  async remove(id: UUID) {
+  async remove(id: Program['id']) {
     const program = await this.findOne(id);
     return this.programRepo.remove(program);
   }

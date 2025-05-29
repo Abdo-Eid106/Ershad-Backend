@@ -340,4 +340,7 @@ export enum ErrorEnum {
   // New user password update errors
   PASSWORD_INCORRECT = 'user.PASSWORD_INCORRECT',
   PASSWORD_SAME_AS_OLD = 'user.PASSWORD_SAME_AS_OLD',
+
+  // New addition
+  REGULATION_ID_UUID = 'regulation.REGULATION_ID_UUID',
 }
