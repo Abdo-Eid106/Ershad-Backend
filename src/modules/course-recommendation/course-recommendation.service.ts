@@ -1,5 +1,4 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
-import { UUID } from 'crypto';
 import { Repository } from 'typeorm';
 import { Plan } from '../plan/entities/plan.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +7,7 @@ import { PlanService } from '../plan/plan.service';
 import { RegistrationService } from '../registration/registration.service';
 import { AcademicInfoService } from '../academic-info/academic-info.service';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
+import { Student } from '../student/entities/student.entity';
 
 @Injectable()
 export class CourseRecommendationService {
@@ -19,7 +19,7 @@ export class CourseRecommendationService {
     private readonly academicInfoService: AcademicInfoService,
   ) {}
 
-  async getRecommenedCourses(studentId: UUID) {
+  async getRecommenedCourses(studentId: Student['userId']) {
     const plan =
       (await this.planService.getProgramPlan(studentId)) ||
       (await this.planService.getAlternativeProgramPlan(studentId));
