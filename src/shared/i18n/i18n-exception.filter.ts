@@ -46,6 +46,7 @@ export class I18nExceptionFilter implements ExceptionFilter {
 
     response.status(status).json({
       statusCode: status,
+      test: 'test',
       message: translated,
     });
   }
