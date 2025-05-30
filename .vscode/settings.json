@@ -4,5 +4,6 @@
     "*.ejs": "html",
     ".fantomasignore": "ignore",
     "xstring": "cpp"
-  }
+  },
+  "i18next.i18nPaths": "c:/intellitech/graduation project/backend/dist/shared/i18n,c:/intellitech/graduation project/backend/src/shared/i18n,c:/intellitech/graduation project/backend/src/shared/i18n/translations"
 }
