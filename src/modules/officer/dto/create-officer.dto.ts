@@ -1,7 +1,6 @@
 import { Type } from 'class-transformer';
 import {
   IsEmail,
-  IsNotEmpty,
   IsString,
   Matches,
   MinLength,
@@ -18,17 +17,15 @@ class NameDto {
 }
 
 export class CreateOfficerDto {
-  @IsNotEmpty()
   @ValidateNested()
   @Type(() => NameDto)
   name: NameDto;
 
-  @IsNotEmpty({ message: ErrorEnum.EMAIL_REQUIRED })
   @IsString({ message: ErrorEnum.EMAIL_STRING })
   @IsEmail({}, { message: ErrorEnum.EMAIL_INVALID })
   email: string;
 
-  @IsString({ message: ErrorEnum.PASSWORD_REQUIRED })
+  @IsString({ message: ErrorEnum.PASSWORD_STRING })
   @MinLength(8, { message: ErrorEnum.PASSWORD_MIN_LENGTH })
   @Matches(/(?=.*[a-z])/, {
     message: ErrorEnum.PASSWORD_LOWERCASE,

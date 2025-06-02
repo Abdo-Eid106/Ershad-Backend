@@ -20,10 +20,10 @@ export class CreateSemesterPlan {
   @Max(2, { message: ErrorEnum.PLAN_SEMESTER_MAX })
   semester: number;
 
-  @IsArray({ message: ErrorEnum.PLAN_COURSE_IDS_ARRAY })
+  @IsArray({ message: ErrorEnum.COURSE_IDS_ARRAY })
   @IsUUID('all', {
     each: true,
-    message: ErrorEnum.PLAN_COURSE_IDS_UUID,
+    message: ErrorEnum.COURSE_IDS_UUID,
   })
   courseIds: Course['id'][];
 }

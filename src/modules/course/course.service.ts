@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
-import { UUID } from 'crypto';
 import { Repository } from 'typeorm';
 import { Course } from './entites/course.entity';
 import { InjectRepository } from '@nestjs/typeorm';

@@ -7,38 +7,38 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
-import { UUID } from 'crypto';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
+import { Course } from '../entites/course.entity';
 
 export class CourseName {
-  @IsString({ message: ErrorEnum.COURSE_NAME_EN_REQUIRED })
+  @IsString({ message: ErrorEnum.NAME_EN_STRING })
   en: string;
 
-  @IsString({ message: ErrorEnum.COURSE_NAME_AR_REQUIRED })
+  @IsString({ message: ErrorEnum.NAME_AR_STRING })
   ar: string;
 }
 
 export class CreateCourseDto {
   @Type(() => CourseName)
-  @ValidateNested({ message: ErrorEnum.COURSE_NAME_OBJECT })
+  @ValidateNested({ message: ErrorEnum.NAME_OBJECT })
   name: CourseName;
 
-  @IsString({ message: ErrorEnum.COURSE_CODE_REQUIRED })
+  @IsString({ message: ErrorEnum.CODE_STRING })
   code: string;
 
-  @IsInt({ message: ErrorEnum.LECTURE_HOURS_MIN })
+  @IsInt({ message: ErrorEnum.LECTURE_HOURS_INTEGER })
   @Min(1, { message: ErrorEnum.LECTURE_HOURS_MIN })
   lectureHours: number;
 
-  @IsInt({ message: ErrorEnum.PRACTICAL_HOURS_MIN })
+  @IsInt({ message: ErrorEnum.PRACTICAL_HOURS_INTEGER })
   @Min(1, { message: ErrorEnum.PRACTICAL_HOURS_MIN })
   practicalHours: number;
 
-  @IsInt({ message: ErrorEnum.CREDIT_HOURS_MIN })
+  @IsInt({ message: ErrorEnum.CREDIT_HOURS_INTEGER })
   @Min(1, { message: ErrorEnum.CREDIT_HOURS_MIN })
   creditHours: number;
 
-  @IsInt({ message: ErrorEnum.LEVEL_MIN })
+  @IsInt({ message: ErrorEnum.LEVEL_INTEGER })
   @Min(1, { message: ErrorEnum.LEVEL_MIN })
   level: number;
 
@@ -48,5 +48,5 @@ export class CreateCourseDto {
 
   @IsOptional()
   @IsUUID(undefined, { message: ErrorEnum.PREREQUISITE_UUID })
-  prerequisiteId?: UUID;
+  prerequisiteId?: Course['id'];
 }

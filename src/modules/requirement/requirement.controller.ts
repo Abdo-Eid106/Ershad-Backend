@@ -13,12 +13,12 @@ import { RequirementService } from './requirement.service';
 import { CreateRequirementDto } from './dto/create-requirement.dto';
 import { GetRequiremetsDto } from './dto/get-requirements.dto';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
-import { UUID } from 'crypto';
 import { RequirementDto } from './dto/requirement.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
 import { RoleEnum } from '../role/enums/role.enum';
 import { Roles } from '../role/decorators/roles.decorator';
+import { RequirementCourse } from './entities/requirement-course.entity';
 
 @Controller('requirements')
 @UseGuards(JwtGuard, RolesGuard)
@@ -39,7 +39,7 @@ export class RequirementController {
 
   @Delete(':id')
   @Roles(RoleEnum.ADMIN)
-  remove(@Param('id', ParseUUIDPipe) id: UUID) {
+  remove(@Param('id', ParseUUIDPipe) id: RequirementCourse['id']) {
     return this.requirementService.remove(id);
   }
 }

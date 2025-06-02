@@ -10,16 +10,12 @@ export class SummaryService {
   constructor(
     @InjectRepository(Regulation)
     private readonly regulationRepo: Repository<Regulation>,
-
     @InjectRepository(Program)
     private readonly programRepo: Repository<Program>,
-
     @InjectRepository(Course)
     private readonly courseRepo: Repository<Course>,
-
     @InjectRepository(Officer)
     private readonly officerRepo: Repository<Officer>,
-
     @InjectRepository(SemesterCourse)
     private readonly semesterCourseRepo: Repository<SemesterCourse>,
   ) {}

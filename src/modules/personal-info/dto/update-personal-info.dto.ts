@@ -5,7 +5,6 @@ import {
   IsPhoneNumber,
   IsString,
   ValidateNested,
-  IsNotEmpty,
 } from 'class-validator';
 import { Gender } from 'src/shared/enums/gender.enum';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
@@ -34,7 +33,6 @@ export class UpdatePersonalInfoDto {
   @IsString({ message: ErrorEnum.UNIVERSITY_ID_STRING })
   universityId: string;
 
-  @IsNotEmpty({ message: ErrorEnum.EMAIL_REQUIRED })
   @IsString({ message: ErrorEnum.EMAIL_STRING })
   @IsEmail({}, { message: ErrorEnum.EMAIL_INVALID })
   email: string;

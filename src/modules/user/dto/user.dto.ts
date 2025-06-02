@@ -1,9 +1,9 @@
 import { Expose } from 'class-transformer';
-import { UUID } from 'crypto';
+import { User } from '../entities/user.entity';
 
 export class UserDto {
   @Expose()
-  id: UUID;
+  id: User['id'];
 
   @Expose()
   email: string;

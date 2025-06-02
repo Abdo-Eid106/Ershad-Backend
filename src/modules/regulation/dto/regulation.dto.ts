@@ -1,5 +1,5 @@
 import { Expose, Type } from 'class-transformer';
-import { UUID } from 'crypto';
+import { Regulation } from '../entities';
 
 class NameDto {
   @Expose()
@@ -147,7 +147,7 @@ class CreateSpecializationRequirements {
 
 export class RegulationDto {
   @Expose()
-  id: UUID;
+  id: Regulation['id'];
 
   @Expose()
   @Type(() => NameDto)

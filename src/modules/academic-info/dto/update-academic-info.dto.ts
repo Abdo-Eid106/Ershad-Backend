@@ -1,11 +1,13 @@
-import { UUID } from 'crypto';
 import { IsOptional, IsUUID } from 'class-validator';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
+import { Regulation } from 'src/modules/regulation/entities';
+import { Program } from 'src/modules/program/entities/program.entitiy';
 
 export class UpdateAcademicInfoDto {
-  @IsUUID()
-  regulationId: UUID;
+  @IsUUID('4', { message: ErrorEnum.REGULATION_ID_UUID })
+  regulationId: Regulation['id'];
 
-  @IsUUID()
+  @IsUUID('4', { message: ErrorEnum.PROGRAM_ID_UUID })
   @IsOptional()
-  programId?: UUID;
+  programId?: Program['id'];
 }

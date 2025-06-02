@@ -8,8 +8,9 @@ import { SemesterPlan } from './entities/semester-plan.entity';
 import { SemesterPlanCourse } from './entities/semester-plan-course.entity';
 import { getCourseWithPreFragment } from '../course/fragments';
 import { AcademicInfo } from '../academic-info/entities/academic-info.entity';
-import { User } from '../user/entities/user.entity';  
+import { User } from '../user/entities/user.entity';
 import { Program } from '../program/entities/program.entitiy';
+import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
 export class PlanService {
@@ -115,7 +116,7 @@ export class PlanService {
       .getRawMany();
 
     if (plan.length === 0) {
-      throw new NotFoundException('Plan not found');
+      throw new NotFoundException(ErrorEnum.PLAN_NOT_FOUND);
     }
 
     return plan;
@@ -125,7 +126,7 @@ export class PlanService {
     const plan =
       (await this.getProgramPlan(studentId)) ||
       (await this.getAlternativeProgramPlan(studentId));
-    if (!plan) throw new NotFoundException('plan not found');
+    if (!plan) throw new NotFoundException(ErrorEnum.PLAN_NOT_FOUND);
     return this.findOne(plan.programId);
   }
 

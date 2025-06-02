@@ -8,7 +8,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AcademicInfoService } from './academic-info.service';
-import { UUID } from 'crypto';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { AcademicInfoDto } from './dto/academic-info.dto';
 import { UpdateAcademicInfoDto } from './dto/update-academic-info.dto';
@@ -18,6 +17,7 @@ import { Roles } from '../role/decorators/roles.decorator';
 import { RoleEnum } from '../role/enums/role.enum';
 import { currentUser } from 'src/shared/decorators/current-user.decorator';
 import { IPayloud } from 'src/shared/interfaces/payloud.interface';
+import { User } from '../user/entities/user.entity';
 
 @Controller()
 @UseGuards(JwtGuard, RolesGuard)
@@ -27,7 +27,7 @@ export class AcademicInfoController {
   @Get('students/:id/academic-info')
   @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
   @Serialize(AcademicInfoDto)
-  get(@Param('id', ParseUUIDPipe) id: UUID) {
+  get(@Param('id', ParseUUIDPipe) id: User['id']) {
     return this.academicInfoService.getAcademicInfo(id);
   }
 
@@ -41,7 +41,7 @@ export class AcademicInfoController {
   @Put('students/:id/academic-info')
   @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
   update(
-    @Param('id', ParseUUIDPipe) id: UUID,
+    @Param('id', ParseUUIDPipe) id: User['id'],
     @Body() updateAcademicInfoDto: UpdateAcademicInfoDto,
   ) {
     return this.academicInfoService.update(id, updateAcademicInfoDto);

@@ -10,13 +10,13 @@ import {
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
-import { UUID } from 'crypto';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { AdminDto } from './dto/admin.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
 import { Roles } from '../role/decorators/roles.decorator';
 import { RoleEnum } from '../role/enums/role.enum';
+import { User } from '../user/entities/user.entity';
 
 @Controller('admins')
 @UseGuards(JwtGuard, RolesGuard)
@@ -36,7 +36,7 @@ export class AdminController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: UUID) {
+  remove(@Param('id', ParseUUIDPipe) id: User['id']) {
     return this.adminService.remove(id);
   }
 }

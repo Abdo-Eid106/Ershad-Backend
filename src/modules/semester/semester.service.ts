@@ -10,9 +10,9 @@ import { Semester } from './entities/semester.entity';
 import { CourseService } from '../course/course.service';
 import { Repository } from 'typeorm';
 import { SemesterCourse } from './entities/semester-course.entity';
-import { UUID } from 'crypto';
 import { Student } from '../student/entities/student.entity';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class SemesterService {
@@ -26,7 +26,7 @@ export class SemesterService {
     private readonly courseService: CourseService,
   ) {}
 
-  async create(studentId: UUID, createSemesterDto: CreateSemesterDto) {
+  async create(studentId: User['id'], createSemesterDto: CreateSemesterDto) {
     const { startYear, endYear, semester, semesterCourses } = createSemesterDto;
 
     //check if the end year is equal to the start year + 1
@@ -35,7 +35,7 @@ export class SemesterService {
 
     //check if the student is exist
     if (!(await this.studentRepo.existsBy({ userId: studentId })))
-      throw new NotFoundException(ErrorEnum.SEMESTER_STUDENT_NOT_FOUND);
+      throw new NotFoundException(ErrorEnum.STUDENT_NOT_FOUND);
 
     //check if this semester already exist
     if (
@@ -54,7 +54,7 @@ export class SemesterService {
       ),
     ];
     if (courseIds.length != semesterCourses.length)
-      throw new ConflictException(ErrorEnum.SEMESTER_COURSE_REPEATED);
+      throw new ConflictException(ErrorEnum.COURSE_REPEATED);
     await this.courseService.findByIds(courseIds);
 
     if (!courseIds.length)
@@ -78,9 +78,9 @@ export class SemesterService {
     );
   }
 
-  async findStudentSemesters(studentId: UUID) {
+  async findStudentSemesters(studentId: User['id']) {
     if (!(await this.studentRepo.existsBy({ userId: studentId })))
-      throw new NotFoundException(ErrorEnum.SEMESTER_STUDENT_NOT_FOUND);
+      throw new NotFoundException(ErrorEnum.STUDENT_NOT_FOUND);
 
     return this.studentRepo
       .createQueryBuilder('student')
@@ -126,7 +126,7 @@ export class SemesterService {
       .getRawMany();
   }
 
-  async findOne(id: UUID) {
+  async findOne(id: Semester['id']) {
     const semester = await this.semesterRepo
       .createQueryBuilder('semester')
       .innerJoin('semester.semesterCourses', 'semesterCourse')
@@ -159,7 +159,7 @@ export class SemesterService {
     return semester;
   }
 
-  async update(id: UUID, updateSemesterDto: UpdateSemesterDto) {
+  async update(id: Semester['id'], updateSemesterDto: UpdateSemesterDto) {
     const { semesterCourses } = updateSemesterDto;
 
     //check if the semester exist and get it
@@ -173,11 +173,11 @@ export class SemesterService {
       ),
     ];
     if (courseIds.length != semesterCourses.length)
-      throw new ConflictException(ErrorEnum.SEMESTER_COURSE_REPEATED);
+      throw new ConflictException(ErrorEnum.COURSE_REPEATED);
     await this.courseService.findByIds(courseIds);
 
     if (!courseIds.length)
-      throw new BadRequestException(ErrorEnum.SEMESTER_NO_COURSES);
+      throw new BadRequestException(ErrorEnum.NO_COURSES_SELECTED);
 
     //remove semesterCourses
     await this.semesterCourseRepo.remove(
@@ -196,7 +196,7 @@ export class SemesterService {
     );
   }
 
-  async remove(id: UUID) {
+  async remove(id: Semester['id']) {
     const semester = await this.semesterRepo.findOne({ where: { id } });
     if (!semester) throw new NotFoundException(ErrorEnum.SEMESTER_NOT_FOUND);
     return this.semesterRepo.remove(semester);

@@ -22,5 +22,16 @@
   "NAME_EN_STRING": "English name must be a string.",
   "NAME_AR_STRING": "Arabic name must be a string.",
   "NAME_OBJECT": "Name must be a valid object.",
-  "PASSWORD_STRING": "Password must be a string."
+  "PASSWORD_STRING": "Password must be a string.",
+  "OLD_PASSWORD_STRING": "Old password must be a string.",
+  "NEW_PASSWORD_STRING": "New password must be a string.",
+  "INVALID_OTP": "The OTP is invalid.",
+  "EXPIRED_OTP": "The OTP has expired.",
+  "CODE_STRING": "Course code must be a string.",
+  "LECTURE_HOURS_INTEGER": "Lecture hours must be an integer.",
+  "PRACTICAL_HOURS_INTEGER": "Practical hours must be an integer.",
+  "CREDIT_HOURS_INTEGER": "Credit hours must be an integer.",
+  "LEVEL_INTEGER": "Level must be an integer.",
+  "COURSE_REPEATED": "Courses must not be repeated.",
+  "NO_COURSES_SELECTED": "No courses were selected."
 }

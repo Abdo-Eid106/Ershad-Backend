@@ -16,7 +16,6 @@ export class ProgramService {
   constructor(
     @InjectRepository(Program)
     private readonly programRepo: Repository<Program>,
-
     @InjectRepository(Regulation)
     private readonly regulationRepo: Repository<Regulation>,
   ) {}

@@ -1,6 +1,6 @@
 import { Expose, Type } from 'class-transformer';
-import { UUID } from 'crypto';
 import { ProgramDto } from 'src/modules/program/dto';
+import { Regulation } from 'src/modules/regulation/entities';
 
 class NameDto {
   @Expose()
@@ -17,7 +17,7 @@ class AcademicRequirementsDto {
 
 class RegulationDto {
   @Expose()
-  id: UUID;
+  id: Regulation['id'];
 
   @Expose()
   @Type(() => NameDto)

@@ -1,15 +1,15 @@
 import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { SemesterPlan } from './semester-plan.entity';
 import { Course } from 'src/modules/course/entites/course.entity';
-import { UUID } from 'crypto';
+import { Plan } from './plan.entity';
 
 @Entity()
 export class SemesterPlanCourse {
   @PrimaryColumn('uuid')
-  semesterPlanId: UUID;
+  semesterPlanId: Plan['programId'];
 
   @PrimaryColumn('uuid')
-  courseId: UUID;
+  courseId: Course['id'];
 
   @ManyToOne(
     () => SemesterPlan,

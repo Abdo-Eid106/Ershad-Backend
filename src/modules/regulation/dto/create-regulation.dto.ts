@@ -1,4 +1,4 @@
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
   IsString,
   IsInt,
@@ -7,7 +7,6 @@ import {
   Min,
   ValidateNested,
   Max,
-  IsNotEmpty,
 } from 'class-validator';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
@@ -41,12 +40,10 @@ export class CreateCourseGpaRange {
 export class CreateCumGpaRange {
   @IsNumber({}, { message: ErrorEnum.REGULATION_CUM_GPA_FROM_NUMBER })
   @Min(0, { message: ErrorEnum.REGULATION_CUM_GPA_FROM_MIN })
-  @Transform(({ value }) => Number(value))
   from: number;
 
   @IsNumber({}, { message: ErrorEnum.REGULATION_CUM_GPA_TO_NUMBER })
   @Max(4, { message: ErrorEnum.REGULATION_CUM_GPA_TO_MAX })
-  @Transform(({ value }) => Number(value))
   to: number;
 
   @IsString({ message: ErrorEnum.REGULATION_CUM_GPA_NAME_STRING })
@@ -54,12 +51,10 @@ export class CreateCumGpaRange {
 }
 
 export class NameDto {
-  @IsNotEmpty({ message: ErrorEnum.REGULATION_NAME_EN_REQUIRED })
-  @IsString({ message: ErrorEnum.REGULATION_NAME_EN_STRING })
+  @IsString({ message: ErrorEnum.NAME_EN_STRING })
   en: string;
 
-  @IsNotEmpty({ message: ErrorEnum.REGULATION_NAME_AR_REQUIRED })
-  @IsString({ message: ErrorEnum.REGULATION_NAME_AR_STRING })
+  @IsString({ message: ErrorEnum.NAME_AR_STRING })
   ar: string;
 }
 

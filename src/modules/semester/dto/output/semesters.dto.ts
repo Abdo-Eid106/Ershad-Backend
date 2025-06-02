@@ -1,5 +1,6 @@
 import { Expose, Type } from 'class-transformer';
-import { UUID } from 'crypto';
+import { Semester } from '../../entities/semester.entity';
+import { Course } from 'src/modules/course/entites/course.entity';
 
 class NameDto {
   @Expose()
@@ -11,7 +12,7 @@ class NameDto {
 
 class CourseDto {
   @Expose()
-  courseId: UUID;
+  courseId: Course['id'];
 
   @Expose()
   @Type(() => NameDto)
@@ -35,7 +36,7 @@ class CourseDto {
 
 export class SemestersDto {
   @Expose()
-  id: UUID;
+  id: Semester['id'];
 
   @Expose()
   startYear: number;

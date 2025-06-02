@@ -9,9 +9,9 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { UUID } from 'crypto';
 import { Gender } from 'src/shared/enums/gender.enum';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
+import { Regulation } from 'src/modules/regulation/entities';
 
 class NameDto {
   @IsString({ message: ErrorEnum.NAME_EN_STRING })
@@ -62,5 +62,5 @@ export class CreateStudentDto {
   gender: Gender;
 
   @IsUUID('4', { message: ErrorEnum.REGULATION_ID_UUID })
-  regulationId: UUID;
+  regulationId: Regulation['id'];
 }

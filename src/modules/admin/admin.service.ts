@@ -9,7 +9,6 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { hash } from 'bcrypt';
-import { UUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { Role } from '../auth/entities/role.entity';
 import { RoleEnum } from '../role/enums/role.enum';
@@ -56,7 +55,7 @@ export class AdminService implements OnModuleInit {
       .getRawMany();
   }
 
-  async remove(id: UUID) {
+  async remove(id: User['id']) {
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) throw new NotFoundException('Admin not found');
     return this.userRepo.remove(user);

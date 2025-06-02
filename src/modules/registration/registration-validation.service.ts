@@ -8,10 +8,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Course } from '../course/entites/course.entity';
 import { AcademicInfoService } from '../academic-info/academic-info.service';
-import { UUID } from 'crypto';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { RegistrationService } from './registration.service';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
+import { User } from '../user/entities/user.entity';
 
 enum CreditHourStatus {
   EXCEEDS_MAX = 'EXCEEDS_MAX',
@@ -30,7 +30,7 @@ export class RegistrationValidationService {
   ) {}
 
   async validate(
-    studentId: UUID,
+    studentId: User['id'],
     createRegistrationDto: CreateRegistrationDto,
   ) {
     const { courseIds } = createRegistrationDto;
@@ -96,11 +96,11 @@ export class RegistrationValidationService {
     return true;
   }
 
-  hasDuplicateCourses(courseIds: UUID[]) {
+  hasDuplicateCourses(courseIds: Course['id'][]) {
     return new Set(courseIds).size !== courseIds.length;
   }
 
-  async doAllCoursesExist(courseIds: UUID[]) {
+  async doAllCoursesExist(courseIds: Course['id'][]) {
     const count = await this.courseRepo
       .createQueryBuilder('course')
       .where('course.id IN (:...courseIds)', { courseIds })
@@ -108,7 +108,10 @@ export class RegistrationValidationService {
     return count === courseIds.length;
   }
 
-  async isCreditHoursWithinRange(studentId: UUID, courseIds: UUID[]) {
+  async isCreditHoursWithinRange(
+    studentId: User['id'],
+    courseIds: Course['id'][],
+  ) {
     const { totalCreditHours } = await this.courseRepo
       .createQueryBuilder('course')
       .where('course.id IN (:...courseIds)', { courseIds })
@@ -128,8 +131,8 @@ export class RegistrationValidationService {
   }
 
   async hasAllPrerequisitesMet(
-    studentId: UUID,
-    selectedCourseIds: UUID[],
+    studentId: User['id'],
+    selectedCourseIds: Course['id'][],
   ): Promise<boolean> {
     const availableCourses =
       await this.registrationService.getStudentAvailableCourses(studentId);
@@ -142,7 +145,10 @@ export class RegistrationValidationService {
     );
   }
 
-  async validateCourseRegistrationLimits(studentId: UUID, courseIds: UUID[]) {
+  async validateCourseRegistrationLimits(
+    studentId: User['id'],
+    courseIds: Course['id'][],
+  ) {
     const [previousRetakeAttempts, maxAllowedRetakes] = await Promise.all([
       this.academicInfoService.getPreviousRetakeAttempts(studentId),
       this.academicInfoService.getMaxRetakeCourses(studentId),

@@ -10,27 +10,24 @@ import {
 } from '@nestjs/common';
 import { AcademicInfoService } from './academic-info.service';
 import { UpdateAcademicInfoDto } from './dto/update-academic-info.dto';
-import { UUID } from 'crypto';
 import { AcademicInfo } from './entities/academic-info.entity';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
+import { User } from '../user/entities/user.entity';
 
 export class AcademicInfoValidationService {
   constructor(
     @InjectRepository(AcademicInfo)
     private readonly academicInfoRepo: Repository<AcademicInfo>,
-
     @InjectRepository(Regulation)
     private readonly regulationRepo: Repository<Regulation>,
-
     @InjectRepository(Program)
     private readonly programRepo: Repository<Program>,
-
     @Inject(forwardRef(() => AcademicInfoService))
     private readonly academicInfoService: AcademicInfoService,
   ) {}
 
   async validate(
-    studentId: UUID,
+    studentId: User['id'],
     updateAcademicInfoDto: UpdateAcademicInfoDto,
   ) {
     const { programId, regulationId } = updateAcademicInfoDto;
@@ -46,7 +43,8 @@ export class AcademicInfoValidationService {
     }
     if (programId) {
       const programExists = await this.doesProgramExist(programId);
-      if (!programExists) throw new NotFoundException(ErrorEnum.PROGRAM_NOT_FOUND);
+      if (!programExists)
+        throw new NotFoundException(ErrorEnum.PROGRAM_NOT_FOUND);
 
       const programInRegulation =
         await this.doesProgramExistWithinTheRegulation(programId, regulationId);
@@ -55,27 +53,29 @@ export class AcademicInfoValidationService {
 
       const isEligible = await this.isEligibleForSpecialization(studentId);
       if (!isEligible) {
-        throw new BadRequestException(ErrorEnum.STUDENT_NOT_ELIGIBLE_FOR_SPECIALIZATION);
+        throw new BadRequestException(
+          ErrorEnum.STUDENT_NOT_ELIGIBLE_FOR_SPECIALIZATION,
+        );
       }
     }
     return true;
   }
 
-  async doesStudentExist(studentId: UUID) {
+  async doesStudentExist(studentId: User['id']) {
     return this.academicInfoRepo.existsBy({ studentId });
   }
 
-  async doesRegulationExist(regulationId: UUID) {
+  async doesRegulationExist(regulationId: Regulation['id']) {
     return this.regulationRepo.existsBy({ id: regulationId });
   }
 
-  async doesProgramExist(programId: UUID) {
+  async doesProgramExist(programId: Program['id']) {
     return this.programRepo.existsBy({ id: programId });
   }
 
   async doesProgramExistWithinTheRegulation(
-    programId: UUID,
-    regulationId: UUID,
+    programId: Program['id'],
+    regulationId: Regulation['id'],
   ) {
     return this.programRepo
       .createQueryBuilder('program')
@@ -85,7 +85,7 @@ export class AcademicInfoValidationService {
       .getExists();
   }
 
-  async isEligibleForSpecialization(studentId: UUID) {
+  async isEligibleForSpecialization(studentId: User['id']) {
     const gainedHours =
       await this.academicInfoService.getGainedHours(studentId);
     const requiredHours =

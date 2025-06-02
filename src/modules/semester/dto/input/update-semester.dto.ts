@@ -6,13 +6,13 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { UUID } from 'crypto';
 import { Type } from 'class-transformer';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
+import { Course } from 'src/modules/course/entites/course.entity';
 
 class CreateSemesterCourse {
   @IsUUID('4', { message: ErrorEnum.COURSE_IDS_UUID })
-  courseId: UUID;
+  courseId: Course['id'];
 
   @IsInt({ message: ErrorEnum.SEMESTER_DEGREE_INT })
   @Min(0, { message: ErrorEnum.SEMESTER_DEGREE_MIN })

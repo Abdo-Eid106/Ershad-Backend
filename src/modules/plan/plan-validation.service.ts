@@ -8,7 +8,6 @@ import { Repository } from 'typeorm';
 import { Program } from '../program/entities/program.entitiy';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePlanDto, CreateSemesterPlan } from './dto/create-plan.dto';
-import { UUID } from 'crypto';
 import { Course } from '../course/entites/course.entity';
 import { Plan } from './entities/plan.entity';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
@@ -18,10 +17,8 @@ export class PlanValidationService {
   constructor(
     @InjectRepository(Program)
     private readonly programRepo: Repository<Program>,
-
     @InjectRepository(Course)
     private readonly courseRepo: Repository<Course>,
-
     @InjectRepository(Plan)
     private readonly planRepo: Repository<Plan>,
   ) {}

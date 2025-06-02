@@ -4,7 +4,6 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdatePasswordDto } from './dto/update-password';
 import { compare, hash } from 'bcrypt';
-import { UUID } from 'crypto';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
@@ -14,7 +13,10 @@ export class UserService {
     private readonly userRepo: Repository<User>,
   ) {}
 
-  async updatePassword(userId: UUID, updatePasswordDto: UpdatePasswordDto) {
+  async updatePassword(
+    userId: User['id'],
+    updatePasswordDto: UpdatePasswordDto,
+  ) {
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user || !(await compare(updatePasswordDto.oldPassword, user.password)))
       throw new BadRequestException(ErrorEnum.PASSWORD_INCORRECT);

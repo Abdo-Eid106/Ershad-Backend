@@ -16,11 +16,11 @@ import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { PaginatedStudentsDto } from './dto/paginated-students.dto';
 import { GetStudentsDto } from './dto/get-students.dto';
 import { StudentDto } from './dto/student.dto';
-import { UUID } from 'crypto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
 import { Roles } from '../role/decorators/roles.decorator';
 import { RoleEnum } from '../role/enums/role.enum';
+import { User } from '../user/entities/user.entity';
 
 @Controller('students')
 @UseGuards(JwtGuard, RolesGuard)
@@ -42,7 +42,7 @@ export class StudentController {
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param('id', ParseUUIDPipe) id: UUID) {
+  remove(@Param('id', ParseUUIDPipe) id: User['id']) {
     return this.studentService.remove(id);
   }
 }
