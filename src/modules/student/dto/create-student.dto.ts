@@ -14,53 +14,53 @@ import { Gender } from 'src/shared/enums/gender.enum';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 class NameDto {
-  @IsString({ message: ErrorEnum.STUDENT_NAME_EN_STRING })
+  @IsString({ message: ErrorEnum.NAME_EN_STRING })
   en: string;
 
-  @IsString({ message: ErrorEnum.STUDENT_NAME_AR_STRING })
+  @IsString({ message: ErrorEnum.NAME_AR_STRING })
   ar: string;
 }
 
 export class CreateStudentDto {
-  @ValidateNested({ message: ErrorEnum.STUDENT_NAME_NESTED })
+  @ValidateNested({ message: ErrorEnum.NAME_OBJECT })
   @Type(() => NameDto)
   name: NameDto;
 
-  @IsString({ message: ErrorEnum.STUDENT_NATIONAL_ID_STRING })
+  @IsString({ message: ErrorEnum.NATIONAL_ID_STRING })
   nationalId: string;
 
-  @IsString({ message: ErrorEnum.STUDENT_UNIVERSITY_ID_STRING })
+  @IsString({ message: ErrorEnum.UNIVERSITY_ID_STRING })
   universityId: string;
 
-  @IsString({ message: ErrorEnum.STUDENT_EMAIL_STRING })
-  @IsEmail({}, { message: ErrorEnum.STUDENT_EMAIL_INVALID })
+  @IsString({ message: ErrorEnum.EMAIL_STRING })
+  @IsEmail({}, { message: ErrorEnum.EMAIL_INVALID })
   email: string;
 
-  @IsString({ message: ErrorEnum.STUDENT_PASSWORD_STRING })
-  @MinLength(8, { message: ErrorEnum.STUDENT_PASSWORD_MIN_LENGTH })
+  @IsString({ message: ErrorEnum.PASSWORD_STRING })
+  @MinLength(8, { message: ErrorEnum.PASSWORD_MIN_LENGTH })
   @Matches(/(?=.*[a-z])/, {
-    message: ErrorEnum.STUDENT_PASSWORD_LOWERCASE,
+    message: ErrorEnum.PASSWORD_LOWERCASE,
   })
   @Matches(/(?=.*[A-Z])/, {
-    message: ErrorEnum.STUDENT_PASSWORD_UPPERCASE,
+    message: ErrorEnum.PASSWORD_UPPERCASE,
   })
   @Matches(/(?=.*\d)/, {
-    message: ErrorEnum.STUDENT_PASSWORD_NUMBER,
+    message: ErrorEnum.PASSWORD_NUMBER,
   })
   @Matches(/(?=.*[@$!%*?&])/, {
-    message: ErrorEnum.STUDENT_PASSWORD_SPECIAL_CHAR,
+    message: ErrorEnum.PASSWORD_SPECIAL_CHAR,
   })
   @Matches(/^[A-Za-z\d@$!%*?&]*$/, {
-    message: ErrorEnum.STUDENT_PASSWORD_ALLOWED_CHARS,
+    message: ErrorEnum.PASSWORD_ALLOWED_CHARS,
   })
   password: string;
 
-  @IsPhoneNumber(undefined, { message: ErrorEnum.STUDENT_PHONE_STRING })
+  @IsPhoneNumber(undefined, { message: ErrorEnum.PHONE_INVALID })
   phone: string;
 
-  @IsIn(Object.values(Gender), { message: ErrorEnum.STUDENT_GENDER_IN })
+  @IsIn(Object.values(Gender), { message: ErrorEnum.GENDER_INVALID })
   gender: Gender;
 
-  @IsUUID('4', { message: ErrorEnum.STUDENT_REGULATION_ID_UUID })
+  @IsUUID('4', { message: ErrorEnum.REGULATION_ID_UUID })
   regulationId: UUID;
 }

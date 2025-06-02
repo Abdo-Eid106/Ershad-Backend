@@ -95,6 +95,16 @@ export enum ErrorEnum {
   UNIVERSITY_ID_STRING = 'common.UNIVERSITY_ID_STRING',
   PHONE_STRING = 'common.PHONE_STRING',
   PHONE_INVALID = 'common.PHONE_INVALID',
+  UUID = 'common.UUID',
+  INT = 'common.INT',
+  MIN = 'common.MIN',
+  MAX = 'common.MAX',
+  ARRAY = 'common.ARRAY',
+  NESTED = 'common.NESTED',
+  NAME_EN_STRING = 'common.NAME_EN_STRING',
+  NAME_AR_STRING = 'common.NAME_AR_STRING',
+  NAME_OBJECT = 'common.NAME_OBJECT',
+  PASSWORD_STRING = 'common.PASSWORD_STRING',
 
   // Auth DTOs
   PASSWORD_REQUIRED = 'auth.PASSWORD_REQUIRED',

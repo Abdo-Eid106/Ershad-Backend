@@ -12,5 +12,15 @@
   "NATIONAL_ID_STRING": "National ID must be a string.",
   "UNIVERSITY_ID_STRING": "University ID must be a string.",
   "PHONE_STRING": "Phone must be a string.",
-  "PHONE_INVALID": "Phone must be a valid phone number."
+  "PHONE_INVALID": "Phone must be a valid phone number.",
+  "UUID": "Value must be a valid UUID.",
+  "INT": "Value must be an integer.",
+  "MIN": "Value is below the minimum allowed.",
+  "MAX": "Value exceeds the maximum allowed.",
+  "ARRAY": "Value must be an array.",
+  "NESTED": "Value must be a valid object.",
+  "NAME_EN_STRING": "English name must be a string.",
+  "NAME_AR_STRING": "Arabic name must be a string.",
+  "NAME_OBJECT": "Name must be a valid object.",
+  "PASSWORD_STRING": "Password must be a string."
 }
