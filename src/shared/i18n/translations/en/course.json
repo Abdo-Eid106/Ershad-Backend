@@ -13,5 +13,7 @@
   "PREREQUISITE_UUID": "Prerequisite ID must be a valid UUID.",
   "GET_COURSES_SEARCH_STRING": "Search must be a string.",
   "GET_COURSES_PAGE_INT": "Page must be an integer.",
-  "GET_COURSES_LIMIT_INT": "Limit must be an integer."
+  "GET_COURSES_LIMIT_INT": "Limit must be an integer.",
+  "COURSE_IDS_ARRAY": "Course IDs must be an array.",
+  "COURSE_IDS_UUID": "Course IDs must be valid UUIDs."
 }

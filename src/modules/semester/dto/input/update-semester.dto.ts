@@ -11,7 +11,7 @@ import { Type } from 'class-transformer';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 class CreateSemesterCourse {
-  @IsUUID('4', { message: ErrorEnum.SEMESTER_COURSE_ID_UUID })
+  @IsUUID('4', { message: ErrorEnum.COURSE_IDS_UUID })
   courseId: UUID;
 
   @IsInt({ message: ErrorEnum.SEMESTER_DEGREE_INT })
