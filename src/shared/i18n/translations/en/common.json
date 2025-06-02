@@ -33,5 +33,6 @@
   "CREDIT_HOURS_INTEGER": "Credit hours must be an integer.",
   "LEVEL_INTEGER": "Level must be an integer.",
   "COURSE_REPEATED": "Courses must not be repeated.",
-  "NO_COURSES_SELECTED": "No courses were selected."
+  "NO_COURSES_SELECTED": "No courses were selected.",
+  "CHECK_YOUR_EMAIL": "Check your email for further instructions."
 }

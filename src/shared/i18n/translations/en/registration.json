@@ -19,5 +19,7 @@
   "RETAKE_LIMIT_EXCEEDED": "Retake limit exceeded. You have retaken {{previous}} courses (max: {{max}}). You are attempting to retake {{selected}} courses, but only {{available}} slots are available.",
   "REGISTRATION_COURSE_IDS_ARRAY": "Course IDs must be an array.",
   "REGISTRATION_COURSE_IDS_UUID": "Each course ID must be a valid UUID.",
-  "REGISTRATION_STATUS_IS_OPEN_BOOLEAN": "isOpen must be a boolean value."
+  "REGISTRATION_STATUS_IS_OPEN_BOOLEAN": "isOpen must be a boolean value.",
+  "REGISTRATION_COMPLETED": "Registration completed successfully.",
+  "REGISTRATION_SETTINGS_UPDATED": "Registration settings updated successfully."
 }

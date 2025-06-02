@@ -11,6 +11,7 @@ import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { CourseDto } from '../course/dto/course.dto';
 import { UpdateRegistrationStatus } from './dto/update-registration-status.dto';
 import { RegistrationSettingsDto } from './dto/registration-settings.dto';
+import { SuccessEnum } from 'src/shared/i18n/enums/success.enum';
 
 @Controller()
 @UseGuards(JwtGuard, RolesGuard)
@@ -24,7 +25,7 @@ export class RegistrationController {
     @Body() createRegistrationDto: CreateRegistrationDto,
   ) {
     await this.registrationService.create(user.id, createRegistrationDto);
-    return { message: 'Registration completed successfully.' };
+    return { message: SuccessEnum.REGISTRATION_COMPLETED };
   }
 
   @Patch('/registrations/status')
@@ -35,7 +36,7 @@ export class RegistrationController {
     await this.registrationService.updateRegistrationStatus(
       updateRegistrationStatus,
     );
-    return { message: 'registration settings updated successfully' };
+    return { message: SuccessEnum.REGISTRATION_SETTINGS_UPDATED };
   }
 
   @Get('/registrations/status')

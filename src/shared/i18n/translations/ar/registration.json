@@ -19,5 +19,7 @@
   "RETAKE_LIMIT_EXCEEDED": "تم تجاوز حد الإعادة. لقد أعدت {{previous}} مقررات (الحد الأقصى: {{max}}). تحاول إعادة {{selected}} مقررات، ولكن هناك فقط {{available}} أماكن متاحة.",
   "REGISTRATION_COURSE_IDS_ARRAY": "يجب أن تكون معرفات المقررات مصفوفة.",
   "REGISTRATION_COURSE_IDS_UUID": "يجب أن يكون كل معرف مقرر UUID صالحًا.",
-  "REGISTRATION_STATUS_IS_OPEN_BOOLEAN": "يجب أن تكون قيمة isOpen منطقية (boolean)."
+  "REGISTRATION_STATUS_IS_OPEN_BOOLEAN": "يجب أن تكون قيمة isOpen منطقية (boolean).",
+  "REGISTRATION_COMPLETED": "تم إكمال التسجيل بنجاح.",
+  "REGISTRATION_SETTINGS_UPDATED": "تم تحديث إعدادات التسجيل بنجاح."
 }

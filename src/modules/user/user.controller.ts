@@ -6,6 +6,7 @@ import { UserDto } from './dto/user.dto';
 import { UpdatePasswordDto } from './dto/update-password';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
+import { SuccessEnum } from 'src/shared/i18n/enums/success.enum';
 
 @Controller()
 @UseGuards(JwtGuard)
@@ -18,7 +19,7 @@ export class UserController {
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
     await this.userService.updatePassword(user.id, updatePasswordDto);
-    return { message: 'password is updated successfully' };
+    return { message: SuccessEnum.PASSWORD_UPDATED };
   }
 
   @Get('/me')

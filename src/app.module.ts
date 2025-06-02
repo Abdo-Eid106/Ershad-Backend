@@ -1,7 +1,7 @@
 import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { APP_PIPE, APP_FILTER } from '@nestjs/core';
+import { APP_PIPE, APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { validationPipe } from './shared/pipes/validation.pipe';
 import { LoggerMiddleware } from './shared/middlewares/logger.middleware';
 import { RegulationModule } from './modules/regulation/regulation.module';
@@ -27,6 +27,7 @@ import { OtpModule } from './modules/otp/otp.module';
 import { GradProjectModule } from './modules/grad-project/grad-project.module';
 import { TranslationModule } from './shared/i18n/translation.module';
 import { I18nExceptionFilter } from './shared/i18n/i18n-exception.filter';
+import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
 
 @Module({
   imports: [
@@ -63,6 +64,10 @@ import { I18nExceptionFilter } from './shared/i18n/i18n-exception.filter';
     {
       provide: APP_FILTER,
       useClass: I18nExceptionFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
     },
   ],
 })
