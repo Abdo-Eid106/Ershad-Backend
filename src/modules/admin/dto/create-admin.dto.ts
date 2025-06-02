@@ -1,7 +1,6 @@
 import { Type } from 'class-transformer';
 import {
   IsEmail,
-  IsNotEmpty,
   IsString,
   Matches,
   MinLength,
@@ -10,40 +9,38 @@ import {
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 class NameDto {
-  @IsString({ message: ErrorEnum.ADMIN_NAME_EN_REQUIRED })
+  @IsString({ message: ErrorEnum.NAME_EN_STRING })
   en: string;
 
-  @IsString({ message: ErrorEnum.ADMIN_NAME_AR_REQUIRED })
+  @IsString({ message: ErrorEnum.NAME_AR_STRING })
   ar: string;
 }
 
 export class CreateAdminDto {
-  @IsNotEmpty()
   @ValidateNested()
   @Type(() => NameDto)
   name: NameDto;
 
-  @IsString({ message: ErrorEnum.ADMIN_EMAIL_REQUIRED })
-  @IsEmail({}, { message: ErrorEnum.ADMIN_EMAIL_INVALID })
+  @IsString({ message: ErrorEnum.EMAIL_STRING })
+  @IsEmail({}, { message: ErrorEnum.EMAIL_INVALID })
   email: string;
 
-  @IsString({ message: ErrorEnum.ADMIN_PASSWORD_REQUIRED })
-  @MinLength(8, { message: ErrorEnum.ADMIN_PASSWORD_MIN_LENGTH })
-  // @Matches(/(?=.*[a-z])/, {
-  //   message: 'Password must contain at least one lowercase letter',
-  // })
-  // @Matches(/(?=.*[A-Z])/, {
-  //   message: 'Password must contain at least one uppercase letter',
-  // })
-  // @Matches(/(?=.*\d)/, {
-  //   message: 'Password must contain at least one number',
-  // })
-  // @Matches(/(?=.*[@$!%*?&])/, {
-  //   message: 'Password must contain at least one special character (@$!%*?&)',
-  // })
-  // @Matches(/^[A-Za-z\d@$!%*?&]*$/, {
-  //   message:
-  //     'Password can only contain letters, numbers, and special characters (@$!%*?&)',
-  // })
+  @IsString({ message: ErrorEnum.PASSWORD_STRING })
+  @MinLength(8, { message: ErrorEnum.PASSWORD_MIN_LENGTH })
+  @Matches(/(?=.*[a-z])/, {
+    message: ErrorEnum.PASSWORD_LOWERCASE,
+  })
+  @Matches(/(?=.*[A-Z])/, {
+    message: ErrorEnum.PASSWORD_UPPERCASE,
+  })
+  @Matches(/(?=.*\d)/, {
+    message: ErrorEnum.PASSWORD_NUMBER,
+  })
+  @Matches(/(?=.*[@$!%*?&])/, {
+    message: ErrorEnum.PASSWORD_SPECIAL_CHAR,
+  })
+  @Matches(/^[A-Za-z\d@$!%*?&]*$/, {
+    message: ErrorEnum.PASSWORD_ALLOWED_CHARS,
+  })
   password: string;
 }

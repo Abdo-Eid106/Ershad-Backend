@@ -5,7 +5,7 @@ import { Regulation } from 'src/modules/regulation/entities';
 import { Program } from 'src/modules/program/entities/program.entitiy';
 
 export class GetRequiremetsDto {
-  @IsUUID('4', { message: ErrorEnum.REQUIREMENT_REGULATION_ID_UUID })
+  @IsUUID('4', { message: ErrorEnum.REGULATION_ID_UUID })
   regulationId: Regulation['id'];
 
   @IsString({ message: ErrorEnum.REQUIREMENT_OPTIONAL_STRING })
@@ -17,6 +17,6 @@ export class GetRequiremetsDto {
   category: RequirementCategory;
 
   @ValidateIf((o) => o.type == RequirementCategory.SPECIALIZATION)
-  @IsUUID('4', { message: ErrorEnum.REQUIREMENT_PROGRAM_ID_UUID })
+  @IsUUID('4', { message: ErrorEnum.PROGRAM_ID_UUID })
   programId?: Program['id'];
 }
