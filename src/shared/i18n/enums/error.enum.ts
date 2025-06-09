@@ -272,4 +272,9 @@ export enum ErrorEnum {
   // Business
   INVALID_OTP = 'otp.INVALID_OTP',
   EXPIRED_OTP = 'otp.EXPIRED_OTP',
+  // =========================
+  // WARNING
+  // =========================
+  // Business
+  WARNING_EXIST = 'warning.WARNING_EXIST',
 }

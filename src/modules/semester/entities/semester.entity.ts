@@ -2,6 +2,7 @@ import { AcademicInfo } from 'src/modules/academic-info/entities/academic-info.e
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { SemesterCourse } from './semester-course.entity';
 import { BaseEntity } from 'src/shared/entities/Base.entity';
+import { Warning } from 'src/modules/warning/entities/warning.entity';
 
 @Entity()
 export class Semester extends BaseEntity {
@@ -22,4 +23,7 @@ export class Semester extends BaseEntity {
 
   @OneToMany(() => SemesterCourse, (semesterCourse) => semesterCourse.semester)
   semesterCourses: SemesterCourse[];
+
+  @OneToMany(() => Warning, (warning) => warning.semester)
+  warnings: Warning[];
 }

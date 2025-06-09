@@ -13,6 +13,9 @@ import { SemesterCourse } from './entities/semester-course.entity';
 import { Student } from '../student/entities/student.entity';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 import { User } from '../user/entities/user.entity';
+import { InjectQueue } from '@nestjs/bullmq';
+import { QueuesEnum } from 'src/shared/queue/queues.enum';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class SemesterService {
@@ -24,6 +27,8 @@ export class SemesterService {
     @InjectRepository(Student)
     private readonly studentRepo: Repository<Student>,
     private readonly courseService: CourseService,
+    @InjectQueue(QueuesEnum.WARNNINGS)
+    private readonly warningsQueue: Queue,
   ) {}
 
   async create(studentId: User['id'], createSemesterDto: CreateSemesterDto) {
@@ -67,7 +72,7 @@ export class SemesterService {
       }),
     );
 
-    return this.semesterCourseRepo.save(
+    await this.semesterCourseRepo.save(
       semesterCourses.map((semesterCourse) =>
         this.semesterCourseRepo.create({
           semester: { id: semesterRecord.id },
@@ -76,6 +81,8 @@ export class SemesterService {
         }),
       ),
     );
+
+    await this.warningsQueue.add('warning', { id: semesterRecord.id });
   }
 
   async findStudentSemesters(studentId: User['id']) {
@@ -157,43 +164,6 @@ export class SemesterService {
 
     if (!semester) throw new NotFoundException(ErrorEnum.SEMESTER_NOT_FOUND);
     return semester;
-  }
-
-  async update(id: Semester['id'], updateSemesterDto: UpdateSemesterDto) {
-    const { semesterCourses } = updateSemesterDto;
-
-    //check if the semester exist and get it
-    const semester = await this.semesterRepo.findOne({ where: { id } });
-    if (!semester) throw new NotFoundException(ErrorEnum.SEMESTER_NOT_FOUND);
-
-    //check if the courses exist and check that they are not repeated
-    const courseIds = [
-      ...new Set(
-        semesterCourses.map((semesterCourse) => semesterCourse.courseId),
-      ),
-    ];
-    if (courseIds.length != semesterCourses.length)
-      throw new ConflictException(ErrorEnum.COURSE_REPEATED);
-    await this.courseService.findByIds(courseIds);
-
-    if (!courseIds.length)
-      throw new BadRequestException(ErrorEnum.NO_COURSES_SELECTED);
-
-    //remove semesterCourses
-    await this.semesterCourseRepo.remove(
-      await this.semesterCourseRepo.find({ where: { semester: { id } } }),
-    );
-
-    //add new semesterCourses
-    await this.semesterCourseRepo.save(
-      semesterCourses.map((semesterCourse) =>
-        this.semesterCourseRepo.create({
-          semester: { id },
-          course: { id: semesterCourse.courseId },
-          ...semesterCourse,
-        }),
-      ),
-    );
   }
 
   async remove(id: Semester['id']) {

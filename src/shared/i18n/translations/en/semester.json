@@ -17,5 +17,6 @@
   "SEMESTER_SEMESTER_MIN": "Semester must be at least 1.",
   "SEMESTER_SEMESTER_MAX": "Semester must be at most 2.",
   "SEMESTER_COURSES_ARRAY": "Semester courses must be an array.",
-  "SEMESTER_COURSES_NESTED": "Each semester course must be valid."
+  "SEMESTER_COURSES_NESTED": "Each semester course must be valid.",
+  "SEMESTER_CREATED": "Semester has been created successfully."
 }

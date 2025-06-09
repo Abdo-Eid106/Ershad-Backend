@@ -5,17 +5,11 @@ import {
   Body,
   Param,
   ParseUUIDPipe,
-  Put,
   Delete,
   UseGuards,
 } from '@nestjs/common';
 import { SemesterService } from './semester.service';
-import {
-  CreateSemesterDto,
-  UpdateSemesterDto,
-  SemestersDto,
-  SemesterDto,
-} from './dto';
+import { CreateSemesterDto, SemestersDto, SemesterDto } from './dto';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
@@ -24,6 +18,7 @@ import { RoleEnum } from '../role/enums/role.enum';
 import { currentUser } from 'src/shared/decorators/current-user.decorator';
 import { IPayloud } from 'src/shared/interfaces/payloud.interface';
 import { User } from '../user/entities/user.entity';
+import { SuccessEnum } from 'src/shared/i18n/enums/success.enum';
 
 @Controller()
 @UseGuards(JwtGuard, RolesGuard)
@@ -32,11 +27,12 @@ export class SemesterController {
 
   @Post('/students/:id/semesters')
   @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
-  create(
+  async create(
     @Param('id', ParseUUIDPipe) id: User['id'],
     @Body() createSemesterDto: CreateSemesterDto,
   ) {
-    return this.semesterService.create(id, createSemesterDto);
+    await this.semesterService.create(id, createSemesterDto);
+    return { message: SuccessEnum.SEMESTER_CREATED };
   }
 
   @Get('/students/:id/semesters')
@@ -58,15 +54,6 @@ export class SemesterController {
   @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
   findOne(@Param('id', ParseUUIDPipe) id: User['id']) {
     return this.semesterService.findOne(id);
-  }
-
-  @Put('/semesters/:id')
-  @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
-  update(
-    @Param('id', ParseUUIDPipe) id: User['id'],
-    @Body() updateSemesterDto: UpdateSemesterDto,
-  ) {
-    return this.semesterService.update(id, updateSemesterDto);
   }
 
   @Delete('/semesters/:id')

@@ -28,6 +28,7 @@ import { GradProjectModule } from './modules/grad-project/grad-project.module';
 import { TranslationModule } from './shared/i18n/translation.module';
 import { I18nExceptionFilter } from './shared/i18n/i18n-exception.filter';
 import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
+import { WarningModule } from './modules/warning/warning.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { TransformInterceptor } from './shared/interceptors/transform.intercepto
     OtpModule,
     GradProjectModule,
     TranslationModule,
+    WarningModule,
   ],
   controllers: [AppController],
   providers: [
