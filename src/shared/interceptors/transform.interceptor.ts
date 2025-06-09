@@ -14,6 +14,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T> {
   intercept(context: ExecutionContext, next: CallHandler) {
     return next.handle().pipe(
       map((data) => {
+        if (!data) return;
         if (data.message) data.message = this.i18nService.t(data.message);
         return data;
       }),
