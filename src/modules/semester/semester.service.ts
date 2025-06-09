@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateSemesterDto, UpdateSemesterDto } from './dto';
+import { CreateSemesterDto } from './dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Semester } from './entities/semester.entity';
 import { CourseService } from '../course/course.service';
@@ -82,7 +82,7 @@ export class SemesterService {
       ),
     );
 
-    await this.warningsQueue.add('warning', { id: semesterRecord.id });
+    await this.warningsQueue.add('warning', { semesterId: semesterRecord.id });
   }
 
   async findStudentSemesters(studentId: User['id']) {

@@ -1,6 +1,6 @@
 import { ConflictException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { Student } from '../student/entities/student.entity';
 import { Warning } from './entities/warning.entity';
 import { Semester } from '../semester/entities/semester.entity';
@@ -89,7 +89,10 @@ export class WarningConsumer extends WorkerHost {
     if (doesExist) throw new ConflictException(ErrorEnum.WARNING_EXIST);
   }
 
-  async getStudentCourseRecords(semester: Semester): Promise<CourseRecord[]> {
+  async getStudentCourseRecords(semester: Semester) {
+    const { studentId } = semester.academicInfo;
+    const { startYear, semester: semesterValue } = semester;
+
     return this.studentRepo
       .createQueryBuilder('student')
       .leftJoin('student.academicInfo', 'academicInfo')
@@ -102,18 +105,15 @@ export class WarningConsumer extends WorkerHost {
         'gpaRange',
         'semesterCourse.degree BETWEEN gpaRange.from AND gpaRange.to',
       )
-      .where('student.userId = :studentId', {
-        studentId: semester.academicInfo.studentId,
-      })
-      .andWhere('studentSemester.semester = :semester', {
-        semester: semester.semester,
-      })
-      .andWhere('studentSemester.startYear = :startYear', {
-        startYear: semester.startYear,
-      })
-      .andWhere('studentSemester.endYear = :endYear', {
-        endYear: semester.endYear,
-      })
+      .where('student.userId = :studentId', { studentId })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('studentSemester.startYear < :startYear').orWhere(
+            'studentSemester.startYear = :startYear AND studentSemester.semester <= :semesterValue',
+          );
+        }),
+      )
+      .setParameters({ startYear, semesterValue })
       .select([
         'course.id AS id',
         'gpaRange.gpa AS gpa',
