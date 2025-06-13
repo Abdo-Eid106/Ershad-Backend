@@ -17,7 +17,7 @@ interface CourseRecord {
   creditHours: number;
 }
 
-@Processor(QueuesEnum.WARNNINGS)
+@Processor(QueuesEnum.WARNINGS)
 export class WarningConsumer extends WorkerHost {
   private readonly logger = new Logger(WarningConsumer.name);
 

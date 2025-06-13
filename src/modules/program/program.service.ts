@@ -88,7 +88,7 @@ export class ProgramService {
     const program = await this.findOne(id);
     if (program.code != code && (await this.programRepo.existsBy({ code })))
       throw new ConflictException(ErrorEnum.PROGRAM_ALREADY_EXISTS);
-    this.programRepo.save({ ...program, ...updateProgramDto });
+    return this.programRepo.save({ ...program, ...updateProgramDto });
   }
 
   async remove(id: Program['id']) {

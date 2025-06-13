@@ -1,3 +1,3 @@
 export enum QueuesEnum {
-  WARNNINGS = 'warnings',
+  WARNINGS = 'warnings',
 }

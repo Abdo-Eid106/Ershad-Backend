@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UpdatePasswordDto } from './dto/update-password';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 import { compare, hash } from 'bcrypt';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 

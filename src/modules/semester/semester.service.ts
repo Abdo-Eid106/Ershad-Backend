@@ -4,11 +4,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateSemesterDto } from './dto';
+import { CreateSemesterDto, SemesterDto, SemestersDto } from './dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Semester } from './entities/semester.entity';
 import { CourseService } from '../course/course.service';
-import { Repository } from 'typeorm';
 import { SemesterCourse } from './entities/semester-course.entity';
 import { Student } from '../student/entities/student.entity';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
@@ -16,6 +15,21 @@ import { User } from '../user/entities/user.entity';
 import { InjectQueue } from '@nestjs/bullmq';
 import { QueuesEnum } from 'src/shared/queue/queues.enum';
 import { Queue } from 'bullmq';
+import { Course } from '../course/entites/course.entity';
+import { Repository } from 'typeorm';
+
+interface ISemestarData {
+  id: Semester['id'];
+  startYear: number;
+  endYear: number;
+  semester: number;
+  studentId: User['id'];
+  name: { en: string; ar: string };
+  nationalId: string;
+  universityId: string;
+  courseId: Course['id'];
+  degree: number;
+}
 
 @Injectable()
 export class SemesterService {
@@ -27,7 +41,7 @@ export class SemesterService {
     @InjectRepository(Student)
     private readonly studentRepo: Repository<Student>,
     private readonly courseService: CourseService,
-    @InjectQueue(QueuesEnum.WARNNINGS)
+    @InjectQueue(QueuesEnum.WARNINGS)
     private readonly warningsQueue: Queue,
   ) {}
 
@@ -133,37 +147,140 @@ export class SemesterService {
       .getRawMany();
   }
 
-  async findOne(id: Semester['id']) {
-    const semester = await this.semesterRepo
+  async findOne(semesterId: Semester['id']): Promise<SemesterDto> {
+    const rawResults = await this.semesterRepo
       .createQueryBuilder('semester')
-      .innerJoin('semester.semesterCourses', 'semesterCourse')
-      .innerJoin('semesterCourse.course', 'course')
       .innerJoin('semester.academicInfo', 'AC')
       .innerJoin('AC.student', 'student')
       .innerJoin('student.personalInfo', 'PI')
+      .leftJoin('semester.semesterCourses', 'semesterCourse')
+      .leftJoin('semesterCourse.course', 'course')
       .select([
         'semester.id AS id',
         'semester.startYear AS startYear',
         'semester.endYear AS endYear',
         'semester.semester AS semester',
-        `JSON_OBJECT(
-          'name', PI.name,
-          'nationalId', PI.nationalId,
-          'universityId', PI.universityId
-        ) AS student`,
-        `JSON_ARRAYAGG(
-          JSON_OBJECT(
-            'courseId', course.id,
-            'degree', semesterCourse.degree
-          )
-        ) AS semesterCourses`,
+        'PI.name AS name',
+        'PI.nationalId AS nationalId',
+        'PI.universityId AS universityId',
+        'course.id AS courseId',
+        'semesterCourse.degree AS degree',
       ])
-      .groupBy('semester.id')
-      .where('semester.id = :id', { id })
-      .getRawOne();
+      .where('semester.id = :semesterId', { semesterId })
+      .getRawMany<ISemestarData>();
 
-    if (!semester) throw new NotFoundException(ErrorEnum.SEMESTER_NOT_FOUND);
-    return semester;
+    if (rawResults.length === 0) {
+      throw new NotFoundException(ErrorEnum.SEMESTER_NOT_FOUND);
+    }
+
+    const first = rawResults[0];
+    const semesterCourses = rawResults
+      .filter((r) => r.courseId !== null)
+      .map((r) => ({
+        courseId: r.courseId,
+        degree: r.degree,
+      }));
+
+    return {
+      id: first.id,
+      startYear: first.startYear,
+      endYear: first.endYear,
+      semester: first.semester,
+      semesterCourses,
+      student: {
+        name: first.name,
+        nationalId: first.nationalId,
+        universityId: first.universityId,
+      },
+    };
+  }
+
+  async test(studentId: User['id']): Promise<SemestersDto[]> {
+    const studentExists = await this.studentRepo.existsBy({
+      userId: studentId,
+    });
+    if (!studentExists) {
+      throw new NotFoundException(ErrorEnum.STUDENT_NOT_FOUND);
+    }
+
+    const rawRecords = await this.studentRepo
+      .createQueryBuilder('student')
+      .innerJoin('student.academicInfo', 'ac')
+      .innerJoin('ac.regulation', 'regulation')
+      .innerJoin('ac.semesters', 'semester')
+      .innerJoin('semester.semesterCourses', 'semesterCourse')
+      .innerJoin('semesterCourse.course', 'course')
+      .innerJoin(
+        'regulation.courseGpaRanges',
+        'range',
+        'semesterCourse.degree BETWEEN range.from AND range.to',
+      )
+      .select([
+        'semester.id AS semesterId',
+        'semester.startYear AS startYear',
+        'semester.endYear AS endYear',
+        'semester.semester AS semester',
+        'course.id AS courseId',
+        'course.code AS code',
+        'course.name AS name',
+        'course.creditHours AS creditHours',
+        'semesterCourse.degree AS degree',
+        'range.name AS grade',
+        'range.gpa AS gpa',
+      ])
+      .where('student.userId = :studentId', { studentId })
+      .orderBy('semester.startYear', 'DESC')
+      .addOrderBy('semester.semester', 'DESC')
+      .getRawMany();
+
+    const semesterMap = new Map<string, SemestersDto>();
+
+    for (const row of rawRecords) {
+      const key = `${row.semesterId}`;
+      const semester = semesterMap.get(key) ?? {
+        id: row.semesterId,
+        startYear: row.startYear,
+        endYear: row.endYear,
+        semester: row.semester,
+        gainedHours: 0,
+        totalHours: 0,
+        gpa: 0,
+        courses: [],
+      };
+      semester.courses.push({
+        courseId: row.courseId,
+        code: row.code,
+        name: row.name,
+        creditHours: row.creditHours,
+        degree: row.degree,
+        grade: row.grade,
+        gpa: row.gpa,
+      });
+      semesterMap.set(key, semester);
+    }
+
+    semesterMap.forEach((semester) => {
+      let totalWeightedPoints = 0;
+      let totalCreditHours = 0;
+      let gainedHours = 0;
+
+      for (const course of semester.courses) {
+        totalWeightedPoints += course.gpa * course.creditHours;
+        totalCreditHours += course.creditHours;
+        if (course.gpa > 0) {
+          gainedHours += course.creditHours;
+        }
+      }
+
+      semester.gpa =
+        totalCreditHours === 0
+          ? 0
+          : parseFloat((totalWeightedPoints / totalCreditHours).toFixed(2));
+      semester.totalHours = totalCreditHours;
+      semester.gainedHours = gainedHours;
+    });
+
+    return Array.from(semesterMap.values());
   }
 
   async remove(id: Semester['id']) {

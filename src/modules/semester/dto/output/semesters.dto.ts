@@ -57,9 +57,6 @@ export class SemestersDto {
   gpa: number;
 
   @Expose()
-  cumulativeGpa: number;
-
-  @Expose()
   @Type(() => CourseDto)
   courses: CourseDto[];
 }

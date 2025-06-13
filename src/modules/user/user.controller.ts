@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { currentUser } from 'src/shared/decorators/current-user.decorator';
 import { IPayloud } from 'src/shared/interfaces/payloud.interface';
 import { UserDto } from './dto/user.dto';
-import { UpdatePasswordDto } from './dto/update-password';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { SuccessEnum } from 'src/shared/i18n/enums/success.enum';
