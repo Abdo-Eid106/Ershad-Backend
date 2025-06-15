@@ -1,8 +1,8 @@
 {
-  "OFFICER_NOT_FOUND": "الضابط غير موجود.",
-  "OFFICER_ALREADY_EXISTS": "الضابط موجود بالفعل.",
-  "OFFICER_NAME_EN_REQUIRED": "اسم الضابط باللغة الإنجليزية مطلوب.",
-  "OFFICER_NAME_AR_REQUIRED": "اسم الضابط باللغة العربية مطلوب.",
+  "OFFICER_NOT_FOUND": "الموظف غير موجود.",
+  "OFFICER_ALREADY_EXISTS": "الموظف موجود بالفعل.",
+  "OFFICER_NAME_EN_REQUIRED": "اسم الموظف باللغة الإنجليزية مطلوب.",
+  "OFFICER_NAME_AR_REQUIRED": "اسم الموظف باللغة العربية مطلوب.",
   "OFFICER_EMAIL_REQUIRED": "البريد الإلكتروني مطلوب.",
   "OFFICER_EMAIL_INVALID": "يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالح.",
   "OFFICER_PASSWORD_REQUIRED": "كلمة المرور مطلوبة.",
