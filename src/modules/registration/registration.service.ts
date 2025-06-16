@@ -19,6 +19,11 @@ import { Program } from '../program/entities/program.entitiy';
 import { Course } from '../course/entites/course.entity';
 import { AcademicInfoService } from '../academic-info/academic-info.service';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
+import { InjectQueue } from '@nestjs/bullmq';
+import { QueuesEnum } from 'src/shared/queue/queues.enum';
+import { Queue } from 'bullmq';
+import { NotificationEnum } from '../notification/enums/notification.enum';
+import { NotificationJob } from '../notification/interfaces/NotificationJob';
 
 @Injectable()
 export class RegistrationService {
@@ -35,6 +40,8 @@ export class RegistrationService {
     private readonly courseRepo: Repository<Course>,
     @Inject(forwardRef(() => RegistrationValidationService))
     private readonly registrationValidationService: RegistrationValidationService,
+    @InjectQueue(QueuesEnum.NOTIFICATIONS)
+    private readonly notificationQueue: Queue,
     private readonly academicInfoService: AcademicInfoService,
     private readonly dataSource: DataSource,
   ) {}
@@ -54,31 +61,26 @@ export class RegistrationService {
 
     const { courseIds } = createRegistrationDto;
 
-    return await this.dataSource.transaction(
-      async (transactionalEntityManager) => {
-        // Check if a registration already exists and delete it
-        await transactionalEntityManager.delete(Registration, {
-          academicInfoId: studentId,
-        });
+    return await this.dataSource.transaction(async (manager) => {
+      await manager.delete(Registration, {
+        academicInfoId: studentId,
+      });
 
-        // Create a new Registration entry
-        const registration = transactionalEntityManager.create(Registration, {
-          academicInfo: { studentId },
-        });
-        await transactionalEntityManager.save(registration);
+      const registration = manager.create(Registration, {
+        academicInfo: { studentId },
+      });
+      await manager.save(registration);
 
-        // Create RegistrationCourse entries
-        const registrationCourses = courseIds.map((courseId) =>
-          transactionalEntityManager.create(RegistrationCourse, {
-            registrationId: registration.academicInfoId,
-            courseId,
-          }),
-        );
+      const registrationCourses = courseIds.map((courseId) =>
+        manager.create(RegistrationCourse, {
+          registrationId: registration.academicInfoId,
+          courseId,
+        }),
+      );
 
-        await transactionalEntityManager.save(registrationCourses);
-        return registration;
-      },
-    );
+      await manager.save(registrationCourses);
+      return registration;
+    });
   }
 
   async getStudentRegisteredCourses(studentId: Student['userId']) {
@@ -97,23 +99,37 @@ export class RegistrationService {
   async updateRegistrationStatus(
     updateRegistrationStatus: UpdateRegistrationStatus,
   ) {
-    const settings = await this.getSettings();
-
-    return this.dataSource.transaction(async (transactionalEntityManager) => {
-      await transactionalEntityManager.update(
-        RegistrationSettings,
-        settings.id,
-        updateRegistrationStatus,
-      );
-
-      if (updateRegistrationStatus.isOpen) {
-        await transactionalEntityManager.delete(Registration, {});
-      }
-    });
+    const { isOpen } = updateRegistrationStatus;
+    return isOpen ? this.openRegistration() : this.closeReigstration();
   }
 
-  async getRegistrationStatus() {
-    return (await this.getSettings()).isOpen;
+  private async openRegistration() {
+    const { id } = await this.getSettings();
+
+    await this.dataSource.transaction(async (manager) => {
+      await manager.update(RegistrationSettings, id, { isOpen: true });
+      await manager.delete(Registration, {});
+    });
+
+    const tokens = await this.getStudentsTokens();
+    if (tokens.length == 0) return;
+    await this.notificationQueue.add(NotificationEnum.MULTIPLE, {
+      type: NotificationEnum.MULTIPLE,
+      tokens: await this.getStudentsTokens(),
+      payload: {
+        title: 'Registration is now open!',
+        body: 'You can now register for the upcoming semester.',
+      },
+    } as NotificationJob);
+  }
+
+  private async closeReigstration() {
+    const { id } = await this.getSettings();
+
+    return this.dataSource.transaction(async (manager) => {
+      await manager.update(RegistrationSettings, id, { isOpen: false });
+      await manager.delete(Registration, {});
+    });
   }
 
   async getSettings() {
@@ -171,5 +187,16 @@ export class RegistrationService {
 
   private async getGradProjectCourse(programId: Program['id']) {
     return this.courseRepo.findOne({ where: { id: programId } });
+  }
+
+  private async getStudentsTokens() {
+    const fcmTokens = await this.studentRepo
+      .createQueryBuilder('student')
+      .innerJoin('student.user', 'user')
+      .innerJoin('user.fcmTokens', 'fcmToken')
+      .select('fcmToken.token AS token')
+      .getRawMany<{ token: string }>();
+
+    return fcmTokens.map((fcmToken) => fcmToken.token);
   }
 }

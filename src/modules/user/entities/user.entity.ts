@@ -1,10 +1,11 @@
 import { BaseEntity } from 'src/shared/entities/Base.entity';
 import { Student } from 'src/modules/student/entities/student.entity';
-import { Column, Entity, ManyToOne, OneToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { Officer } from 'src/modules/officer/entities/officer.entity';
 import { Role } from 'src/modules/auth/entities/role.entity';
 import { Admin } from 'src/modules/admin/entities/admin.entity';
 import { Otp } from 'src/modules/otp/entities/otp.entity';
+import { FcmToken } from 'src/modules/fcm-token/entities/fcm-token.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -31,4 +32,7 @@ export class User extends BaseEntity {
 
   @OneToOne(() => Otp, (otp) => otp.user)
   otp?: Otp;
+
+  @OneToMany(() => FcmToken, (fcmToken) => fcmToken.user)
+  fcmTokens: FcmToken[];
 }

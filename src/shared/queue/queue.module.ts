@@ -19,6 +19,9 @@ import { ConfigService } from '@nestjs/config';
     BullModule.registerQueue({
       name: QueuesEnum.WARNINGS,
     }),
+    BullModule.registerQueue({
+      name: QueuesEnum.NOTIFICATIONS,
+    }),
   ],
   exports: [BullModule],
 })

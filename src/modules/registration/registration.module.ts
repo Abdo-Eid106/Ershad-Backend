@@ -8,6 +8,7 @@ import { Student } from '../student/entities/student.entity';
 import { Course } from '../course/entites/course.entity';
 import { Registration } from './entities/registration.entity';
 import { RegistrationSettings } from './entities/registration-settings.entity';
+import { QueueModule } from 'src/shared/queue/queue.module';
 import { Program } from '../program/entities/program.entitiy';
 
 @Module({
@@ -19,6 +20,7 @@ import { Program } from '../program/entities/program.entitiy';
       Program,
       RegistrationSettings,
     ]),
+    QueueModule,
     AcademicInfoModule,
   ],
   controllers: [RegistrationController],

@@ -29,6 +29,9 @@ import { TranslationModule } from './shared/i18n/translation.module';
 import { I18nExceptionFilter } from './shared/i18n/i18n-exception.filter';
 import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
 import { WarningModule } from './modules/warning/warning.module';
+import { FcmTokenModule } from './modules/fcm-token/fcm-token.module';
+import { FirebaseModule } from './shared/firebase/firebase.module';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -55,6 +58,9 @@ import { WarningModule } from './modules/warning/warning.module';
     GradProjectModule,
     TranslationModule,
     WarningModule,
+    FcmTokenModule,
+    FirebaseModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [

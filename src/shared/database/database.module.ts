@@ -37,6 +37,7 @@ import { Otp } from 'src/modules/otp/entities/otp.entity';
 import { Role } from 'src/modules/auth/entities/role.entity';
 import { RegistrationSettings } from 'src/modules/registration/entities/registration-settings.entity';
 import { Warning } from 'src/modules/warning/entities/warning.entity';
+import { FcmToken } from 'src/modules/fcm-token/entities/fcm-token.entity';
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import { Warning } from 'src/modules/warning/entities/warning.entity';
           Otp,
           RegistrationSettings,
           Warning,
+          FcmToken,
         ],
         synchronize: true,
       }),
