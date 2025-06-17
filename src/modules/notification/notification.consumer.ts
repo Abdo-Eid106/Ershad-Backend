@@ -2,9 +2,9 @@ import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { QueuesEnum } from 'src/shared/queue/queues.enum';
 import { FirebaseService } from 'src/shared/firebase/firebase.service';
 import { Job } from 'bullmq';
-import { NotificationEnum } from './enums/notification.enum';
-import { NotificationPayload } from './interfaces/NotificationPayloud';
-import { NotificationJob } from './interfaces/NotificationJob';
+import { NotificationTarget } from './enums/notification.target';
+import { NotificationPayload } from './types/NotificationPayloud';
+import { NotificationJob } from './types/NotificationJob';
 import { Logger } from '@nestjs/common';
 
 @Processor(QueuesEnum.NOTIFICATIONS)
@@ -26,11 +26,7 @@ export class NotificatioConsumer extends WorkerHost {
   ): Promise<void> {
     await this.firebaseService.messaging().send({
       token,
-      notification: {
-        title: payload.title,
-        body: payload.body,
-      },
-      data: payload.data || {},
+      ...payload,
     });
   }
 
@@ -40,20 +36,16 @@ export class NotificatioConsumer extends WorkerHost {
   ): Promise<void> {
     await this.firebaseService.messaging().sendEachForMulticast({
       tokens,
-      notification: {
-        title: payload.title,
-        body: payload.body,
-      },
-      data: payload.data || {},
+      ...payload,
     });
   }
 
   private async dispatchNotification(
-    type: NotificationEnum,
+    type: NotificationTarget,
     tokens: string | string[],
     payload: NotificationPayload,
   ): Promise<void> {
-    if (type === NotificationEnum.SINGLE) {
+    if (type === NotificationTarget.SINGLE) {
       return this.sendToSingleToken(tokens as string, payload);
     }
     return this.sendToMultipleTokens(tokens as string[], payload);

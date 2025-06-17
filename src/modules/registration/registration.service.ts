@@ -22,8 +22,10 @@ import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 import { InjectQueue } from '@nestjs/bullmq';
 import { QueuesEnum } from 'src/shared/queue/queues.enum';
 import { Queue } from 'bullmq';
-import { NotificationEnum } from '../notification/enums/notification.enum';
-import { NotificationJob } from '../notification/interfaces/NotificationJob';
+import { NotificationTarget } from '../notification/enums/notification.target';
+import { NotificationJob } from '../notification/types/NotificationJob';
+import { NotficationType } from '../notification/enums/notification.type';
+import { NotificationPayload } from '../notification/types/NotificationPayloud';
 
 @Injectable()
 export class RegistrationService {
@@ -113,13 +115,22 @@ export class RegistrationService {
 
     const tokens = await this.getStudentsTokens();
     if (tokens.length == 0) return;
-    await this.notificationQueue.add(NotificationEnum.MULTIPLE, {
-      type: NotificationEnum.MULTIPLE,
+
+    const notification = {
+      title: 'Registration is now open!',
+      body: 'You can now register for the upcoming semester.',
+    };
+
+    const data = {
+      id,
+      type: NotficationType.REGISTRATION,
+    };
+
+    const payload = { notification, data } as NotificationPayload;
+    await this.notificationQueue.add(NotificationTarget.MULTIPLE, {
+      type: NotificationTarget.MULTIPLE,
       tokens: await this.getStudentsTokens(),
-      payload: {
-        title: 'Registration is now open!',
-        body: 'You can now register for the upcoming semester.',
-      },
+      payload,
     } as NotificationJob);
   }
 
