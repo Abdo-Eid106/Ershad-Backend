@@ -7,7 +7,7 @@
   "REGULATION_NAME_EN_STRING": "English name must be a string.",
   "REGULATION_NAME_AR_STRING": "Arabic name must be a string.",
   "LEVELS_RANGE_INVALID": "Levels should be from 1 to levelsCount.",
-  "LEVEL_REQ_HOURS_INVALID": "Level {{current}} reqHours ({{currentHours}}) must be greater than level {{previous}} reqHours ({{previousHours}}).",
+  "LEVEL_REQ_HOURS_INVALID": "Level {current} reqHours ({currentHours}) must be greater than level {previous} reqHours ({previousHours}).",
   "COURSE_GPA_RANGE_INVALID": "Course GPA ranges must cover all numbers from 0 to 100 without gaps or overlaps.",
   "CUM_GPA_RANGE_INVALID": "Cumulative GPA ranges must cover all numbers from 0 to 4 without gaps or overlaps.",
   "REGULATION_LEVEL_VALUE_INT": "Level value must be an integer.",

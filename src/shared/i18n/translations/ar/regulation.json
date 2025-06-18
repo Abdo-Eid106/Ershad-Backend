@@ -7,7 +7,7 @@
   "REGULATION_NAME_EN_STRING": "يجب أن يكون الاسم باللغة الإنجليزية نصًا.",
   "REGULATION_NAME_AR_STRING": "يجب أن يكون الاسم باللغة العربية نصًا.",
   "LEVELS_RANGE_INVALID": "يجب أن تكون المستويات من 1 إلى عدد المستويات.",
-  "LEVEL_REQ_HOURS_INVALID": "يجب أن تكون ساعات المستوى {{current}} ({{currentHours}}) أكبر من ساعات المستوى {{previous}} ({{previousHours}}).",
+  "LEVEL_REQ_HOURS_INVALID": "يجب أن تكون ساعات المستوى {current} ({currentHours}) أكبر من ساعات المستوى {previous} ({previousHours}).",
   "COURSE_GPA_RANGE_INVALID": "يجب أن تغطي نطاقات المعدل التراكمي للمقرر جميع الأرقام من 0 إلى 100 بدون فجوات أو تداخلات.",
   "CUM_GPA_RANGE_INVALID": "يجب أن تغطي نطاقات المعدل التراكمي جميع الأرقام من 0 إلى 4 بدون فجوات أو تداخلات.",
   "REGULATION_LEVEL_VALUE_INT": "قيمة المستوى يجب أن تكون عددًا صحيحًا.",
