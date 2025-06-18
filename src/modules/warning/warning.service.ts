@@ -14,7 +14,7 @@ export class WarningService {
   async getStudentWarnings(studentId: User['id']) {
     const warnings = await this.warningRepo.find({
       where: { semester: { academicInfo: { studentId } } },
-      order: { createdAt: 'ASC' },
+      order: { semester: { startYear: 'ASC', semester: 'ASC' } },
       relations: ['semester'],
     });
 

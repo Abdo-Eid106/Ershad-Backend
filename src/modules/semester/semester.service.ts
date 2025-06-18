@@ -105,7 +105,10 @@ export class SemesterService {
       ),
     );
 
-    await this.warningsQueue.add('warning', { semesterId: semesterRecord.id });
+    await this.warningsQueue.add('warning', {
+      semesterId: semesterRecord.id,
+      studentId,
+    });
   }
 
   async findOne(id: Semester['id']) {
