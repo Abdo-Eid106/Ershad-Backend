@@ -7,10 +7,12 @@ import { Regulation } from '../regulation/entities';
 import { AcademicInfo } from './entities/academic-info.entity';
 import { AcademicInfoValidationService } from './academic-info-validation.service';
 import { Program } from '../program/entities/program.entitiy';
+import { SemesterModule } from '../semester/semester.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Student, Regulation, AcademicInfo, Program]),
+    SemesterModule,
   ],
   controllers: [AcademicInfoController],
   providers: [AcademicInfoService, AcademicInfoValidationService],

@@ -13,6 +13,7 @@ import { AcademicInfoValidationService } from './academic-info-validation.servic
 import { User } from '../user/entities/user.entity';
 import { Course } from '../course/entites/course.entity';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
+import { SemesterService } from '../semester/semester.service';
 
 @Injectable()
 export class AcademicInfoService {
@@ -23,6 +24,7 @@ export class AcademicInfoService {
     private readonly academicInfoRepo: Repository<AcademicInfo>,
     @Inject(forwardRef(() => AcademicInfoValidationService))
     private readonly academicInfoValidationService: AcademicInfoValidationService,
+    private readonly semesterService: SemesterService,
     @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
 
@@ -40,7 +42,7 @@ export class AcademicInfoService {
 
     const attemptedHours = await this.getAttemptedHours(studentId);
     const gainedHours = await this.getGainedHours(studentId);
-    const gpa = await this.getGpa(studentId);
+    const gpa = await this.semesterService.getStudentGpa(studentId);
     const level = await this.getLevel(studentId);
 
     return {
@@ -67,62 +69,6 @@ export class AcademicInfoService {
       { studentId },
       { regulation: { id: regulationId }, program: { id: programId } },
     );
-  }
-
-  async getGpa(studentId: User['id']) {
-    const subQuery = this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'ac')
-      .leftJoin('ac.semesters', 'semester')
-      .leftJoin('semester.semesterCourses', 'semesterCourse')
-      .innerJoin('semesterCourse.course', 'course')
-      .select('course.id', 'courseId')
-      .addSelect('semesterCourse.degree', 'degree')
-      .addSelect(
-        'RANK() OVER(PARTITION BY course.id ORDER BY semester.startYear ASC, semester.semester ASC)',
-        'rank',
-      )
-      .addSelect('course.creditHours', 'creditHours')
-      .where('student.userId = :studentId', { studentId });
-
-    const maxRetakeGrade = await this.getMaxRetakeGrade(studentId);
-
-    const subQuery2 = this.entityManager
-      .createQueryBuilder()
-      .select([
-        'sub.courseId AS id',
-        `MAX(
-          CASE 
-            WHEN sub.rank = 1 THEN sub.degree 
-            ELSE LEAST(sub.degree, :maxRetakeGrade) 
-          END
-        ) AS degree`,
-        'sub.creditHours AS creditHours',
-      ])
-      .from(`(${subQuery.getQuery()})`, 'sub')
-      .setParameters({ ...subQuery.getParameters(), maxRetakeGrade })
-      .groupBy('sub.courseId');
-
-    const result = await this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'academicInfo')
-      .innerJoin('academicInfo.regulation', 'regulation')
-      .innerJoin('regulation.courseGpaRanges', 'range')
-      .innerJoin(
-        `(${subQuery2.getQuery()})`,
-        'sub',
-        'sub.degree BETWEEN range.from AND range.to',
-      )
-      .select(
-        `CASE 
-          WHEN SUM(sub.creditHours) > 0 THEN ROUND(SUM(range.gpa * sub.creditHours) / SUM(sub.creditHours), 2)
-          ELSE 0 
-        END AS gpa`,
-      )
-      .where('student.userId = :studentId', { studentId })
-      .setParameters({ studentId, ...subQuery2.getParameters() })
-      .getRawOne();
-    return result.gpa;
   }
 
   async getMinGpaToGraduate(studentId: User['id']) {
@@ -265,7 +211,7 @@ export class AcademicInfoService {
   async getRegistrationHoursRange(
     studentId: User['id'],
   ): Promise<{ min: number; max: number }> {
-    const gpa = await this.getGpa(studentId);
+    const gpa = await this.semesterService.getStudentGpa(studentId);
     const isUnderGpaRules = await this.isUnderGpaRules(studentId);
 
     return this.studentRepo
@@ -361,7 +307,7 @@ export class AcademicInfoService {
   }
 
   async canStudentRetakeCourseWithoutLimit(studentId: User['id']) {
-    const gpa = await this.getGpa(studentId);
+    const gpa = await this.semesterService.getStudentGpa(studentId);
     const minGpaForGraduation = await this.getMinGpaToGraduate(studentId);
 
     return gpa < minGpaForGraduation;

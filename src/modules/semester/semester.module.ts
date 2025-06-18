@@ -16,5 +16,6 @@ import { QueueModule } from 'src/shared/queue/queue.module';
   ],
   controllers: [SemesterController],
   providers: [SemesterService],
+  exports: [SemesterService],
 })
 export class SemesterModule {}

@@ -20,14 +20,12 @@ import { Brackets, Repository, SelectQueryBuilder } from 'typeorm';
 import { RequirementCategory } from '../requirement/enums/requirement-category.enum';
 import { CourseGpaRange } from '../regulation/entities';
 import { RequirementCourse } from '../requirement/entities/requirement-course.entity';
-import { UUID } from 'crypto';
 import {
   SemesterCourseDto,
   SemesterCoursePerformance,
   SemesterDto,
   SemesterStatistics,
 } from './dto/output/semester.dto';
-import { CourseDto } from '../course/dto/course.dto';
 
 export interface CourseRecord {
   courseId: Course['id'];
@@ -349,5 +347,19 @@ export class SemesterService {
     const semester = await this.semesterRepo.findOne({ where: { id } });
     if (!semester) throw new NotFoundException(ErrorEnum.SEMESTER_NOT_FOUND);
     return this.semesterRepo.remove(semester);
+  }
+
+  async getStudentGpa(studentId: Student['userId']) {
+    const semester = await this.semesterRepo.findOne({
+      where: { academicInfo: { studentId } },
+      order: {
+        startYear: 'DESC',
+        semester: 'DESC',
+      },
+    });
+    if (!semester) return 0;
+
+    const result = await this.findOne(semester.id);
+    return result.statistics.cumGpa;
   }
 }
