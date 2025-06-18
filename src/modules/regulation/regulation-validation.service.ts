@@ -58,6 +58,10 @@ export class RegulationValidationService {
       if (current.to !== next.from - 1) {
         isValid = false;
       }
+
+      if (current.gpa >= next.gpa) {
+        isValid = false;
+      }
     }
 
     if (!isValid) {
