@@ -1,8 +1,12 @@
-import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
+import {
+  Module,
+  MiddlewareConsumer,
+  RequestMethod,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { APP_PIPE, APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { validationPipe } from './shared/pipes/validation.pipe';
 import { LoggerMiddleware } from './shared/middlewares/logger.middleware';
 import { RegulationModule } from './modules/regulation/regulation.module';
 import { DatabaseModule } from './shared/database/database.module';
@@ -67,7 +71,7 @@ import { NotificationModule } from './modules/notification/notification.module';
     AppService,
     {
       provide: APP_PIPE,
-      useValue: validationPipe,
+      useClass: ValidationPipe,
     },
     {
       provide: APP_FILTER,
