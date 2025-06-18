@@ -41,9 +41,9 @@ describe('WarningService (integration)', () => {
     expect(service).toBeDefined();
   });
 
-//   it('should throw NotFoundException if student not found', async () => {
-//     await expect(service.getStudentCourses('non-existent-id')).rejects.toThrow(ErrorEnum.STUDENT_NOT_FOUND);
-//   });
+  //   it('should throw NotFoundException if student not found', async () => {
+  //     await expect(service.getStudentCourses('non-existent-id')).rejects.toThrow(ErrorEnum.STUDENT_NOT_FOUND);
+  //   });
 
   // Add more tests for happy path, etc.
-}); 
+});
