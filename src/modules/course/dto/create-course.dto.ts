@@ -6,6 +6,7 @@ import {
   IsUUID,
   IsOptional,
   ValidateNested,
+  IsNotEmpty,
 } from 'class-validator';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 import { Course } from '../entites/course.entity';
@@ -19,6 +20,7 @@ export class CourseName {
 }
 
 export class CreateCourseDto {
+  @IsNotEmpty()
   @Type(() => CourseName)
   @ValidateNested({ message: ErrorEnum.NAME_OBJECT })
   name: CourseName;
