@@ -128,7 +128,7 @@ export class RegistrationService {
 
     const payload = { notification, data } as NotificationPayload;
     await this.notificationQueue.add(NotificationTarget.MULTIPLE, {
-      type: NotificationTarget.MULTIPLE,
+      target: NotificationTarget.MULTIPLE,
       tokens: await this.getStudentsTokens(),
       payload,
     } as NotificationJob);

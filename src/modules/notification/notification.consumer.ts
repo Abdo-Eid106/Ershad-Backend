@@ -16,8 +16,11 @@ export class NotificatioConsumer extends WorkerHost {
   }
 
   async process(job: Job<NotificationJob>): Promise<any> {
-    const { type, tokens, payload } = job.data;
-    return this.dispatchNotification(type, tokens, payload);
+    const { target, tokens, payload } = job.data;
+    if (target === NotificationTarget.SINGLE) {
+      return this.sendToSingleToken(tokens as string, payload);
+    }
+    return this.sendToMultipleTokens(tokens as string[], payload);
   }
 
   private async sendToSingleToken(
@@ -38,17 +41,6 @@ export class NotificatioConsumer extends WorkerHost {
       tokens,
       ...payload,
     });
-  }
-
-  private async dispatchNotification(
-    type: NotificationTarget,
-    tokens: string | string[],
-    payload: NotificationPayload,
-  ): Promise<void> {
-    if (type === NotificationTarget.SINGLE) {
-      return this.sendToSingleToken(tokens as string, payload);
-    }
-    return this.sendToMultipleTokens(tokens as string[], payload);
   }
 
   @OnWorkerEvent('completed')
