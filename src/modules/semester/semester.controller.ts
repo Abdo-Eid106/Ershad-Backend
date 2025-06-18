@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { SemesterService } from './semester.service';
-import { CreateSemesterDto, SemestersDto, SemesterDto } from './dto';
+import { CreateSemesterDto, SemesterDto } from './dto';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
@@ -22,6 +22,7 @@ import { SuccessEnum } from 'src/shared/i18n/enums/success.enum';
 
 @Controller()
 @UseGuards(JwtGuard, RolesGuard)
+@Serialize(SemesterDto)
 export class SemesterController {
   constructor(private readonly semesterService: SemesterService) {}
 
@@ -37,20 +38,17 @@ export class SemesterController {
 
   @Get('/students/:id/semesters')
   @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
-  @Serialize(SemestersDto)
   findStudentSemesters(@Param('id', ParseUUIDPipe) id: User['id']) {
     return this.semesterService.findStudentSemesters(id);
   }
 
   @Get('/semesters/me')
-  @Serialize(SemestersDto)
   @Roles(RoleEnum.STUDENT)
   findMySemesters(@currentUser() user: IPayloud) {
     return this.semesterService.findStudentSemesters(user.id);
   }
 
   @Get('/semesters/:id')
-  @Serialize(SemesterDto)
   @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
   findOne(@Param('id', ParseUUIDPipe) id: User['id']) {
     return this.semesterService.findOne(id);

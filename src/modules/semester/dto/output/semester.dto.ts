@@ -1,31 +1,38 @@
 import { Expose, Type } from 'class-transformer';
+import { CourseDto } from 'src/modules/course/dto/course.dto';
 
-class NameDto {
-  @Expose()
-  ar: string;
-
-  @Expose()
-  en: string;
-}
-
-class StudentDto {
-  @Expose()
-  @Type(() => NameDto)
-  name: NameDto;
-
-  @Expose()
-  nationalId: string;
-
-  @Expose()
-  universityId: string;
-}
-
-class CourseDto {
+export class SemesterCoursePerformance {
   @Expose()
   degree: number;
 
   @Expose()
-  courseId: string;
+  grade: string;
+
+  @Expose()
+  gpa: number;
+}
+
+export class SemesterCourseDto {
+  @Expose()
+  course: Partial<CourseDto>;
+
+  @Expose()
+  @Type(() => SemesterCoursePerformance)
+  performance: SemesterCoursePerformance;
+}
+
+export class SemesterStatistics {
+  @Expose()
+  attemptedHours: number;
+
+  @Expose()
+  gainedHours: number;
+
+  @Expose()
+  gpa: number;
+
+  @Expose()
+  cumGpa: number;
 }
 
 export class SemesterDto {
@@ -42,10 +49,10 @@ export class SemesterDto {
   semester: number;
 
   @Expose()
-  @Type(() => StudentDto)
-  student: StudentDto;
+  @Type(() => SemesterStatistics)
+  statistics: SemesterStatistics;
 
   @Expose()
-  @Type(() => CourseDto)
-  semesterCourses: CourseDto[];
+  @Type(() => SemesterCourseDto)
+  semesterCourses: SemesterCourseDto[];
 }
