@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsIn,
+  IsNotEmpty,
   IsPhoneNumber,
   IsString,
   IsUUID,
@@ -22,6 +23,7 @@ class NameDto {
 }
 
 export class CreateStudentDto {
+  @IsNotEmpty()
   @ValidateNested({ message: ErrorEnum.NAME_OBJECT })
   @Type(() => NameDto)
   name: NameDto;

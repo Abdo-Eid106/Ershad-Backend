@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsIn,
+  IsNotEmpty,
   IsPhoneNumber,
   IsString,
   ValidateNested,
@@ -18,6 +19,7 @@ class NameDto {
 }
 
 export class UpdatePersonalInfoDto {
+  @IsNotEmpty()
   @ValidateNested()
   @Type(() => NameDto)
   name: NameDto;

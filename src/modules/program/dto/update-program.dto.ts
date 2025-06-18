@@ -1,9 +1,10 @@
 import { Type } from 'class-transformer';
-import { IsString, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { NameDto } from 'src/modules/regulation/dto/create-regulation.dto';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 export class UpdateProgramDto {
+  @IsNotEmpty()
   @ValidateNested()
   @Type(() => NameDto)
   name: object;

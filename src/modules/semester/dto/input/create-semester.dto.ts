@@ -1,6 +1,7 @@
 import {
   IsArray,
   IsInt,
+  IsNotEmpty,
   IsUUID,
   Max,
   Min,
@@ -21,6 +22,7 @@ class CreateSemesterCourse {
 }
 
 export class CreateSemesterDto {
+  @IsNotEmpty()
   @IsInt({ message: ErrorEnum.SEMESTER_START_YEAR_INT })
   @Min(2019, { message: ErrorEnum.SEMESTER_START_YEAR_MIN })
   startYear: number;
@@ -34,6 +36,7 @@ export class CreateSemesterDto {
   @Max(2, { message: ErrorEnum.SEMESTER_SEMESTER_MAX })
   semester: number;
 
+  @IsNotEmpty()
   @IsArray({ message: ErrorEnum.SEMESTER_COURSES_ARRAY })
   @ValidateNested({ message: ErrorEnum.SEMESTER_COURSES_NESTED })
   @Type(() => CreateSemesterCourse)

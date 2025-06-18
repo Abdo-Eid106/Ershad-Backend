@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsInt,
+  IsNotEmpty,
   IsUUID,
   Max,
   Min,
@@ -29,6 +30,7 @@ export class CreateSemesterPlan {
 }
 
 export class CreatePlanDto {
+  @IsNotEmpty()
   @IsArray({ message: ErrorEnum.PLAN_SEMESTERS_ARRAY })
   @ValidateNested({ each: true })
   @Type(() => CreateSemesterPlan)

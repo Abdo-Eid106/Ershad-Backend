@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsEmail,
+  IsNotEmpty,
   IsString,
   Matches,
   MinLength,
@@ -17,6 +18,7 @@ class NameDto {
 }
 
 export class CreateOfficerDto {
+  @IsNotEmpty()
   @ValidateNested()
   @Type(() => NameDto)
   name: NameDto;
