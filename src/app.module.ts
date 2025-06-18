@@ -71,7 +71,7 @@ import { NotificationModule } from './modules/notification/notification.module';
     AppService,
     {
       provide: APP_PIPE,
-      useClass: ValidationPipe,
+      useValue: new ValidationPipe({ transform: true, whitelist: true }),
     },
     {
       provide: APP_FILTER,
