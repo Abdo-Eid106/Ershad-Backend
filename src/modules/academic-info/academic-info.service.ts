@@ -16,6 +16,7 @@ import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 import { SemesterService } from '../semester/semester.service';
 import { Semester } from '../semester/entities/semester.entity';
 import { Plan } from '../plan/entities/plan.entity';
+import { Program } from '../program/entities/program.entitiy';
 
 @Injectable()
 export class AcademicInfoService {
@@ -324,5 +325,20 @@ export class AcademicInfoService {
 
     if (plan) return plan.programId;
     return null;
+  }
+
+  async getStudentGradProjectId(
+    studentId: User['id'],
+  ): Promise<Course['id'] | null> {
+    const course = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
+      .innerJoin('academicInfo.program', 'program')
+      .innerJoin(Course, 'course', 'program.id = course.id')
+      .where('academicInfo.studentId = :studentId', { studentId })
+      .select('course.id AS courseId')
+      .getRawOne<{ id: Course['id'] }>();
+
+    if (!course) return null;
+    return course.id;
   }
 }

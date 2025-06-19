@@ -9,7 +9,6 @@ import { Course } from '../course/entites/course.entity';
 import { Registration } from './entities/registration.entity';
 import { RegistrationSettings } from './entities/registration-settings.entity';
 import { QueueModule } from 'src/shared/queue/queue.module';
-import { Program } from '../program/entities/program.entitiy';
 import { Plan } from '../plan/entities/plan.entity';
 
 @Module({
@@ -18,7 +17,6 @@ import { Plan } from '../plan/entities/plan.entity';
       Student,
       Course,
       Registration,
-      Program,
       Plan,
       RegistrationSettings,
     ]),

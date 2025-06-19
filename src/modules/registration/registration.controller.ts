@@ -24,7 +24,10 @@ export class RegistrationController {
     @currentUser() user: IPayloud,
     @Body() createRegistrationDto: CreateRegistrationDto,
   ) {
-    await this.registrationService.create(user.id, createRegistrationDto);
+    await this.registrationService.registerStudentCourses(
+      user.id,
+      createRegistrationDto,
+    );
     return { message: SuccessEnum.REGISTRATION_COMPLETED };
   }
 

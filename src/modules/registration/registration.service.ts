@@ -37,10 +37,6 @@ export class RegistrationService {
     private readonly registrationRepo: Repository<Registration>,
     @InjectRepository(RegistrationSettings)
     private readonly registrationSettingsRepo: Repository<RegistrationSettings>,
-    @InjectRepository(Program)
-    private readonly programRepo: Repository<Program>,
-    @InjectRepository(Course)
-    private readonly courseRepo: Repository<Course>,
     @InjectRepository(Plan)
     private readonly planRepo: Repository<Plan>,
     @Inject(forwardRef(() => RegistrationValidationService))
@@ -51,7 +47,7 @@ export class RegistrationService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async create(
+  async registerStudentCourses(
     studentId: Student['userId'],
     createRegistrationDto: CreateRegistrationDto,
   ) {
@@ -86,19 +82,6 @@ export class RegistrationService {
       await manager.save(registrationCourses);
       return registration;
     });
-  }
-
-  async getStudentRegisteredCourses(studentId: Student['userId']) {
-    if (!(await this.studentRepo.existsBy({ userId: studentId })))
-      throw new NotFoundException(ErrorEnum.STUDENT_NOT_FOUND);
-
-    return this.registrationRepo
-      .createQueryBuilder('registration')
-      .innerJoin('registration.registrationCourses', 'registrationCourse')
-      .innerJoin('registrationCourse.course', 'course')
-      .where('registration.academicInfoId = :studentId', { studentId })
-      .select(this.getCourseSelectFields())
-      .getRawMany();
   }
 
   async updateRegistrationStatus(
@@ -154,11 +137,22 @@ export class RegistrationService {
     );
   }
 
+  async getStudentRegisteredCourses(studentId: Student['userId']) {
+    if (!(await this.studentRepo.existsBy({ userId: studentId })))
+      throw new NotFoundException(ErrorEnum.STUDENT_NOT_FOUND);
+
+    return this.registrationRepo
+      .createQueryBuilder('registration')
+      .innerJoin('registration.registrationCourses', 'registrationCourse')
+      .innerJoin('registrationCourse.course', 'course')
+      .where('registration.academicInfoId = :studentId', { studentId })
+      .select(this.getCourseSelectFields())
+      .getRawMany();
+  }
+
   async getStudentAvailableCourses(studentId: Student['userId']) {
-    const program = await this.getStudentProgram(studentId);
-    const gradProject = program
-      ? await this.getGradProjectCourse(program.id)
-      : null;
+    const gradProjectId =
+      await this.academicInfoService.getStudentGradProjectId(studentId);
 
     const [requiredHoursToTakeGradProject, gainedHours, passedCourseIds] =
       await Promise.all([
@@ -182,25 +176,13 @@ export class RegistrationService {
         { passedCourseIds },
       );
 
-    if (gradProject && gainedHours < requiredHoursToTakeGradProject) {
+    if (gradProjectId && gainedHours < requiredHoursToTakeGradProject) {
       query.andWhere('course.id != :gradProjectId', {
-        gradProjectId: gradProject.id,
+        gradProjectId,
       });
     }
 
     return (await query.getRawMany()) as Course[];
-  }
-
-  private async getStudentProgram(studentId: Student['userId']) {
-    return this.programRepo
-      .createQueryBuilder('program')
-      .innerJoin('program.academicInfos', 'academicInfo')
-      .where('academicInfo.studentId = :studentId', { studentId })
-      .getOne();
-  }
-
-  private async getGradProjectCourse(programId: Program['id']) {
-    return this.courseRepo.findOne({ where: { id: programId } });
   }
 
   private async getStudentsTokens() {
