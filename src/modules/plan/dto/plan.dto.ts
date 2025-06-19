@@ -19,9 +19,6 @@ export class PlanDto {
   id: Program['id'];
 
   @Expose()
-  levels: number;
-
-  @Expose()
   @Type(() => PlanCourse)
   planCourses: PlanCourse[];
 }
