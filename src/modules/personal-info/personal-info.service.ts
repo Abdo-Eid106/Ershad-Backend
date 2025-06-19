@@ -24,32 +24,32 @@ export class PersonalInfoService {
 
   async findOne(id: User['id']) {
     const student = await this.personalInfoRepo
-      .createQueryBuilder('PI')
-      .innerJoin('PI.student', 'student')
+      .createQueryBuilder('personalInfo')
+      .innerJoin('personalInfo.student', 'student')
       .innerJoin('student.user', 'user')
       .select([
         'user.id AS id',
-        'PI.name AS name',
-        'PI.nationalId AS nationalId',
-        'PI.universityId AS universityId',
-        'PI.gender AS gender',
-        'PI.phone AS phone',
-        'PI.avatar AS avatar',
         'user.email AS email',
+        'personalInfo.name AS name',
+        'personalInfo.nationalId AS nationalId',
+        'personalInfo.universityId AS universityId',
+        'personalInfo.gender AS gender',
+        'personalInfo.phone AS phone',
+        'personalInfo.avatar AS avatar',
       ])
       .where('user.id = :id', { id })
       .getRawOne();
+
     if (!student) throw new NotFoundException(ErrorEnum.STUDENT_NOT_FOUND);
     return student;
   }
 
   async update(id: User['id'], updatePersonalInfoDto: UpdatePersonalInfoDto) {
     const { email, nationalId, universityId, phone } = updatePersonalInfoDto;
-    //check if the user exist
+
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) throw new NotFoundException(ErrorEnum.STUDENT_NOT_FOUND);
 
-    //check if the email in user
     if (user.email != email && (await this.userRepo.existsBy({ email })))
       throw new ConflictException(ErrorEnum.EMAIL_IN_USE);
 
@@ -57,37 +57,30 @@ export class PersonalInfoService {
       where: { studentId: id },
     });
 
-    //check if the nationalId in use
     if (
       personalInfo.nationalId != nationalId &&
       (await this.personalInfoRepo.existsBy({ nationalId }))
     )
       throw new ConflictException(ErrorEnum.NATIONAL_ID_IN_USE);
 
-    //check if the universityId in use
     if (
       personalInfo.universityId != universityId &&
       (await this.personalInfoRepo.existsBy({ universityId }))
     )
       throw new ConflictException(ErrorEnum.UNIVERSITY_ID_IN_USE);
 
-    //check if the phone in use
     if (
       personalInfo.phone != phone &&
       (await this.personalInfoRepo.existsBy({ phone }))
     )
       throw new ConflictException(ErrorEnum.PHONE_IN_USE);
 
-    //update user entity
     await this.userRepo.save({ ...user, ...updatePersonalInfoDto });
 
-    //update personalInfo entity
     await this.personalInfoRepo.save({
       ...personalInfo,
       ...updatePersonalInfoDto,
     });
-
-    return this.findOne(id);
   }
 
   async updateAvatar(studentId: User['id'], avatar: Express.Multer.File) {
