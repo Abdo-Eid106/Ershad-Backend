@@ -157,11 +157,11 @@ export class RegistrationService {
       ? await this.getGradProjectCourse(program.id)
       : null;
 
-    const [requiredHoursToTakeGradProject, gainedHours, takenCourseIds] =
+    const [requiredHoursToTakeGradProject, gainedHours, passedCourseIds] =
       await Promise.all([
         this.academicInfoService.getRequiredHoursToTakeGradProject(studentId),
         this.academicInfoService.getGainedHours(studentId),
-        this.academicInfoService.getTakenCourseIds(studentId),
+        this.academicInfoService.getPassedCourseIds(studentId),
       ]);
 
     const query = this.studentRepo
@@ -175,8 +175,8 @@ export class RegistrationService {
       .select(COURSE_SELECT_FIELDS)
       .where('student.userId = :studentId', { studentId })
       .andWhere(
-        '(prerequisite.id IS NULL OR prerequisite.id IN (:...takenCourseIds))',
-        { takenCourseIds },
+        '(prerequisite.id IS NULL OR prerequisite.id IN (:...passedCourseIds))',
+        { passedCourseIds },
       );
 
     if (gradProject && gainedHours < requiredHoursToTakeGradProject) {

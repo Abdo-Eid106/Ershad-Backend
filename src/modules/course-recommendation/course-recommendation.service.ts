@@ -33,11 +33,11 @@ export class CourseRecommendationService {
     const availableCourses =
       await this.registrationService.getStudentAvailableCourses(studentId);
     const availableCourseIds = availableCourses.map((course) => course.id);
-    const takenCourseIds = new Set(
-      await this.academicInfoService.getTakenCourseIds(studentId),
+    const passedCourseIds = new Set(
+      await this.academicInfoService.getPassedCourseIds(studentId),
     );
     const targetCourseIds = availableCourseIds.filter(
-      (id) => !takenCourseIds.has(id),
+      (id) => !passedCourseIds.has(id),
     );
 
     return this.planRepo

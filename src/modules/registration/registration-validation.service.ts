@@ -68,7 +68,7 @@ export class RegistrationValidationService {
     }
 
     if (
-      !(await this.academicInfoService.canStudentRetakeCourseWithoutLimit(
+      !(await this.academicInfoService.canStudentRetakeCoursesWithoutLimit(
         studentId,
       ))
     ) {
@@ -118,7 +118,7 @@ export class RegistrationValidationService {
       .select(['SUM(course.creditHours) as totalCreditHours'])
       .getRawOne();
 
-    const { min: minHours, max: maxHours } =
+    const [minHours, maxHours] =
       await this.academicInfoService.getRegistrationHoursRange(studentId);
 
     const creditHourStatus =
@@ -151,7 +151,7 @@ export class RegistrationValidationService {
   ) {
     const [previousRetakeAttempts, maxAllowedRetakes] = await Promise.all([
       this.academicInfoService.getPreviousRetakeAttempts(studentId),
-      this.academicInfoService.getMaxRetakeCourses(studentId),
+      this.academicInfoService.getMaxAllowedRetakes(studentId),
     ]);
 
     const availableRetakeSlots = maxAllowedRetakes - previousRetakeAttempts;

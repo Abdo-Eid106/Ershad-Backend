@@ -4,9 +4,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from '../student/entities/student.entity';
-import { EntityManager, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UpdateAcademicInfoDto } from './dto/update-academic-info.dto';
 import { AcademicInfo } from './entities/academic-info.entity';
 import { AcademicInfoValidationService } from './academic-info-validation.service';
@@ -14,31 +14,26 @@ import { User } from '../user/entities/user.entity';
 import { Course } from '../course/entites/course.entity';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 import { SemesterService } from '../semester/semester.service';
+import { Semester } from '../semester/entities/semester.entity';
 
 @Injectable()
 export class AcademicInfoService {
   constructor(
-    @InjectRepository(Student)
-    private readonly studentRepo: Repository<Student>,
+    @InjectRepository(Semester)
+    private readonly semesterRepo: Repository<Semester>,
     @InjectRepository(AcademicInfo)
     private readonly academicInfoRepo: Repository<AcademicInfo>,
     @Inject(forwardRef(() => AcademicInfoValidationService))
     private readonly academicInfoValidationService: AcademicInfoValidationService,
     private readonly semesterService: SemesterService,
-    @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
 
-  async getAcademicInfo(studentId: User['id']) {
-    const student = await this.studentRepo.findOne({
-      where: { userId: studentId },
-      relations: [
-        'academicInfo',
-        'academicInfo.regulation',
-        'academicInfo.regulation.academicRequirements',
-        'academicInfo.program',
-      ],
+  async getAcademicInfo(studentId: Student['userId']) {
+    const academicInfo = await this.academicInfoRepo.findOne({
+      where: { studentId },
+      relations: ['regulation', 'regulation.academicRequirements', 'program'],
     });
-    if (!student) throw new NotFoundException(ErrorEnum.STUDENT_NOT_FOUND);
+    if (!academicInfo) throw new NotFoundException(ErrorEnum.STUDENT_NOT_FOUND);
 
     const attemptedHours = await this.getAttemptedHours(studentId);
     const gainedHours = await this.getGainedHours(studentId);
@@ -50,8 +45,8 @@ export class AcademicInfoService {
       gainedHours,
       gpa,
       level,
-      regulation: student.academicInfo.regulation,
-      program: student.academicInfo.program,
+      regulation: academicInfo.regulation,
+      program: academicInfo.program,
     };
   }
 
@@ -72,207 +67,202 @@ export class AcademicInfoService {
   }
 
   async getMinGpaToGraduate(studentId: User['id']) {
-    const result = await this.academicInfoRepo
+    const { minGpaForGraduation } = await this.academicInfoRepo
       .createQueryBuilder('academicInfo')
       .innerJoin('academicInfo.regulation', 'regulation')
       .innerJoin('regulation.dismissalRules', 'dismissalRules')
       .select('dismissalRules.minGpaForGraduation', 'minGpaForGraduation')
       .where('academicInfo.studentId = :studentId', { studentId })
-      .getRawOne();
+      .getRawOne<{ minGpaForGraduation: number }>();
 
-    return result.minGpaForGraduation;
+    return minGpaForGraduation;
   }
 
   async getLevel(studentId: User['id']) {
     const gainedHours = await this.getGainedHours(studentId);
-    const result = await this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'academicInfo')
+    const { level } = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
       .innerJoin('academicInfo.regulation', 'regulation')
       .innerJoin('regulation.levels', 'level')
       .groupBy('regulation.id')
       .where('level.reqHours <= :gainedHours', { gainedHours })
       .select('MAX(level.value)', 'level')
-      .getRawOne();
-    return result?.level ?? 1;
+      .getRawOne<{ level: number }>();
+
+    return level;
   }
 
   async getAttemptedHours(studentId: User['id']) {
-    const result = await this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'ac')
-      .leftJoin('ac.semesters', 'semester')
+    const semesterCourses = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
+      .leftJoin('academicInfo.semesters', 'semester')
       .leftJoin('semester.semesterCourses', 'semesterCourse')
       .innerJoin('semesterCourse.course', 'course')
-      .where('student.userId = :studentId', { studentId })
-      .groupBy('student.userId')
-      .select('COALESCE(SUM(course.creditHours), 0)', 'triedHours')
-      .getRawOne();
+      .where('academicInfo.studentId = :studentId', { studentId })
+      .select('course.creditHours', 'creditHours')
+      .getRawMany<{ creditHours: number }>();
 
-    return parseInt(result?.triedHours ?? '0');
+    return semesterCourses.reduce(
+      (sum, semesterCourse) => sum + semesterCourse.creditHours,
+      0,
+    );
   }
 
   async getGainedHours(studentId: User['id']) {
     const successDegree = await this.getSuccessDegree(studentId);
 
-    const result = await this.entityManager
-      .createQueryBuilder()
-      .select(
-        `SUM(CASE WHEN sub.maxDegree >= :successDegree THEN sub.creditHours ELSE 0 END)`,
-        'totalGainedHours',
-      )
-      .from((qb) => {
-        return qb
-          .select('MAX(semesterCourse.degree)', 'maxDegree')
-          .addSelect('course.id', 'courseId')
-          .addSelect('course.creditHours', 'creditHours')
-          .from('student', 'student')
-          .innerJoin('student.academicInfo', 'ac')
-          .leftJoin('ac.semesters', 'semester')
-          .leftJoin('semester.semesterCourses', 'semesterCourse')
-          .innerJoin('semesterCourse.course', 'course')
-          .where('student.userId = :studentId', { studentId })
-          .groupBy('course.id, course.creditHours');
-      }, 'sub')
-      .setParameter('successDegree', successDegree)
-      .getRawOne();
+    const semesterCourses = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
+      .leftJoin('academicInfo.semesters', 'semester')
+      .leftJoin('semester.semesterCourses', 'semesterCourse')
+      .innerJoin('semesterCourse.course', 'course')
+      .where('academicInfo.studentId = :studentId', { studentId })
+      .groupBy('course.id')
+      .select([
+        'course.id AS id',
+        'course.creditHours AS creditHours',
+        'MAX(semesterCourse.degree) AS degree',
+      ])
+      .getRawMany<{ id: Course['id']; creditHours: number; degree: number }>();
 
-    return parseInt(result?.totalGainedHours ?? '0');
+    return semesterCourses.reduce(
+      (sum, semesterCourse) =>
+        sum +
+        (semesterCourse.degree >= successDegree
+          ? semesterCourse.creditHours
+          : 0),
+      0,
+    );
   }
 
   async getSuccessDegree(studentId: User['id']) {
-    const result = await this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'ac')
-      .innerJoin('ac.regulation', 'regulation')
-      .innerJoin('regulation.courseGpaRanges', 'ranges')
-      .groupBy('regulation.id')
-      .select('MIN(ranges.to)', 'to')
-      .where('student.userId = :studentId', { studentId })
-      .getRawOne();
-    return result?.to ? result.to + 1 : 50;
+    const { degree } = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
+      .innerJoin('academicInfo.regulation', 'regulation')
+      .innerJoin('regulation.courseGpaRanges', 'range')
+      .select('range.to', 'degree')
+      .where('academicInfo.studentId = :studentId', { studentId })
+      .andWhere('range.gpa = 0')
+      .getRawOne<{ degree: number }>();
+
+    return degree + 1;
   }
 
-  async getMaxRetakeGrade(studentId: User['id']) {
-    const result = await this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'ac')
-      .innerJoin('ac.regulation', 'regulation')
-      .innerJoin('regulation.retakeRules', 'retakeRules')
-      .where('student.userId = :studentId', { studentId })
-      .select('retakeRules.maxRetakeGrade', 'maxRetakeGrade')
-      .getRawOne();
-    return result?.maxRetakeGrade ?? 0;
-  }
-
-  async getTakenCourseIds(
+  async getPassedCourseIds(
     studentId: User['id'],
   ): Promise<Course['id'][] | [null]> {
     const successDegree = await this.getSuccessDegree(studentId);
 
-    const result = await this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'ac')
-      .innerJoin('ac.semesters', 'semester')
+    const courses = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
+      .innerJoin('academicInfo.semesters', 'semester')
       .innerJoin('semester.semesterCourses', 'semesterCourse')
       .where('semesterCourse.degree >= :successDegree', { successDegree })
-      .andWhere('student.userId = :studentId', { studentId })
+      .andWhere('academicInfo.studentId = :studentId', { studentId })
       .select('DISTINCT semesterCourse.courseId', 'id')
-      .getRawMany();
+      .getRawMany<{ id: Course['id'] }>();
 
-    return result.length
-      ? (result.map((res) => res.id) as Course['id'][])
+    return courses.length
+      ? (courses.map((res) => res.id) as Course['id'][])
       : [null];
   }
 
   async isUnderGpaRules(studentId: User['id']) {
-    const semesters = (
-      await this.studentRepo
-        .createQueryBuilder('student')
-        .innerJoin('student.academicInfo', 'ac')
-        .innerJoin('ac.semesters', 'semester')
-        .where('student.userId = :studentId', { studentId })
-        .select('semester.id')
-        .getRawMany()
-    ).length;
+    const semesters = await this.semesterRepo
+      .createQueryBuilder('semester')
+      .innerJoin('semester.academicInfo', 'academicInfo')
+      .where('academicInfo.studentId = :studentId', { studentId })
+      .getCount();
 
-    const { semestersWithoutGpaRules } = await this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'ac')
-      .innerJoin('ac.regulation', 'regulation')
-      .innerJoin('regulation.academicRequirements', 'ar')
-      .where('student.userId = :studentId', { studentId })
-      .select('ar.semestersWithoutGpaRules', 'semestersWithoutGpaRules')
-      .getRawOne();
+    const { semestersWithoutGpaRules } = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
+      .innerJoin('academicInfo.regulation', 'regulation')
+      .innerJoin('regulation.academicRequirements', 'academicRequirements')
+      .where('academicInfo.studentId = :studentId', { studentId })
+      .select(
+        'academicRequirements.semestersWithoutGpaRules',
+        'semestersWithoutGpaRules',
+      )
+      .getRawOne<{ semestersWithoutGpaRules: number }>();
 
     return semesters >= semestersWithoutGpaRules;
   }
 
-  async getRegistrationHoursRange(
-    studentId: User['id'],
-  ): Promise<{ min: number; max: number }> {
+  async getRegistrationHoursRange(studentId: User['id']) {
     const gpa = await this.semesterService.getStudentGpa(studentId);
     const isUnderGpaRules = await this.isUnderGpaRules(studentId);
 
-    return this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'ac')
-      .innerJoin('ac.regulation', 'regulation')
+    const {
+      normalRegistrationHours,
+      maxRegistrationHours,
+      minRegistrationHours,
+      gpaForMaxHours,
+      minGpaForGraduation,
+    } = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
+      .innerJoin('academicInfo.regulation', 'regulation')
       .innerJoin('regulation.registrationRules', 'rs')
-      .where('student.userId = :studentId', { studentId })
+      .innerJoin('regulation.dismissalRules', 'ds')
+      .where('academicInfo.studentId = :studentId', { studentId })
       .select([
-        `CASE
-          WHEN NOT :isUnderGpaRules THEN rs.normalRegistrationHours
-          ELSE rs.minRegistrationHours
-        END AS min`,
-        `CASE
-          WHEN NOT :isUnderGpaRules THEN rs.normalRegistrationHours
-          WHEN :gpa >= rs.gpaForMaxHours THEN rs.maxRegistrationHours
-          ELSE rs.normalRegistrationHours
-        END AS max`,
+        'rs.normalRegistrationHours AS normalRegistrationHours',
+        'rs.minRegistrationHours AS minRegistrationHours',
+        'rs.maxRegistrationHours AS maxRegistrationHours',
+        'rs.gpaForMaxHours AS gpaForMaxHours',
+        'ds.minGpaForGraduation AS minGpaForGraduation',
       ])
-      .setParameters({ gpa, isUnderGpaRules })
-      .getRawOne();
+      .getRawOne<{
+        normalRegistrationHours: number;
+        maxRegistrationHours: number;
+        minRegistrationHours: number;
+        gpaForMaxHours: number;
+        minGpaForGraduation: number;
+      }>();
+
+    if (!isUnderGpaRules) {
+      return [normalRegistrationHours, normalRegistrationHours] as const;
+    }
+
+    return [
+      minRegistrationHours,
+      gpa >= gpaForMaxHours
+        ? maxRegistrationHours
+        : gpa >= minGpaForGraduation
+          ? normalRegistrationHours
+          : minRegistrationHours,
+    ] as const;
   }
 
-  async getMaxRetakeCourses(studentId: User['id']) {
-    const result = await this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'ac')
-      .innerJoin('ac.regulation', 'regulation')
+  async getMaxAllowedRetakes(studentId: User['id']) {
+    const { maxRetakeCourses } = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
+      .innerJoin('academicInfo.regulation', 'regulation')
       .innerJoin('regulation.retakeRules', 'retakeRules')
-      .where('student.userId = :studentId', { studentId })
+      .where('academicInfo.studentId = :studentId', { studentId })
       .select('retakeRules.maxRetakeCourses', 'maxRetakeCourses')
-      .getRawOne();
-    return result?.maxRetakeCourses ?? 0;
+      .getRawOne<{ maxRetakeCourses: number }>();
+
+    return maxRetakeCourses;
   }
 
   async getRequiredHoursForSpecialization(studentId: User['id']) {
-    const result = await this.academicInfoRepo
-      .createQueryBuilder('ac')
-      .innerJoin('ac.regulation', 'regulation')
-      .innerJoin('regulation.specializationRequirements', 'sp')
-      .select('sp.requiredHours', 'requiredHours')
-      .where('ac.studentId = :studentId', { studentId })
-      .getRawOne();
-    return result.requiredHours as number;
-  }
+    const { requiredHours } = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
+      .innerJoin('academicInfo.regulation', 'regulation')
+      .innerJoin(
+        'regulation.specializationRequirements',
+        'specializationRequirements',
+      )
+      .select('specializationRequirements.requiredHours', 'requiredHours')
+      .where('academicInfo.studentId = :studentId', { studentId })
+      .getRawOne<{ requiredHours: number }>();
 
-  async getCurrentSemester(studentId: User['id']) {
-    return (
-      (await this.academicInfoRepo
-        .createQueryBuilder('ac')
-        .innerJoin('ac.semesters', 'semester')
-        .where('ac.studentId = :studentId', { studentId })
-        .select('semester.id')
-        .getCount()) + 1
-    );
+    return requiredHours;
   }
 
   async getRequiredHoursToTakeGradProject(studentId: User['id']) {
-    const result = await this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'academicInfo')
+    const { requiredHoursToTakeGradProject } = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
       .innerJoin('academicInfo.regulation', 'regulation')
       .innerJoin(
         'regulation.specializationRequirements',
@@ -285,28 +275,28 @@ export class AcademicInfoService {
       .select(
         'gradProjectRequirements.requiredHours AS requiredHoursToTakeGradProject',
       )
-      .where('student.userId = :userId', { userId: studentId })
-      .getRawOne();
-    return (result?.requiredHoursToTakeGradProject ?? 0) as number;
+      .where('academicInfo.studentId = :studentId', { studentId })
+      .getRawOne<{ requiredHoursToTakeGradProject: number }>();
+
+    return requiredHoursToTakeGradProject;
   }
 
   async getPreviousRetakeAttempts(studentId: User['id']) {
-    const { totalAttempts, uniqueCourses } = await this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.academicInfo', 'academicInfo')
+    const { totalAttempts, uniqueCourses } = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
       .innerJoin('academicInfo.semesters', 'semester')
       .innerJoin('semester.semesterCourses', 'semesterCourse')
-      .where('student.userId = :studentId', { studentId })
+      .where('academicInfo.studentId = :studentId', { studentId })
       .select([
         'COUNT(semesterCourse.courseId) AS totalAttempts',
         'COUNT(DISTINCT semesterCourse.courseId) AS uniqueCourses',
       ])
-      .getRawOne();
+      .getRawOne<{ totalAttempts: number; uniqueCourses: number }>();
 
-    return Number(totalAttempts) - Number(uniqueCourses);
+    return totalAttempts - uniqueCourses;
   }
 
-  async canStudentRetakeCourseWithoutLimit(studentId: User['id']) {
+  async canStudentRetakeCoursesWithoutLimit(studentId: User['id']) {
     const gpa = await this.semesterService.getStudentGpa(studentId);
     const minGpaForGraduation = await this.getMinGpaToGraduate(studentId);
 
