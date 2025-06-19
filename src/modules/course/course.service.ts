@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Course } from './entites/course.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
@@ -19,8 +19,10 @@ export class CourseService {
   async create(createCourseDto: CreateCourseDto) {
     const { code, prerequisiteId } = createCourseDto;
 
-    if (await this.courseRepo.exist({ where: { code } }))
+    const courseExist = await this.courseRepo.existsBy({ code });
+    if (courseExist) {
       throw new ConflictException(ErrorEnum.COURSE_ALREADY_EXISTS);
+    }
 
     const course = this.courseRepo.create(createCourseDto);
     course.prerequisite = prerequisiteId
@@ -39,21 +41,13 @@ export class CourseService {
   }
 
   async findAll() {
-    return this.courseRepo
-      .createQueryBuilder('course')
-      .leftJoinAndSelect('course.prerequisite', 'prerequisite')
-      .getMany();
+    return this.courseRepo.find({ where: {}, relations: ['prerequisite'] });
   }
 
   async findByIds(ids: Course['id'][]) {
-    if (!ids.length) return [];
     ids = [...new Set(ids)];
 
-    const courses = await this.courseRepo
-      .createQueryBuilder('course')
-      .where('course.id IN (:...ids)', { ids })
-      .getMany();
-
+    const courses = await this.courseRepo.find({ where: { id: In(ids) } });
     if (courses.length != ids.length)
       throw new NotFoundException(ErrorEnum.COURSE_NOT_FOUND);
     return courses;
@@ -76,12 +70,15 @@ export class CourseService {
       throw new ConflictException(ErrorEnum.COURSE_ALREADY_EXISTS);
     }
 
-    this.courseRepo.merge(course, updateCourseDto);
-    course.prerequisite = prerequisiteId
+    const prerequisite = prerequisiteId
       ? await this.getPrerequisite(prerequisiteId)
       : null;
 
-    return this.courseRepo.save(course);
+    return this.courseRepo.save({
+      ...course,
+      ...updateCourseDto,
+      prerequisite,
+    });
   }
 
   async remove(id: Course['id']) {
@@ -89,16 +86,15 @@ export class CourseService {
     return this.courseRepo.remove(course);
   }
 
-  async findCourseDetails(courseId: Course['id']) {
-    const course = await this.courseRepo
-      .createQueryBuilder('course')
-      .leftJoinAndSelect('course.prerequisite', 'prerequisite')
-      .where('course.id = :courseId', { courseId })
-      .getOne();
+  async findCourseDetails(id: Course['id']) {
+    const course = await this.courseRepo.findOne({
+      where: { id },
+      relations: ['prerequisite'],
+    });
     if (!course) throw new NotFoundException(ErrorEnum.COURSE_NOT_FOUND);
 
     const dependentCourses = await this.courseRepo.find({
-      where: { prerequisite: { id: courseId } },
+      where: { prerequisite: { id } },
     });
 
     return { ...course, dependentCourses };
