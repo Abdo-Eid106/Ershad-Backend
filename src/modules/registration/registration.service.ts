@@ -6,7 +6,7 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from '../student/entities/student.entity';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
@@ -15,7 +15,6 @@ import { RegistrationCourse } from './entities/registration-course.entity';
 import { RegistrationValidationService } from './registration-validation.service';
 import { RegistrationSettings } from './entities/registration-settings.entity';
 import { UpdateRegistrationStatus } from './dto/update-registration-status.dto';
-import { Program } from '../program/entities/program.entitiy';
 import { Course } from '../course/entites/course.entity';
 import { AcademicInfoService } from '../academic-info/academic-info.service';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
@@ -27,12 +26,17 @@ import { NotificationJob } from '../notification/types/NotificationJob';
 import { NotficationType } from '../notification/enums/notification.type';
 import { NotificationPayload } from '../notification/types/NotificationPayloud';
 import { Plan } from '../plan/entities/plan.entity';
+import { AcademicInfo } from '../academic-info/entities/academic-info.entity';
+import { RequirementCategory } from '../requirement/enums/requirement-category.enum';
+import { safeInArray } from 'src/shared/utils/safe-in-array';
 
 @Injectable()
 export class RegistrationService {
   constructor(
     @InjectRepository(Student)
     private readonly studentRepo: Repository<Student>,
+    @InjectRepository(AcademicInfo)
+    private readonly academicInfoRepo: Repository<AcademicInfo>,
     @InjectRepository(Registration)
     private readonly registrationRepo: Repository<Registration>,
     @InjectRepository(RegistrationSettings)
@@ -63,9 +67,13 @@ export class RegistrationService {
     const { courseIds } = createRegistrationDto;
 
     return await this.dataSource.transaction(async (manager) => {
-      await manager.delete(Registration, {
-        academicInfoId: studentId,
+      const existingRegistration = await manager.findOne(Registration, {
+        where: { academicInfoId: studentId },
       });
+
+      if (existingRegistration) {
+        await manager.remove(Registration, existingRegistration);
+      }
 
       const registration = manager.create(Registration, {
         academicInfo: { studentId },
@@ -93,10 +101,15 @@ export class RegistrationService {
 
   private async openRegistration() {
     const { id } = await this.getSettings();
-
     await this.dataSource.transaction(async (manager) => {
-      await manager.update(RegistrationSettings, id, { isOpen: true });
-      await manager.delete(Registration, {});
+      const settings = await manager.findOne(RegistrationSettings, {
+        where: { id },
+      });
+      settings.isOpen = true;
+      await manager.save(settings);
+
+      const registrations = await manager.find(Registration);
+      await manager.remove(Registration, registrations);
     });
 
     const tokens = await this.getStudentsTokens();
@@ -122,10 +135,15 @@ export class RegistrationService {
 
   private async closeReigstration() {
     const { id } = await this.getSettings();
-
     return this.dataSource.transaction(async (manager) => {
-      await manager.update(RegistrationSettings, id, { isOpen: false });
-      await manager.delete(Registration, {});
+      const settings = await manager.findOne(RegistrationSettings, {
+        where: { id },
+      });
+      settings.isOpen = false;
+      await manager.save(settings);
+
+      const registrations = await manager.find(Registration);
+      await manager.remove(Registration, registrations);
     });
   }
 
@@ -138,7 +156,7 @@ export class RegistrationService {
   }
 
   async getStudentRegisteredCourses(studentId: Student['userId']) {
-    if (!(await this.studentRepo.existsBy({ userId: studentId })))
+    if (!(await this.academicInfoRepo.existsBy({ studentId })))
       throw new NotFoundException(ErrorEnum.STUDENT_NOT_FOUND);
 
     return this.registrationRepo
@@ -151,8 +169,9 @@ export class RegistrationService {
   }
 
   async getStudentAvailableCourses(studentId: Student['userId']) {
-    const gradProjectId =
-      await this.academicInfoService.getStudentGradProjectId(studentId);
+    const programId =
+      await this.academicInfoService.getStudentProgramId(studentId);
+    const gradProjectId = programId;
 
     const [requiredHoursToTakeGradProject, gainedHours, passedCourseIds] =
       await Promise.all([
@@ -161,39 +180,37 @@ export class RegistrationService {
         this.academicInfoService.getPassedCourseIds(studentId),
       ]);
 
-    const query = this.studentRepo
-      .createQueryBuilder('student')
-      .leftJoin('student.academicInfo', 'academicInfo')
+    const query = this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
       .leftJoin('academicInfo.regulation', 'regulation')
-      .leftJoin('regulation.requirementCourses', 'requirementCourses')
-      .leftJoin('requirementCourses.program', 'program')
-      .leftJoin('requirementCourses.course', 'course')
+      .leftJoin('regulation.requirementCourses', 'requirementCourse')
+      .leftJoin('requirementCourse.program', 'program')
+      .leftJoin('requirementCourse.course', 'course')
       .leftJoin('course.prerequisite', 'prerequisite')
       .select(this.getCourseSelectFields())
-      .where('student.userId = :studentId', { studentId })
+      .where('academicInfo.studentId = :studentId', { studentId })
       .andWhere(
-        '(prerequisite.id IS NULL OR prerequisite.id IN (:...passedCourseIds))',
-        { passedCourseIds },
+        new Brackets((qb) => {
+          qb.where('prerequisite.id IS NULL').orWhere(
+            'prerequisite.id IN (:...passedCourseIds)',
+            { passedCourseIds: safeInArray(passedCourseIds) },
+          );
+        }),
+      )
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('requirementCourse.category != :category', {
+            category: RequirementCategory.SPECIALIZATION,
+          }).orWhere('program.id != :programId', { programId });
+        }),
       );
 
     if (gradProjectId && gainedHours < requiredHoursToTakeGradProject) {
-      query.andWhere('course.id != :gradProjectId', {
-        gradProjectId,
-      });
+      query.andWhere('course.id != :gradProjectId', { gradProjectId });
     }
 
-    return (await query.getRawMany()) as Course[];
-  }
-
-  private async getStudentsTokens() {
-    const fcmTokens = await this.studentRepo
-      .createQueryBuilder('student')
-      .innerJoin('student.user', 'user')
-      .innerJoin('user.fcmTokens', 'fcmToken')
-      .select('fcmToken.token AS token')
-      .getRawMany<{ token: string }>();
-
-    return fcmTokens.map((fcmToken) => fcmToken.token);
+    const rawCourses = await query.getRawMany();
+    return rawCourses as Course[];
   }
 
   async getRecommenedCourses(studentId: Student['userId']) {
@@ -243,5 +260,16 @@ export class RegistrationService {
       'course.practicalHours AS practicalHours',
       'course.creditHours AS creditHours',
     ];
+  }
+
+  private async getStudentsTokens() {
+    const fcmTokens = await this.studentRepo
+      .createQueryBuilder('student')
+      .innerJoin('student.user', 'user')
+      .innerJoin('user.fcmTokens', 'fcmToken')
+      .select('fcmToken.token AS token')
+      .getRawMany<{ token: string }>();
+
+    return fcmTokens.map((fcmToken) => fcmToken.token);
   }
 }

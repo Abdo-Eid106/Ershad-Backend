@@ -10,6 +10,7 @@ import { Registration } from './entities/registration.entity';
 import { RegistrationSettings } from './entities/registration-settings.entity';
 import { QueueModule } from 'src/shared/queue/queue.module';
 import { Plan } from '../plan/entities/plan.entity';
+import { AcademicInfo } from '../academic-info/entities/academic-info.entity';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { Plan } from '../plan/entities/plan.entity';
       Registration,
       Plan,
       RegistrationSettings,
+      AcademicInfo,
     ]),
     QueueModule,
     AcademicInfoModule,

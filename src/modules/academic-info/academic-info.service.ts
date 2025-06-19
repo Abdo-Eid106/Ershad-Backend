@@ -327,7 +327,7 @@ export class AcademicInfoService {
     return null;
   }
 
-  async getStudentGradProjectId(
+  async getStudentProgramId(
     studentId: User['id'],
   ): Promise<Course['id'] | null> {
     const course = await this.academicInfoRepo
