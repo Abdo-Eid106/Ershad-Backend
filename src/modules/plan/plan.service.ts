@@ -6,11 +6,11 @@ import { CreatePlanDto } from './dto/create-plan.dto';
 import { PlanValidationService } from './plan-validation.service';
 import { SemesterPlan } from './entities/semester-plan.entity';
 import { SemesterPlanCourse } from './entities/semester-plan-course.entity';
-import { getCourseWithPreFragment } from '../course/fragments';
-import { AcademicInfo } from '../academic-info/entities/academic-info.entity';
+import { AcademicInfoService } from '../academic-info/academic-info.service';
 import { User } from '../user/entities/user.entity';
 import { Program } from '../program/entities/program.entitiy';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
+import { getCourseWithPreFragment } from '../course/fragments';
 
 @Injectable()
 export class PlanService {
@@ -22,33 +22,28 @@ export class PlanService {
     private readonly semesterPlanRepo: Repository<SemesterPlan>,
     @InjectRepository(SemesterPlanCourse)
     private readonly semesterPlanCourseRepo: Repository<SemesterPlanCourse>,
-    @InjectRepository(AcademicInfo)
-    private readonly academicInfoRepo: Repository<AcademicInfo>,
+    private readonly academicInfoService: AcademicInfoService,
     private readonly planValidationService: PlanValidationService,
   ) {}
 
-  private async savePlan(
+  private savePlan(
     programId: Program['id'],
     planDto: CreatePlanDto,
     isUpdate = false,
   ) {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
+    return this.dataSource.transaction(async (manager) => {
       if (isUpdate) {
-        const plan = await queryRunner.manager.findOneBy(Plan, { programId });
-        if (plan) await queryRunner.manager.remove(plan);
+        const existingPlan = await manager.findOne(Plan, {
+          where: { programId },
+        });
+        if (existingPlan) {
+          await manager.remove(existingPlan);
+        }
       }
 
-      // Create the plan
-      const plan = await queryRunner.manager.save(
-        this.planRepo.create({ programId }),
-      );
+      const plan = await manager.save(this.planRepo.create({ programId }));
 
-      // Create semester plans
-      const semesterPlans = await queryRunner.manager.save(
+      const semesterPlans = await manager.save(
         this.semesterPlanRepo.create(
           planDto.semesters.map((semesterPlan) => ({
             ...semesterPlan,
@@ -62,7 +57,6 @@ export class PlanService {
         mp.set(`${semesterPlan.level}-${semesterPlan.semester}`, semesterPlan),
       );
 
-      // Create semester plan courses
       const semesterPlanCourses = planDto.semesters.flatMap((semesterPlan) =>
         semesterPlan.courseIds.map((courseId) =>
           this.semesterPlanCourseRepo.create({
@@ -74,17 +68,8 @@ export class PlanService {
         ),
       );
 
-      // Save semester plan courses inside the transaction
-      await queryRunner.manager.save(semesterPlanCourses);
-
-      // Commit transaction
-      await queryRunner.commitTransaction();
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
+      return manager.save(semesterPlanCourses);
+    });
   }
 
   async create(programId: Program['id'], createPlanDto: CreatePlanDto) {
@@ -123,36 +108,7 @@ export class PlanService {
   }
 
   async getStudentPlan(studentId: User['id']) {
-    const plan =
-      (await this.getProgramPlan(studentId)) ||
-      (await this.getAlternativeProgramPlan(studentId));
-    if (!plan) throw new NotFoundException(ErrorEnum.PLAN_NOT_FOUND);
-    return this.findOne(plan.programId);
-  }
-
-  async getProgramPlan(studentId: User['id']) {
-    const plan = await this.academicInfoRepo
-      .createQueryBuilder('ac')
-      .innerJoin('ac.program', 'program')
-      .innerJoin('program.plan', 'plan')
-      .where('ac.studentId = :studentId', { studentId })
-      .select('plan.programId AS programId')
-      .getRawOne();
-
-    return plan as Plan;
-  }
-
-  async getAlternativeProgramPlan(studentId: User['id']) {
-    const plan = await this.academicInfoRepo
-      .createQueryBuilder('ac')
-      .innerJoin('ac.regulation', 'regulation')
-      .innerJoin('regulation.programs', 'program')
-      .innerJoin('program.plan', 'plan')
-      .where('ac.studentId = :studentId', { studentId })
-      .andWhere('plan.programId IS NOT NULL')
-      .select('plan.programId AS programId')
-      .getRawOne();
-
-    return plan as Plan;
+    const planId = await this.academicInfoService.getStudentPlanId(studentId);
+    return this.findOne(planId);
   }
 }

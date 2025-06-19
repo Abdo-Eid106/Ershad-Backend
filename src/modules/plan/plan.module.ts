@@ -10,6 +10,7 @@ import { PlanValidationService } from './plan-validation.service';
 import { SemesterPlan } from './entities/semester-plan.entity';
 import { SemesterPlanCourse } from './entities/semester-plan-course.entity';
 import { AcademicInfo } from '../academic-info/entities/academic-info.entity';
+import { AcademicInfoModule } from '../academic-info/academic-info.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AcademicInfo } from '../academic-info/entities/academic-info.entity';
       SemesterPlanCourse,
     ]),
     CourseModule,
+    AcademicInfoModule,
   ],
   controllers: [PlanController],
   providers: [PlanService, PlanValidationService],
