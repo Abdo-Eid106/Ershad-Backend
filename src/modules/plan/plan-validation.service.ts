@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Program } from '../program/entities/program.entitiy';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePlanDto, CreateSemesterPlan } from './dto/create-plan.dto';
@@ -100,10 +100,7 @@ export class PlanValidationService {
   }
 
   async doAllCoursesExist(courseIds: Course['id'][]) {
-    const count = await this.courseRepo
-      .createQueryBuilder('course')
-      .where('course.id IN (:...courseIds)', { courseIds })
-      .getCount();
+    const count = await this.courseRepo.count({ where: { id: In(courseIds) } });
     return count === courseIds.length;
   }
 
@@ -111,10 +108,11 @@ export class PlanValidationService {
     const { levelsCount } = await this.programRepo
       .createQueryBuilder('program')
       .innerJoin('program.regulation', 'regulation')
-      .innerJoin('regulation.academicRequirements', 'ac')
+      .innerJoin('regulation.academicRequirements', 'academicRequirements')
       .where('program.id = :programId', { programId })
-      .select('ac.levelsCount', 'levelsCount')
-      .getRawOne();
+      .select('academicRequirements.levelsCount', 'levelsCount')
+      .getRawOne<{ levelsCount: number }>();
+
     return levelsCount;
   }
 }
