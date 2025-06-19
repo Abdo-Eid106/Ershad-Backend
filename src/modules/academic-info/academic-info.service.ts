@@ -15,6 +15,7 @@ import { Course } from '../course/entites/course.entity';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 import { SemesterService } from '../semester/semester.service';
 import { Semester } from '../semester/entities/semester.entity';
+import { Plan } from '../plan/entities/plan.entity';
 
 @Injectable()
 export class AcademicInfoService {
@@ -299,7 +300,29 @@ export class AcademicInfoService {
   async canStudentRetakeCoursesWithoutLimit(studentId: User['id']) {
     const gpa = await this.semesterService.getStudentGpa(studentId);
     const minGpaForGraduation = await this.getMinGpaToGraduate(studentId);
-
     return gpa < minGpaForGraduation;
+  }
+
+  async getStudentPlanId(studentId: User['id']) {
+    let plan = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
+      .innerJoin('academicInfo.program', 'program')
+      .innerJoin('program.plan', 'plan')
+      .where('academicInfo.studentId = :studentId', { studentId })
+      .select(['plan.programId AS programId'])
+      .getRawOne<{ programId: Plan['programId'] }>();
+    if (plan) return plan.programId;
+
+    plan = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
+      .innerJoin('academicInfo.regulation', 'regulation')
+      .innerJoin('regulation.programs', 'program')
+      .innerJoin('program.plan', 'plan')
+      .where('academicInfo.studentId = :studentId', { studentId })
+      .select(['plan.programId AS programId'])
+      .getRawOne<{ programId: Plan['programId'] }>();
+
+    if (plan) return plan.programId;
+    return null;
   }
 }

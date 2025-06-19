@@ -26,7 +26,6 @@ import { RoleModule } from './modules/role/role.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { RegistrationModule } from './modules/registration/registration.module';
 import { SummaryModule } from './modules/summary/summary.module';
-import { CourseRecommendationModule } from './modules/course-recommendation/course-recommendation.module';
 import { OtpModule } from './modules/otp/otp.module';
 import { GradProjectModule } from './modules/grad-project/grad-project.module';
 import { TranslationModule } from './shared/i18n/translation.module';
@@ -57,7 +56,6 @@ import { NotificationModule } from './modules/notification/notification.module';
     AdminModule,
     RegistrationModule,
     SummaryModule,
-    CourseRecommendationModule,
     OtpModule,
     GradProjectModule,
     TranslationModule,

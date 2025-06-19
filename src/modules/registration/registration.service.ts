@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,7 +15,6 @@ import { RegistrationCourse } from './entities/registration-course.entity';
 import { RegistrationValidationService } from './registration-validation.service';
 import { RegistrationSettings } from './entities/registration-settings.entity';
 import { UpdateRegistrationStatus } from './dto/update-registration-status.dto';
-import { COURSE_SELECT_FIELDS } from '../course/constants';
 import { Program } from '../program/entities/program.entitiy';
 import { Course } from '../course/entites/course.entity';
 import { AcademicInfoService } from '../academic-info/academic-info.service';
@@ -26,6 +26,7 @@ import { NotificationTarget } from '../notification/enums/notification.target';
 import { NotificationJob } from '../notification/types/NotificationJob';
 import { NotficationType } from '../notification/enums/notification.type';
 import { NotificationPayload } from '../notification/types/NotificationPayloud';
+import { Plan } from '../plan/entities/plan.entity';
 
 @Injectable()
 export class RegistrationService {
@@ -40,6 +41,8 @@ export class RegistrationService {
     private readonly programRepo: Repository<Program>,
     @InjectRepository(Course)
     private readonly courseRepo: Repository<Course>,
+    @InjectRepository(Plan)
+    private readonly planRepo: Repository<Plan>,
     @Inject(forwardRef(() => RegistrationValidationService))
     private readonly registrationValidationService: RegistrationValidationService,
     @InjectQueue(QueuesEnum.NOTIFICATIONS)
@@ -94,7 +97,7 @@ export class RegistrationService {
       .innerJoin('registration.registrationCourses', 'registrationCourse')
       .innerJoin('registrationCourse.course', 'course')
       .where('registration.academicInfoId = :studentId', { studentId })
-      .select(COURSE_SELECT_FIELDS)
+      .select(this.getCourseSelectFields())
       .getRawMany();
   }
 
@@ -172,7 +175,7 @@ export class RegistrationService {
       .leftJoin('requirementCourses.program', 'program')
       .leftJoin('requirementCourses.course', 'course')
       .leftJoin('course.prerequisite', 'prerequisite')
-      .select(COURSE_SELECT_FIELDS)
+      .select(this.getCourseSelectFields())
       .where('student.userId = :studentId', { studentId })
       .andWhere(
         '(prerequisite.id IS NULL OR prerequisite.id IN (:...passedCourseIds))',
@@ -209,5 +212,54 @@ export class RegistrationService {
       .getRawMany<{ token: string }>();
 
     return fcmTokens.map((fcmToken) => fcmToken.token);
+  }
+
+  async getRecommenedCourses(studentId: Student['userId']) {
+    const planId = await this.academicInfoService.getStudentPlanId(studentId);
+
+    if (!planId) {
+      throw new ServiceUnavailableException(
+        ErrorEnum.RECOMMENDATION_SERVICE_UNAVAILABLE,
+      );
+    }
+
+    const availableCourses = await this.getStudentAvailableCourses(studentId);
+    const availableCourseIds = availableCourses.map((course) => course.id);
+
+    const passedCourseIdsSet = new Set(
+      await this.academicInfoService.getPassedCourseIds(studentId),
+    );
+
+    const unpassedAvailableCourseIds = availableCourseIds.filter(
+      (courseId) => !passedCourseIdsSet.has(courseId),
+    );
+
+    return this.planRepo
+      .createQueryBuilder('plan')
+      .leftJoin('plan.semesterPlans', 'semesterPlan')
+      .leftJoin('semesterPlan.semesterPlanCourses', 'semesterPlanCourse')
+      .leftJoin('semesterPlanCourse.course', 'course')
+      .leftJoin('course.prerequisite', 'prerequisite')
+      .where('plan.programId = :planId', { planId })
+      .andWhere('course.id IN (:...courseIds)', {
+        courseIds: unpassedAvailableCourseIds.length
+          ? unpassedAvailableCourseIds
+          : [null],
+      })
+      .select(this.getCourseSelectFields())
+      .orderBy('semesterPlan.level', 'ASC')
+      .addOrderBy('semesterPlan.semester', 'ASC')
+      .getRawMany();
+  }
+
+  private getCourseSelectFields() {
+    return [
+      'course.id AS id',
+      'course.name AS name',
+      'course.code AS code',
+      'course.lectureHours AS lectureHours',
+      'course.practicalHours AS practicalHours',
+      'course.creditHours AS creditHours',
+    ];
   }
 }

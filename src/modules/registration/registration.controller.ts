@@ -58,4 +58,11 @@ export class RegistrationController {
   async getAvailableCourses(@currentUser() user: IPayloud) {
     return this.registrationService.getStudentAvailableCourses(user.id);
   }
+
+  @Get('/recommended-courses')
+  @Serialize(CourseDto)
+  @Roles(RoleEnum.STUDENT)
+  getRecommendedCourses(@currentUser() user: IPayloud) {
+    return this.registrationService.getRecommenedCourses(user.id);
+  }
 }
