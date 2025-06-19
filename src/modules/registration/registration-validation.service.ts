@@ -5,7 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Course } from '../course/entites/course.entity';
 import { AcademicInfoService } from '../academic-info/academic-info.service';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
@@ -76,9 +76,9 @@ export class RegistrationValidationService {
         isValid,
         previousRetakeAttempts,
         maxAllowedRetakes,
-        availableRetakeSlots,
+        availableRetakes,
         selectedRetakeCount,
-      } = await this.validateCourseRegistrationLimits(studentId, courseIds);
+      } = await this.validateCourseRetakeLimits(studentId, courseIds);
 
       if (!isValid) {
         throw new BadRequestException({
@@ -87,7 +87,7 @@ export class RegistrationValidationService {
             previous: previousRetakeAttempts,
             max: maxAllowedRetakes,
             selected: selectedRetakeCount,
-            available: availableRetakeSlots,
+            available: availableRetakes,
           },
         });
       }
@@ -101,10 +101,7 @@ export class RegistrationValidationService {
   }
 
   async doAllCoursesExist(courseIds: Course['id'][]) {
-    const count = await this.courseRepo
-      .createQueryBuilder('course')
-      .where('course.id IN (:...courseIds)', { courseIds })
-      .getCount();
+    const count = await this.courseRepo.count({ where: { id: In(courseIds) } });
     return count === courseIds.length;
   }
 
@@ -116,7 +113,7 @@ export class RegistrationValidationService {
       .createQueryBuilder('course')
       .where('course.id IN (:...courseIds)', { courseIds })
       .select(['SUM(course.creditHours) as totalCreditHours'])
-      .getRawOne();
+      .getRawOne<{ totalCreditHours: number }>();
 
     const [minHours, maxHours] =
       await this.academicInfoService.getRegistrationHoursRange(studentId);
@@ -145,7 +142,7 @@ export class RegistrationValidationService {
     );
   }
 
-  async validateCourseRegistrationLimits(
+  async validateCourseRetakeLimits(
     studentId: User['id'],
     courseIds: Course['id'][],
   ) {
@@ -154,7 +151,7 @@ export class RegistrationValidationService {
       this.academicInfoService.getMaxAllowedRetakes(studentId),
     ]);
 
-    const availableRetakeSlots = maxAllowedRetakes - previousRetakeAttempts;
+    const availableRetakes = maxAllowedRetakes - previousRetakeAttempts;
 
     const selectedRetakeCount = await this.courseRepo
       .createQueryBuilder('course')
@@ -164,15 +161,16 @@ export class RegistrationValidationService {
       .innerJoin('academicInfo.student', 'student')
       .where('student.userId = :studentId', { studentId })
       .andWhere('course.id IN (:...courseIds)', { courseIds })
+      .select('DISTINCT(course.id) AS selectedRetakeCount')
       .getCount();
 
-    const isValid = selectedRetakeCount <= availableRetakeSlots;
+    const isValid = selectedRetakeCount <= availableRetakes;
 
     return {
       isValid,
       previousRetakeAttempts,
       maxAllowedRetakes,
-      availableRetakeSlots,
+      availableRetakes,
       selectedRetakeCount,
     };
   }
