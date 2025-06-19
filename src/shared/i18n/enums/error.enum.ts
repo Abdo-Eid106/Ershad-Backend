@@ -277,4 +277,7 @@ export enum ErrorEnum {
   // =========================
   // Business
   WARNING_EXIST = 'warning.WARNING_EXIST',
+  FILE_NOT_FOUND = 'FILE_NOT_FOUND',
+  INVALID_FILE_TYPE = 'INVALID_FILE_TYPE',
+  INVALID_FILE_SIZE = 'INVALID_FILE_SIZE'
 }
