@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { LoginInput, LoginOutput, ResetPasswordInput } from './dto';
@@ -10,7 +10,7 @@ export class AuthController {
 
   @Post('/login')
   @Serialize(LoginOutput)
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   login(@Body() loginInput: LoginInput) {
     return this.authService.login(loginInput);
   }
