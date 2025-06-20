@@ -96,9 +96,9 @@ export class RegistrationService {
     updateRegistrationSettings: UpdateRegistrationSettings,
   ) {
     if (updateRegistrationSettings.isOpen !== undefined) {
-      updateRegistrationSettings.isOpen
+      await (updateRegistrationSettings.isOpen
         ? this.openRegistration()
-        : this.closeReigstration();
+        : this.closeReigstration());
     }
 
     if (updateRegistrationSettings.semester !== undefined) {
