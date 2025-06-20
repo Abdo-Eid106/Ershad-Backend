@@ -5,4 +5,7 @@ import { Column, Entity } from 'typeorm';
 export class RegistrationSettings extends BaseEntity {
   @Column({ default: false })
   isOpen: boolean;
+
+  @Column({ default: 1 })
+  semester: number;
 }

@@ -33,7 +33,7 @@ export class CreateSemesterDto {
 
   @IsInt({ message: ErrorEnum.SEMESTER_SEMESTER_INT })
   @Min(1, { message: ErrorEnum.SEMESTER_SEMESTER_MIN })
-  @Max(2, { message: ErrorEnum.SEMESTER_SEMESTER_MAX })
+  @Max(3, { message: ErrorEnum.SEMESTER_SEMESTER_MAX })
   semester: number;
 
   @IsNotEmpty()

@@ -9,7 +9,7 @@ import { RoleEnum } from '../role/enums/role.enum';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { Serialize } from 'src/shared/interceptors/serialize.interceptors';
 import { CourseDto } from '../course/dto/course.dto';
-import { UpdateRegistrationStatus } from './dto/update-registration-status.dto';
+import { UpdateRegistrationSettings } from './dto/update-registration-settings.dto';
 import { RegistrationSettingsDto } from './dto/registration-settings.dto';
 import { SuccessEnum } from 'src/shared/i18n/enums/success.enum';
 
@@ -31,18 +31,18 @@ export class RegistrationController {
     return { message: SuccessEnum.REGISTRATION_COMPLETED };
   }
 
-  @Patch('/registrations/status')
+  @Patch('/registrations/settings')
   @Roles(RoleEnum.ADMIN)
-  async updateRegistrationStatus(
-    @Body() updateRegistrationStatus: UpdateRegistrationStatus,
+  async updateRegistrationSettings(
+    @Body() UpdateRegistrationSettings: UpdateRegistrationSettings,
   ) {
-    await this.registrationService.updateRegistrationStatus(
-      updateRegistrationStatus,
+    await this.registrationService.UpdateRegistrationSettings(
+      UpdateRegistrationSettings,
     );
     return { message: SuccessEnum.REGISTRATION_SETTINGS_UPDATED };
   }
 
-  @Get('/registrations/status')
+  @Get('/registrations/settings')
   @Serialize(RegistrationSettingsDto)
   getRegistrationStatus() {
     return this.registrationService.getSettings();

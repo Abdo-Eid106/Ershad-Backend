@@ -14,7 +14,7 @@ import { Registration } from './entities/registration.entity';
 import { RegistrationCourse } from './entities/registration-course.entity';
 import { RegistrationValidationService } from './registration-validation.service';
 import { RegistrationSettings } from './entities/registration-settings.entity';
-import { UpdateRegistrationStatus } from './dto/update-registration-status.dto';
+import { UpdateRegistrationSettings } from './dto/update-registration-settings.dto';
 import { Course } from '../course/entites/course.entity';
 import { AcademicInfoService } from '../academic-info/academic-info.service';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
@@ -92,11 +92,22 @@ export class RegistrationService {
     });
   }
 
-  async updateRegistrationStatus(
-    updateRegistrationStatus: UpdateRegistrationStatus,
+  async UpdateRegistrationSettings(
+    updateRegistrationSettings: UpdateRegistrationSettings,
   ) {
-    const { isOpen } = updateRegistrationStatus;
-    return isOpen ? this.openRegistration() : this.closeReigstration();
+    if (updateRegistrationSettings.isOpen !== undefined) {
+      updateRegistrationSettings.isOpen
+        ? this.openRegistration()
+        : this.closeReigstration();
+    }
+
+    if (updateRegistrationSettings.semester !== undefined) {
+      const settings = await this.getSettings();
+      await this.registrationSettingsRepo.save({
+        ...settings,
+        semester: updateRegistrationSettings.semester,
+      });
+    }
   }
 
   private async openRegistration() {
