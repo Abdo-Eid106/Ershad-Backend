@@ -25,7 +25,7 @@ import { PlanDto } from './dto/plan.dto';
 export class PlanController {
   constructor(private readonly planService: PlanService) {}
 
-  @Post('programs/:programId/plans')
+  @Post('programs/:programId/plan')
   @Roles(RoleEnum.ADMIN)
   create(
     @Param('programId', ParseUUIDPipe) programId: Program['id'],
@@ -35,12 +35,12 @@ export class PlanController {
   }
 
   @Serialize(PlanDto)
-  @Get('programs/:programId/plans')
+  @Get('programs/:programId/plan')
   findOne(@Param('programId', ParseUUIDPipe) programId: Program['id']) {
     return this.planService.findOne(programId);
   }
 
-  @Put('programs/:programId/plans')
+  @Put('programs/:programId/plan')
   @Roles(RoleEnum.ADMIN)
   update(
     @Param('programId', ParseUUIDPipe) programId: Program['id'],
