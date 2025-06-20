@@ -9,6 +9,7 @@ import { AcademicInfoValidationService } from './academic-info-validation.servic
 import { Program } from '../program/entities/program.entitiy';
 import { SemesterModule } from '../semester/semester.module';
 import { Semester } from '../semester/entities/semester.entity';
+import { RegistrationSettings } from '../registration/entities/registration-settings.entity';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { Semester } from '../semester/entities/semester.entity';
       AcademicInfo,
       Program,
       Semester,
+      RegistrationSettings,
     ]),
     SemesterModule,
   ],

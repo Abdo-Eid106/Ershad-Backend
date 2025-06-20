@@ -16,7 +16,7 @@ import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 import { SemesterService } from '../semester/semester.service';
 import { Semester } from '../semester/entities/semester.entity';
 import { Plan } from '../plan/entities/plan.entity';
-import { Program } from '../program/entities/program.entitiy';
+import { RegistrationSettings } from '../registration/entities/registration-settings.entity';
 
 @Injectable()
 export class AcademicInfoService {
@@ -25,6 +25,8 @@ export class AcademicInfoService {
     private readonly semesterRepo: Repository<Semester>,
     @InjectRepository(AcademicInfo)
     private readonly academicInfoRepo: Repository<AcademicInfo>,
+    @InjectRepository(RegistrationSettings)
+    private readonly registrationSettingsRepo: Repository<RegistrationSettings>,
     @Inject(forwardRef(() => AcademicInfoValidationService))
     private readonly academicInfoValidationService: AcademicInfoValidationService,
     private readonly semesterService: SemesterService,
@@ -191,6 +193,22 @@ export class AcademicInfoService {
   }
 
   async getRegistrationHoursRange(studentId: User['id']) {
+    const regstrationSettings = await this.registrationSettingsRepo.findOne({
+      where: {},
+    });
+
+    if (regstrationSettings.semester == 3) {
+      const { summerTermHours } = await this.academicInfoRepo
+        .createQueryBuilder('academicInfo')
+        .innerJoin('academicInfo.regulation', 'regulation')
+        .innerJoin('regulation.registrationRules', 'rs')
+        .where('academicInfo.studentId = :studentId', { studentId })
+        .select(['rs.summerTermHours AS summerTermHours'])
+        .getRawOne<{ summerTermHours: number }>();
+
+      return [0, summerTermHours] as const;
+    }
+
     const gpa = await this.semesterService.getStudentGpa(studentId);
     const isUnderGpaRules = await this.isUnderGpaRules(studentId);
 
