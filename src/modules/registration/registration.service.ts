@@ -215,7 +215,7 @@ export class RegistrationService {
         new Brackets((qb) => {
           qb.where('requirementCourse.category != :category', {
             category: RequirementCategory.SPECIALIZATION,
-          }).orWhere('program.id != :programId', { programId });
+          }).orWhere('program.id = :programId', { programId });
         }),
       );
 
