@@ -10,7 +10,7 @@ import { AcademicInfoService } from '../academic-info/academic-info.service';
 import { User } from '../user/entities/user.entity';
 import { Program } from '../program/entities/program.entitiy';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
-import { getCourseWithPreFragment } from '../course/fragments';
+import { PlanDto } from './dto/plan.dto';
 
 @Injectable()
 export class PlanService {
@@ -85,26 +85,36 @@ export class PlanService {
   async findOne(programId: Program['id']) {
     const plan = await this.planRepo
       .createQueryBuilder('plan')
-      .innerJoin('plan.semesterPlans', 'semesterPlan')
-      .innerJoin('semesterPlan.semesterPlanCourses', 'semesterPlanCourse')
-      .innerJoin('semesterPlanCourse.course', 'course')
-      .leftJoin('course.prerequisite', 'prerequisite')
+      .leftJoinAndSelect('plan.semesterPlans', 'semesterPlan')
+      .leftJoinAndSelect(
+        'semesterPlan.semesterPlanCourses',
+        'semesterPlanCourse',
+      )
+      .leftJoinAndSelect('semesterPlanCourse.course', 'course')
+      .leftJoinAndSelect('course.prerequisite', 'prerequisite')
       .where('plan.programId = :programId', { programId })
-      .groupBy('semesterPlan.id')
-      .select([
-        'semesterPlan.level AS level',
-        'semesterPlan.semester AS semester',
-        getCourseWithPreFragment('course', 'prerequisite'),
-      ])
       .orderBy('semesterPlan.level', 'ASC')
       .addOrderBy('semesterPlan.semester', 'ASC')
-      .getRawMany();
+      .getOne();
 
-    if (plan.length === 0) {
+    if (!plan) {
       throw new NotFoundException(ErrorEnum.PLAN_NOT_FOUND);
     }
 
-    return plan;
+    return this.serializePlan(plan);
+  }
+
+  private serializePlan(plan: Plan): PlanDto {
+    return {
+      programId: plan.programId,
+      semesters: plan.semesterPlans.map((semesterPlan) => ({
+        level: semesterPlan.level,
+        semester: semesterPlan.semester,
+        courses: semesterPlan.semesterPlanCourses.map(
+          (semesterPlanCourse) => semesterPlanCourse.course,
+        ),
+      })),
+    };
   }
 
   async getStudentPlan(studentId: User['id']) {

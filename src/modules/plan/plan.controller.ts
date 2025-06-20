@@ -15,10 +15,10 @@ import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../role/guards/roles.guard';
 import { Roles } from '../role/decorators/roles.decorator';
 import { RoleEnum } from '../role/enums/role.enum';
-import { SemesterPlanDto } from './dto/semester-plan.dto';
 import { currentUser } from 'src/shared/decorators/current-user.decorator';
 import { IPayloud } from 'src/shared/interfaces/payloud.interface';
 import { Program } from '../program/entities/program.entitiy';
+import { PlanDto } from './dto/plan.dto';
 
 @Controller()
 @UseGuards(JwtGuard, RolesGuard)
@@ -34,8 +34,8 @@ export class PlanController {
     return this.planService.create(programId, CreatePlanDto);
   }
 
+  @Serialize(PlanDto)
   @Get('programs/:programId/plans')
-  @Serialize(SemesterPlanDto)
   findOne(@Param('programId', ParseUUIDPipe) programId: Program['id']) {
     return this.planService.findOne(programId);
   }
@@ -50,6 +50,7 @@ export class PlanController {
   }
 
   @Roles(RoleEnum.STUDENT)
+  @Serialize(PlanDto)
   @Get('/me/plan')
   getMyPlan(@currentUser() user: IPayloud) {
     return this.planService.getStudentPlan(user.id);

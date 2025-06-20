@@ -2,7 +2,7 @@ import { Expose, Type } from 'class-transformer';
 import { CourseDto } from 'src/modules/course/dto/course.dto';
 import { Program } from 'src/modules/program/entities/program.entitiy';
 
-class PlanCourse {
+export class SemesterPlanDto {
   @Expose()
   level: number;
 
@@ -11,14 +11,14 @@ class PlanCourse {
 
   @Expose()
   @Type(() => CourseDto)
-  course: CourseDto;
+  courses: CourseDto[];
 }
 
 export class PlanDto {
   @Expose()
-  id: Program['id'];
+  programId: Program['id'];
 
   @Expose()
-  @Type(() => PlanCourse)
-  planCourses: PlanCourse[];
+  @Type(() => SemesterPlanDto)
+  semesters: SemesterPlanDto[];
 }
