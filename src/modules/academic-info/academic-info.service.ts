@@ -153,9 +153,7 @@ export class AcademicInfoService {
     return degree + 1;
   }
 
-  async getPassedCourseIds(
-    studentId: User['id'],
-  ): Promise<Course['id'][] | [null]> {
+  async getPassedCourseIds(studentId: User['id']) {
     const successDegree = await this.getSuccessDegree(studentId);
 
     const courses = await this.academicInfoRepo
@@ -167,9 +165,7 @@ export class AcademicInfoService {
       .select('DISTINCT semesterCourse.courseId', 'id')
       .getRawMany<{ id: Course['id'] }>();
 
-    return courses.length
-      ? (courses.map((res) => res.id) as Course['id'][])
-      : [null];
+    return courses.map((res) => res.id);
   }
 
   async isUnderGpaRules(studentId: User['id']) {
