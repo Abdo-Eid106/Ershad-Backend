@@ -8,6 +8,7 @@ import { Regulation } from '../regulation/entities';
 import { PersonalInfo } from '../personal-info/entities/personal-info.entity';
 import { AcademicInfo } from '../academic-info/entities/academic-info.entity';
 import { Role } from '../auth/entities/role.entity';
+import { StudentRepo } from './repos/student.repo';
 
 @Module({
   imports: [
@@ -21,6 +22,6 @@ import { Role } from '../auth/entities/role.entity';
     ]),
   ],
   controllers: [StudentController],
-  providers: [StudentService],
+  providers: [StudentService, StudentRepo],
 })
 export class StudentModule {}
