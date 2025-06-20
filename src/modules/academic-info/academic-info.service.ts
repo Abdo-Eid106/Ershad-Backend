@@ -17,6 +17,7 @@ import { SemesterService } from '../semester/semester.service';
 import { Semester } from '../semester/entities/semester.entity';
 import { Plan } from '../plan/entities/plan.entity';
 import { RegistrationSettings } from '../registration/entities/registration-settings.entity';
+import { Program } from '../program/entities/program.entitiy';
 
 @Injectable()
 export class AcademicInfoService {
@@ -346,6 +347,20 @@ export class AcademicInfoService {
   }
 
   async getStudentProgramId(
+    studentId: User['id'],
+  ): Promise<Program['id'] | null> {
+    const program = await this.academicInfoRepo
+      .createQueryBuilder('academicInfo')
+      .innerJoin('academicInfo.program', 'program')
+      .where('academicInfo.studentId = :studentId', { studentId })
+      .select('program.id AS id')
+      .getRawOne<{ id: Course['id'] }>();
+
+    if (!program) return null;
+    return program.id;
+  }
+
+  async getStudentGradProjectId(
     studentId: User['id'],
   ): Promise<Course['id'] | null> {
     const course = await this.academicInfoRepo

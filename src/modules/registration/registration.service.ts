@@ -180,16 +180,19 @@ export class RegistrationService {
   }
 
   async getStudentAvailableCourses(studentId: Student['userId']) {
-    const programId =
-      await this.academicInfoService.getStudentProgramId(studentId);
-    const gradProjectId = programId;
-
-    const [requiredHoursToTakeGradProject, gainedHours, passedCourseIds] =
-      await Promise.all([
-        this.academicInfoService.getRequiredHoursToTakeGradProject(studentId),
-        this.academicInfoService.getGainedHours(studentId),
-        this.academicInfoService.getPassedCourseIds(studentId),
-      ]);
+    const [
+      requiredHoursToTakeGradProject,
+      gainedHours,
+      passedCourseIds,
+      programId,
+      gradProjectId,
+    ] = await Promise.all([
+      this.academicInfoService.getRequiredHoursToTakeGradProject(studentId),
+      this.academicInfoService.getGainedHours(studentId),
+      this.academicInfoService.getPassedCourseIds(studentId),
+      this.academicInfoService.getStudentProgramId(studentId),
+      this.academicInfoService.getStudentGradProjectId(studentId),
+    ]);
 
     const query = this.academicInfoRepo
       .createQueryBuilder('academicInfo')
@@ -220,8 +223,7 @@ export class RegistrationService {
       query.andWhere('course.id != :gradProjectId', { gradProjectId });
     }
 
-    const rawCourses = await query.getRawMany();
-    return rawCourses as Course[];
+    return query.getRawMany<Course>();
   }
 
   async getRecommenedCourses(studentId: Student['userId']) {
@@ -252,9 +254,7 @@ export class RegistrationService {
       .leftJoin('course.prerequisite', 'prerequisite')
       .where('plan.programId = :planId', { planId })
       .andWhere('course.id IN (:...courseIds)', {
-        courseIds: unpassedAvailableCourseIds.length
-          ? unpassedAvailableCourseIds
-          : [null],
+        courseIds: safeInArray(unpassedAvailableCourseIds),
       })
       .select(this.getCourseSelectFields())
       .orderBy('semesterPlan.level', 'ASC')
