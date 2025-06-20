@@ -26,15 +26,7 @@ export class RegulationValidationService {
       if (x.value !== i + 1)
         throw new BadRequestException(ErrorEnum.LEVELS_RANGE_INVALID);
       if (i > 0 && x.reqHours <= levels[i - 1].reqHours)
-        throw new BadRequestException({
-          message: ErrorEnum.LEVEL_REQ_HOURS_INVALID,
-          args: {
-            current: x.value,
-            currentHours: x.reqHours,
-            previous: levels[i - 1].value,
-            previousHours: levels[i - 1].reqHours,
-          },
-        });
+        throw new BadRequestException(ErrorEnum.LEVEL_REQ_HOURS_INVALID);
     });
   }
 
@@ -51,11 +43,11 @@ export class RegulationValidationService {
       const current = gpaRange[i];
       const next = gpaRange[i + 1];
 
-      if (current.to <= current.from) {
+      if (current.to < current.from) {
         isValid = false;
       }
 
-      if (current.to !== next.from - 1) {
+      if (current.to + 1 !== next.from) {
         isValid = false;
       }
 
@@ -81,11 +73,11 @@ export class RegulationValidationService {
       const current = gpaRange[i];
       const next = gpaRange[i + 1];
 
-      if (current.to <= current.from) {
+      if (current.to < current.from) {
         isValid = false;
       }
 
-      if (current.to !== next.from - 0.01) {
+      if (current.to + 0.01 !== next.from) {
         isValid = false;
       }
     }
