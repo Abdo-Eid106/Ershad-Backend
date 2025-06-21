@@ -4,6 +4,7 @@ import { Plan } from 'src/modules/plan/entities/plan.entity';
 import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { RequirementCourse } from 'src/modules/requirement/entities/requirement-course.entity';
 import { AcademicInfo } from 'src/modules/academic-info/entities/academic-info.entity';
+import { GradProject } from 'src/modules/grad-project/entites/grad-project.entity';
 
 @Entity()
 export class Program extends BaseEntity {
@@ -32,4 +33,7 @@ export class Program extends BaseEntity {
 
   @OneToMany(() => AcademicInfo, (academicInfo) => academicInfo.program)
   academicInfos: AcademicInfo[];
+
+  @OneToOne(() => GradProject, (gradProject) => gradProject.program)
+  gradProject?: GradProject;
 }
