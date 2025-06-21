@@ -45,8 +45,6 @@ export class AcademicInfoService {
     const gpa = await this.semesterService.getStudentGpa(studentId);
     const level = await this.getLevel(studentId);
 
-    console.log('grad = ', await this.getStudentGradProjectId(studentId));
-
     return {
       attemptedHours,
       gainedHours,
