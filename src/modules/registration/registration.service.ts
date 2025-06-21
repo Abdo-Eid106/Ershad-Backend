@@ -278,7 +278,7 @@ export class RegistrationService {
       .createQueryBuilder('student')
       .innerJoin('student.user', 'user')
       .innerJoin('user.fcmTokens', 'fcmToken')
-      .select('fcmToken.token AS token')
+      .select('fcmToken.token', 'token')
       .getRawMany<{ token: string }>();
 
     return fcmTokens.map((fcmToken) => fcmToken.token);

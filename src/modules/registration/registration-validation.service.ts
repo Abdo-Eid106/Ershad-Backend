@@ -112,7 +112,7 @@ export class RegistrationValidationService {
     const { totalCreditHours } = await this.courseRepo
       .createQueryBuilder('course')
       .where('course.id IN (:...courseIds)', { courseIds })
-      .select(['SUM(course.creditHours) as totalCreditHours'])
+      .select('SUM(course.creditHours)', 'totalCreditHours')
       .getRawOne<{ totalCreditHours: number }>();
 
     const [minHours, maxHours] =
@@ -161,7 +161,7 @@ export class RegistrationValidationService {
       .innerJoin('academicInfo.student', 'student')
       .where('student.userId = :studentId', { studentId })
       .andWhere('course.id IN (:...courseIds)', { courseIds })
-      .select('DISTINCT(course.id) AS selectedRetakeCount')
+      .select('DISTINCT(course.id)', 'selectedRetakeCount')
       .getCount();
 
     const isValid = selectedRetakeCount <= availableRetakes;

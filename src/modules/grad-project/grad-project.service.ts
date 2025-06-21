@@ -52,7 +52,7 @@ export class GradProjectService {
     const { regulationId } = await this.programRepo
       .createQueryBuilder('program')
       .innerJoin('program.regulation', 'regulation')
-      .select('regulation.id AS regulationId')
+      .select('regulation.id', 'regulationId')
       .where('program.id = :programId', { programId })
       .getRawOne<{ regulationId: Regulation['id'] }>();
 

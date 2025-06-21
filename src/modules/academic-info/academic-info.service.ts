@@ -123,11 +123,9 @@ export class AcademicInfoService {
       .innerJoin('semesterCourse.course', 'course')
       .where('academicInfo.studentId = :studentId', { studentId })
       .groupBy('course.id')
-      .select([
-        'course.id AS id',
-        'course.creditHours AS creditHours',
-        'MAX(semesterCourse.degree) AS degree',
-      ])
+      .select('course.id', 'id')
+      .addSelect('course.creditHours', 'creditHours')
+      .addSelect('MAX(semesterCourse.degree)', 'degree')
       .getRawMany<{ id: Course['id']; creditHours: number; degree: number }>();
 
     return semesterCourses.reduce(
@@ -200,7 +198,7 @@ export class AcademicInfoService {
         .innerJoin('academicInfo.regulation', 'regulation')
         .innerJoin('regulation.registrationRules', 'rs')
         .where('academicInfo.studentId = :studentId', { studentId })
-        .select(['rs.summerTermHours AS summerTermHours'])
+        .select('rs.summerTermHours', 'summerTermHours')
         .getRawOne<{ summerTermHours: number }>();
 
       return [0, summerTermHours] as const;
@@ -221,13 +219,11 @@ export class AcademicInfoService {
       .innerJoin('regulation.registrationRules', 'rs')
       .innerJoin('regulation.dismissalRules', 'ds')
       .where('academicInfo.studentId = :studentId', { studentId })
-      .select([
-        'rs.normalRegistrationHours AS normalRegistrationHours',
-        'rs.minRegistrationHours AS minRegistrationHours',
-        'rs.maxRegistrationHours AS maxRegistrationHours',
-        'rs.gpaForMaxHours AS gpaForMaxHours',
-        'ds.minGpaForGraduation AS minGpaForGraduation',
-      ])
+      .select('rs.normalRegistrationHours', 'normalRegistrationHours')
+      .addSelect('rs.minRegistrationHours', 'minRegistrationHours')
+      .addSelect('rs.maxRegistrationHours', 'maxRegistrationHours')
+      .addSelect('rs.gpaForMaxHours', 'gpaForMaxHours')
+      .addSelect('ds.minGpaForGraduation', 'minGpaForGraduation')
       .getRawOne<{
         normalRegistrationHours: number;
         maxRegistrationHours: number;
@@ -290,7 +286,8 @@ export class AcademicInfoService {
         'gradProjectRequirements',
       )
       .select(
-        'gradProjectRequirements.requiredHours AS requiredHoursToTakeGradProject',
+        'gradProjectRequirements.requiredHours',
+        'requiredHoursToTakeGradProject',
       )
       .where('academicInfo.studentId = :studentId', { studentId })
       .getRawOne<{ requiredHoursToTakeGradProject: number }>();
@@ -304,10 +301,8 @@ export class AcademicInfoService {
       .innerJoin('academicInfo.semesters', 'semester')
       .innerJoin('semester.semesterCourses', 'semesterCourse')
       .where('academicInfo.studentId = :studentId', { studentId })
-      .select([
-        'COUNT(semesterCourse.courseId) AS totalAttempts',
-        'COUNT(DISTINCT semesterCourse.courseId) AS uniqueCourses',
-      ])
+      .select('COUNT(semesterCourse.courseId)', 'totalAttempts')
+      .addSelect('COUNT(DISTINCT semesterCourse.courseId)', 'uniqueCourses')
       .getRawOne<{ totalAttempts: number; uniqueCourses: number }>();
 
     return totalAttempts - uniqueCourses;
@@ -325,7 +320,7 @@ export class AcademicInfoService {
       .innerJoin('academicInfo.program', 'program')
       .innerJoin('program.plan', 'plan')
       .where('academicInfo.studentId = :studentId', { studentId })
-      .select(['plan.programId AS programId'])
+      .select('plan.programId', 'programId')
       .getRawOne<{ programId: Plan['programId'] }>();
     if (plan) return plan.programId;
 
@@ -335,7 +330,7 @@ export class AcademicInfoService {
       .innerJoin('regulation.programs', 'program')
       .innerJoin('program.plan', 'plan')
       .where('academicInfo.studentId = :studentId', { studentId })
-      .select(['plan.programId AS programId'])
+      .select('plan.programId', 'programId')
       .getRawOne<{ programId: Plan['programId'] }>();
 
     if (plan) return plan.programId;
@@ -349,7 +344,7 @@ export class AcademicInfoService {
       .createQueryBuilder('academicInfo')
       .innerJoin('academicInfo.program', 'program')
       .where('academicInfo.studentId = :studentId', { studentId })
-      .select('program.id AS id')
+      .select('program.id', 'id')
       .getRawOne<{ id: Course['id'] }>();
 
     if (!program) return null;
@@ -364,7 +359,7 @@ export class AcademicInfoService {
       .innerJoin('academicInfo.program', 'program')
       .innerJoin('program.gradProject', 'gradProject')
       .where('academicInfo.studentId = :studentId', { studentId })
-      .select('gradProject.courseId AS id')
+      .select('gradProject.courseId', 'id')
       .getRawOne<{ id: Course['id'] }>();
 
     if (!course) return null;

@@ -63,12 +63,10 @@ export class SummaryService {
       .createQueryBuilder('program')
       .leftJoin('program.academicInfos', 'ac')
       .groupBy('program.id')
-      .select([
-        'program.id AS id',
-        'program.name AS name',
-        'program.degree AS degree',
-        'COUNT(ac.studentId) AS enrollments',
-      ])
+      .select('program.id', 'id')
+      .addSelect('program.name', 'name')
+      .addSelect('program.degree', 'degree')
+      .addSelect('COUNT(ac.studentId)', 'enrollments')
       .orderBy('enrollments', 'DESC')
       .getRawOne();
   }
@@ -78,12 +76,10 @@ export class SummaryService {
       .createQueryBuilder('program')
       .leftJoin('program.academicInfos', 'ac')
       .groupBy('program.id')
-      .select([
-        'program.id AS id',
-        'program.name AS name',
-        'program.degree AS degree',
-        'COUNT(ac.studentId) AS enrollments',
-      ])
+      .select('program.id', 'id')
+      .addSelect('program.name', 'name')
+      .addSelect('program.degree', 'degree')
+      .addSelect('COUNT(ac.studentId)', 'enrollments')
       .orderBy('enrollments', 'ASC')
       .getRawOne();
   }
@@ -103,12 +99,10 @@ export class SummaryService {
       .innerJoin('semesterCourse.course', 'course')
       .leftJoin('course.prerequisite', 'prerequisite')
       .groupBy('course.id')
-      .select([
-        'course.id AS id',
-        'course.name AS name',
-        'course.code AS code',
-        'COUNT(semesterCourse.id) AS enrollments',
-      ])
+      .select('course.id', 'id')
+      .addSelect('course.name', 'name')
+      .addSelect('course.code', 'code')
+      .addSelect('COUNT(semesterCourse.id)', 'enrollments')
       .orderBy('enrollments', 'DESC')
       .limit(5)
       .getRawMany();

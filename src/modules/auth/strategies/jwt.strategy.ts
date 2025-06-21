@@ -25,7 +25,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.userRepo
       .createQueryBuilder('user')
       .innerJoin('user.role', 'role')
-      .select(['user.id AS id', 'user.email AS email', 'role.name AS role'])
+      .select('user.id', 'id')
+      .addSelect('user.email', 'email')
+      .addSelect('role.name', 'role')
       .where('user.id = :id', { id: payloud.id })
       .getRawOne();
     if (!user) throw new UnauthorizedException();

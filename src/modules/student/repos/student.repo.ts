@@ -25,23 +25,21 @@ export class StudentRepo extends Repository<Student> {
     const baseQuery = this.createQueryBuilder('student')
       .innerJoin('student.user', 'user')
       .innerJoin('student.personalInfo', 'personalInfo')
-      .select([
-        'user.id AS id',
-        'personalInfo.name AS name',
-        'personalInfo.avatar AS avatar',
-      ]);
+      .select('user.id', 'id')
+      .addSelect('personalInfo.name', 'name')
+      .addSelect('personalInfo.avatar', 'avatar');
 
     if (search) {
       if (this.isPostgres) {
         baseQuery.where(
-          `(LOWER(personalInfo.name::json->>'en') LIKE LOWER(:search) OR 
-            LOWER(personalInfo.name::json->>'ar') LIKE LOWER(:search))`,
+          `(LOWER(name::json->>'en') LIKE LOWER(:search) OR 
+            LOWER(name::json->>'ar') LIKE LOWER(:search))`,
           { search: `%${search}%` },
         );
       } else {
         baseQuery.where(
-          `(LOWER(JSON_UNQUOTE(JSON_EXTRACT(personalInfo.name, '$.en'))) LIKE LOWER(:search) OR 
-            LOWER(JSON_UNQUOTE(JSON_EXTRACT(personalInfo.name, '$.ar'))) LIKE LOWER(:search))`,
+          `(LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.en'))) LIKE LOWER(:search) OR 
+            LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, '$.ar'))) LIKE LOWER(:search))`,
           { search: `%${search}%` },
         );
       }

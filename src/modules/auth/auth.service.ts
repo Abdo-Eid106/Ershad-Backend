@@ -28,12 +28,10 @@ export class AuthService {
     const user = await this.userRepo
       .createQueryBuilder('user')
       .innerJoin('user.role', 'role')
-      .select([
-        'user.id AS id',
-        'user.email AS email',
-        'user.password AS password',
-        'role.name AS role',
-      ])
+      .select('user.id', 'id')
+      .addSelect('user.email', 'email')
+      .addSelect('user.password', 'password')
+      .addSelect('role.name', 'role')
       .where('user.email = :email', { email })
       .getRawOne();
 

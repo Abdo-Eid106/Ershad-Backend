@@ -61,15 +61,14 @@ export class ProgramService {
       .createQueryBuilder('program')
       .innerJoin('program.regulation', 'regulation')
       .innerJoin('regulation.academicRequirements', 'ac')
-      .select([
-        'program.id AS id',
-        'program.name AS name',
-        'program.code AS code',
-        'program.degree AS degree',
-        'ac.levelsCount as levels',
-      ])
+      .select('program.id', 'id')
+      .addSelect('program.name', 'name')
+      .addSelect('program.code', 'code')
+      .addSelect('program.degree', 'degree')
+      .addSelect('ac.levelsCount', 'levels')
       .where('program.id = :id', { id })
       .getRawOne();
+
     if (!program) throw new NotFoundException(ErrorEnum.PROGRAM_NOT_FOUND);
     return program;
   }

@@ -27,16 +27,14 @@ export class PersonalInfoService {
       .createQueryBuilder('personalInfo')
       .innerJoin('personalInfo.student', 'student')
       .innerJoin('student.user', 'user')
-      .select([
-        'user.id AS id',
-        'user.email AS email',
-        'personalInfo.name AS name',
-        'personalInfo.nationalId AS "nationalId"',
-        'personalInfo.universityId AS "universityId"',
-        'personalInfo.gender AS gender',
-        'personalInfo.phone AS phone',
-        'personalInfo.avatar AS avatar',
-      ])
+      .select('user.id', 'id')
+      .addSelect('user.email', 'email')
+      .addSelect('personalInfo.name', 'name')
+      .addSelect('personalInfo.nationalId', 'nationalId')
+      .addSelect('personalInfo.universityId', 'universityId')
+      .addSelect('personalInfo.gender', 'gender')
+      .addSelect('personalInfo.phone', 'phone')
+      .addSelect('personalInfo.avatar', 'avatar')
       .where('user.id = :id', { id })
       .getRawOne();
 

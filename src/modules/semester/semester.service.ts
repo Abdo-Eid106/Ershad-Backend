@@ -242,26 +242,20 @@ export class SemesterService {
         'requirementCourse.course = course.id',
       )
       .where('academicInfo.studentId = :studentId', { studentId })
-      .select(this.getCourseSelectFields())
+      .select('course.id', 'courseId')
+      .addSelect('course.name', 'courseName')
+      .addSelect('course.code', 'code')
+      .addSelect('course.creditHours', 'creditHours')
+      .addSelect('semesterCourse.degree', 'degree')
+      .addSelect('range.gpa', 'gpa')
+      .addSelect('range.name', 'grade')
+      .addSelect('semester.id', 'semesterId')
+      .addSelect('semester.startYear', 'startYear')
+      .addSelect('semester.endYear', 'endYear')
+      .addSelect('semester.semester', 'semester')
+      .addSelect('requirementCourse.category', 'category')
       .orderBy('semester.startYear', 'ASC')
       .addOrderBy('semester.semester', 'ASC');
-  }
-
-  private getCourseSelectFields() {
-    return [
-      'course.id AS courseId',
-      'course.name AS courseName',
-      'course.code AS code',
-      'course.creditHours AS creditHours',
-      'semesterCourse.degree AS degree',
-      'range.gpa AS gpa',
-      'range.name AS grade',
-      'semester.id AS semesterId',
-      'semester.startYear AS startYear',
-      'semester.endYear AS endYear',
-      'semester.semester AS semester',
-      'requirementCourse.category AS category',
-    ];
   }
 
   private applySemesterFilter(

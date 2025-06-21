@@ -46,7 +46,9 @@ export class OfficerService {
     return this.officerRepo
       .createQueryBuilder('officer')
       .innerJoin('officer.user', 'user')
-      .select(['user.id AS id', 'user.email AS email', 'officer.name AS name'])
+      .select('user.id', 'id')
+      .addSelect('user.email', 'email')
+      .addSelect('officer.name', 'name')
       .getRawMany();
   }
 
