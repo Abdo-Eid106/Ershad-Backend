@@ -364,7 +364,7 @@ export class AcademicInfoService {
       .innerJoin('academicInfo.program', 'program')
       .innerJoin(Course, 'course', 'program.id = course.id')
       .where('academicInfo.studentId = :studentId', { studentId })
-      .select('course.id AS courseId')
+      .select('course.id AS id')
       .getRawOne<{ id: Course['id'] }>();
 
     if (!course) return null;
