@@ -1,9 +1,17 @@
+import { GradProject } from 'src/modules/grad-project/entites/grad-project.entity';
 import { SemesterPlanCourse } from 'src/modules/plan/entities/semester-plan-course.entity';
 import { RegistrationCourse } from 'src/modules/registration/entities/registration-course.entity';
 import { RequirementCourse } from 'src/modules/requirement/entities/requirement-course.entity';
 import { SemesterCourse } from 'src/modules/semester/entities/semester-course.entity';
 import { BaseEntity } from 'src/shared/entities/Base.entity';
-import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 
 @Entity()
 export class Course extends BaseEntity {
@@ -55,4 +63,7 @@ export class Course extends BaseEntity {
     (semesterPlanCourse) => semesterPlanCourse.course,
   )
   semesterPlanCourses: SemesterPlanCourse[];
+
+  @OneToOne(() => GradProject, (gradProject) => gradProject.course)
+  gradProject?: GradProject;
 }

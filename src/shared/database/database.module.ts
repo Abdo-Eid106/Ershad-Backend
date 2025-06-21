@@ -38,6 +38,7 @@ import { Role } from 'src/modules/auth/entities/role.entity';
 import { RegistrationSettings } from 'src/modules/registration/entities/registration-settings.entity';
 import { Warning } from 'src/modules/warning/entities/warning.entity';
 import { FcmToken } from 'src/modules/fcm-token/entities/fcm-token.entity';
+import { GradProject } from 'src/modules/grad-project/entites/grad-project.entity';
 
 @Module({
   imports: [
@@ -88,6 +89,7 @@ import { FcmToken } from 'src/modules/fcm-token/entities/fcm-token.entity';
           RegistrationSettings,
           Warning,
           FcmToken,
+          GradProject,
         ],
         synchronize: true,
       }),
