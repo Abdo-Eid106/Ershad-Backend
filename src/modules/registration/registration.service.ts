@@ -6,7 +6,7 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { Brackets, DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from '../student/entities/student.entity';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
@@ -170,13 +170,13 @@ export class RegistrationService {
     if (!(await this.academicInfoRepo.existsBy({ studentId })))
       throw new NotFoundException(ErrorEnum.STUDENT_NOT_FOUND);
 
-    return this.registrationRepo
+    const qb = this.registrationRepo
       .createQueryBuilder('registration')
       .innerJoin('registration.registrationCourses', 'registrationCourse')
       .innerJoin('registrationCourse.course', 'course')
-      .where('registration.academicInfoId = :studentId', { studentId })
-      .select(this.getCourseSelectFields())
-      .getRawMany();
+      .where('registration.academicInfoId = :studentId', { studentId });
+
+    return this.applyCourseSelectFields(qb).getRawMany();
   }
 
   async getStudentAvailableCourses(studentId: Student['userId']) {
@@ -194,14 +194,15 @@ export class RegistrationService {
       this.academicInfoService.getStudentGradProjectId(studentId),
     ]);
 
-    const query = this.academicInfoRepo
+    const qb = this.academicInfoRepo
       .createQueryBuilder('academicInfo')
       .leftJoin('academicInfo.regulation', 'regulation')
       .leftJoin('regulation.requirementCourses', 'requirementCourse')
       .leftJoin('requirementCourse.program', 'program')
       .leftJoin('requirementCourse.course', 'course')
-      .leftJoin('course.prerequisite', 'prerequisite')
-      .select(this.getCourseSelectFields())
+      .leftJoin('course.prerequisite', 'prerequisite');
+
+    this.applyCourseSelectFields(qb)
       .where('academicInfo.studentId = :studentId', { studentId })
       .andWhere(
         new Brackets((qb) => {
@@ -220,10 +221,10 @@ export class RegistrationService {
       );
 
     if (gradProjectId && gainedHours < requiredHoursToTakeGradProject) {
-      query.andWhere('course.id != :gradProjectId', { gradProjectId });
+      qb.andWhere('course.id != :gradProjectId', { gradProjectId });
     }
 
-    return query.getRawMany<Course>();
+    return qb.getRawMany<Course>();
   }
 
   async getRecommenedCourses(studentId: Student['userId']) {
@@ -246,7 +247,7 @@ export class RegistrationService {
       (courseId) => !passedCourseIdsSet.has(courseId),
     );
 
-    return this.planRepo
+    const qb = this.planRepo
       .createQueryBuilder('plan')
       .leftJoin('plan.semesterPlans', 'semesterPlan')
       .leftJoin('semesterPlan.semesterPlanCourses', 'semesterPlanCourse')
@@ -255,22 +256,22 @@ export class RegistrationService {
       .where('plan.programId = :planId', { planId })
       .andWhere('course.id IN (:...courseIds)', {
         courseIds: safeInArray(unpassedAvailableCourseIds),
-      })
-      .select(this.getCourseSelectFields())
+      });
+
+    return this.applyCourseSelectFields(qb)
       .orderBy('semesterPlan.level', 'ASC')
       .addOrderBy('semesterPlan.semester', 'ASC')
       .getRawMany();
   }
 
-  private getCourseSelectFields() {
-    return [
-      'course.id AS id',
-      'course.name AS name',
-      'course.code AS code',
-      'course.lectureHours AS lectureHours',
-      'course.practicalHours AS practicalHours',
-      'course.creditHours AS creditHours',
-    ];
+  private applyCourseSelectFields(qb: SelectQueryBuilder<any>) {
+    return qb
+      .select('course.id', 'id')
+      .addSelect('course.name', 'name')
+      .addSelect('course.code', 'code')
+      .addSelect('course.lectureHours', 'lectureHours')
+      .addSelect('course.practicalHours', 'practicalHours')
+      .addSelect('course.creditHours', 'creditHours');
   }
 
   private async getStudentsTokens() {
