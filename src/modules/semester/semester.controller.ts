@@ -42,7 +42,7 @@ export class SemesterController {
     return this.semesterService.findStudentSemesters(id);
   }
 
-  @Get('/semesters/me')
+  @Get('/me/semesters')
   @Roles(RoleEnum.STUDENT)
   findMySemesters(@currentUser() user: IPayloud) {
     return this.semesterService.findStudentSemesters(user.id);

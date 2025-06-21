@@ -48,7 +48,7 @@ export class RegistrationController {
     return this.registrationService.getSettings();
   }
 
-  @Get('/registrations/me')
+  @Get('/me/registrations')
   @Roles(RoleEnum.STUDENT)
   @Serialize(CourseDto)
   async getMyRegistration(@currentUser() user: IPayloud) {

@@ -31,7 +31,7 @@ export class AcademicInfoController {
     return this.academicInfoService.getAcademicInfo(id);
   }
 
-  @Get('academic-info/me')
+  @Get('me/academic-info')
   @Roles(RoleEnum.STUDENT)
   @Serialize(AcademicInfoDto)
   getMyAcademicInfo(@currentUser() user: IPayloud) {
