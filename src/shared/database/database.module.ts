@@ -46,7 +46,7 @@ import { FcmToken } from 'src/modules/fcm-token/entities/fcm-token.entity';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        type: 'mysql',
+        type: configService.get<'postgres' | 'mysql'>('DB_TYPE', 'mysql'),
         host: configService.get<string>('DB_HOST', 'localhost'),
         port: configService.get<number>('DB_PORT', 3306),
         username: configService.get<string>('DB_USER', 'root'),
