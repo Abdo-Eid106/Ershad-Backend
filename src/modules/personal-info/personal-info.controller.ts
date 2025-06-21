@@ -53,15 +53,6 @@ export class PersonalInfoController {
     return this.personalInfoService.update(id, updatePersonalInfoDto);
   }
 
-  @Put('/me/personal-info')
-  @Roles(RoleEnum.STUDENT)
-  updateMe(
-    @currentUser() user: IPayloud,
-    @Body() updatePersonalInfoDto: UpdatePersonalInfoDto,
-  ) {
-    return this.personalInfoService.update(user.id, updatePersonalInfoDto);
-  }
-
   @Patch('/students/:id/avatar')
   @Roles(RoleEnum.ADMIN, RoleEnum.OFFICER)
   @UseInterceptors(FileInterceptor('avatar'))
