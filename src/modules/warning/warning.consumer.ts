@@ -28,9 +28,15 @@ export class WarningConsumer extends WorkerHost {
     job: Job<{ semesterId: Semester['id']; studentId: Student['userId'] }>,
   ) {
     const { semesterId, studentId } = job.data;
+
+    const isFirstSemester = await this.semesterService.isFirstSemester(
+      semesterId,
+      studentId,
+    );
+    if (isFirstSemester) return;
+
     const { cumGpa } = (await this.semesterService.findOne(semesterId))
       .statistics;
-
     const minGpaToGraduate =
       await this.academicInfoService.getMinGpaToGraduate(studentId);
     if (cumGpa >= minGpaToGraduate) return;

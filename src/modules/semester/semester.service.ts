@@ -145,6 +145,16 @@ export class SemesterService {
     return this.buildAllSemestersResponse(allSemesterCourses);
   }
 
+  async isFirstSemester(id: Semester['id'], studentId: User['id']) {
+    const semester = await this.semesterRepo.findOne({
+      where: { academicInfo: { studentId } },
+      order: { startYear: 'ASC', semester: 'ASC' },
+    });
+
+    if (!semester) return false;
+    return semester.id == id;
+  }
+
   private buildSemesterResponse(
     semester: Partial<Semester>,
     currentSemesterCourses: CourseRecord[],
