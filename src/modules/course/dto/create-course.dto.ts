@@ -33,7 +33,7 @@ export class CreateCourseDto {
   lectureHours: number;
 
   @IsInt({ message: ErrorEnum.PRACTICAL_HOURS_INTEGER })
-  @Min(1, { message: ErrorEnum.PRACTICAL_HOURS_MIN })
+  @Min(0, { message: ErrorEnum.PRACTICAL_HOURS_MIN })
   practicalHours: number;
 
   @IsInt({ message: ErrorEnum.CREDIT_HOURS_INTEGER })
