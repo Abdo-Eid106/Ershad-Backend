@@ -8,7 +8,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateProgramDto, GetProgramsDto, UpdateProgramDto } from './dto';
 import { Regulation } from '../regulation/entities';
-import { Course } from '../course/entites/course.entity';
 import { ErrorEnum } from 'src/shared/i18n/enums/error.enum';
 
 @Injectable()
@@ -42,27 +41,19 @@ export class ProgramService {
   async findAll(query: GetProgramsDto) {
     const { regulationId } = query;
 
-    return this.programRepo
+    const programs = await this.programRepo
       .createQueryBuilder('program')
-      .innerJoin('program.regulation', 'regulation')
-      .leftJoin('program.plan', 'plan')
-      .leftJoin(Course, 'course', 'program.id = course.id')
-      .select([
-        'program.id AS id',
-        'program.name AS name',
-        'program.code AS code',
-        'program.degree AS degree',
-        `CASE 
-          WHEN plan.programId IS NOT NULL THEN TRUE 
-          ELSE FALSE 
-        END AS hasPlan`,
-        `CASE 
-          WHEN course.id IS NOT NULL THEN TRUE 
-          ELSE FALSE 
-        END AS hasGradProject`,
-      ])
+      .innerJoinAndSelect('program.regulation', 'regulation')
+      .leftJoinAndSelect('program.plan', 'plan')
+      .leftJoinAndSelect('program.gradProject', 'gradProject')
       .where('regulation.id = :regulationId', { regulationId })
-      .getRawMany();
+      .getMany();
+
+    return programs.map((program) => ({
+      ...program,
+      hasPlan: !!program.plan,
+      hasGradProject: !!program.gradProject,
+    }));
   }
 
   async findOne(id: Program['id']) {

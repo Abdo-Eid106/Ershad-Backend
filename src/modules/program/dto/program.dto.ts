@@ -1,4 +1,4 @@
-import { Expose, Transform } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import { Program } from '../entities/program.entitiy';
 
 export class ProgramDto {
@@ -18,18 +18,8 @@ export class ProgramDto {
   levels?: number;
 
   @Expose()
-  @Transform(({ value }) =>
-    value !== undefined && value !== null
-      ? value === '1' || value === 1
-      : undefined,
-  )
   hasPlan?: boolean;
 
   @Expose()
-  @Transform(({ value }) =>
-    value !== undefined && value !== null
-      ? value === '1' || value === 1
-      : undefined,
-  )
   hasGradProject?: boolean;
 }

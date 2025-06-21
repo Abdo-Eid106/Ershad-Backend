@@ -45,6 +45,8 @@ export class AcademicInfoService {
     const gpa = await this.semesterService.getStudentGpa(studentId);
     const level = await this.getLevel(studentId);
 
+    console.log('grad = ', await this.getStudentGradProjectId(studentId));
+
     return {
       attemptedHours,
       gainedHours,
@@ -362,9 +364,9 @@ export class AcademicInfoService {
     const course = await this.academicInfoRepo
       .createQueryBuilder('academicInfo')
       .innerJoin('academicInfo.program', 'program')
-      .innerJoin(Course, 'course', 'program.id = course.id')
+      .innerJoin('program.gradProject', 'gradProject')
       .where('academicInfo.studentId = :studentId', { studentId })
-      .select('course.id AS id')
+      .select('gradProject.courseId AS id')
       .getRawOne<{ id: Course['id'] }>();
 
     if (!course) return null;
