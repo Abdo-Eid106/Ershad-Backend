@@ -140,8 +140,9 @@ export class RegulationService {
     const regulation = await this.regulationRepo
       .createQueryBuilder('regulation')
       .innerJoinAndSelect('regulation.levels', 'levels')
+      .orderBy('levels.value', 'ASC')
       .innerJoinAndSelect('regulation.cumGpaRanges', 'cumGpaRanges')
-      .orderBy('cumGpaRanges.from', 'DESC')
+      .addOrderBy('cumGpaRanges.from', 'DESC')
       .innerJoinAndSelect('regulation.courseGpaRanges', 'courseGpaRanges')
       .addOrderBy('courseGpaRanges.from', 'DESC')
       .innerJoinAndSelect('regulation.registrationRules', 'registrationRules')
@@ -187,8 +188,9 @@ export class RegulationService {
     const regulation = await this.regulationRepo
       .createQueryBuilder('regulation')
       .innerJoinAndSelect('regulation.levels', 'levels')
+      .orderBy('levels.value', 'ASC')
       .innerJoinAndSelect('regulation.cumGpaRanges', 'cumGpaRanges')
-      .orderBy('cumGpaRanges.from', 'DESC')
+      .addOrderBy('cumGpaRanges.from', 'DESC')
       .innerJoinAndSelect('regulation.courseGpaRanges', 'courseGpaRanges')
       .addOrderBy('courseGpaRanges.from', 'DESC')
       .innerJoinAndSelect('regulation.registrationRules', 'registrationRules')
