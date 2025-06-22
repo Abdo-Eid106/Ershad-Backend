@@ -7,11 +7,15 @@ export class GradProject {
   @PrimaryColumn('uuid')
   courseId: Course['id'];
 
-  @OneToOne(() => Course, (course) => course.gradProject)
+  @OneToOne(() => Course, (course) => course.gradProject, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'courseId' })
   course: Course;
 
-  @OneToOne(() => Program, (program) => program.gradProject)
+  @OneToOne(() => Program, (program) => program.gradProject, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'programId' })
   program: Program;
 }
