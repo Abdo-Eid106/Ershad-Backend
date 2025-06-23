@@ -6,7 +6,7 @@ export class Otp {
   @PrimaryColumn('uuid')
   userId: User['id'];
 
-  @OneToOne(() => User, (user) => user.otp)
+  @OneToOne(() => User, (user) => user.otp, { onDelete: "CASCADE"})
   @JoinColumn({ name: 'userId' })
   user: User;
 
